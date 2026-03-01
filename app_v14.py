@@ -8,11 +8,15 @@ from streamlit_drawable_canvas import st_canvas
 from PIL import Image
 
 # --- 1. GÜVENLİ AYARLAR ---
-# DİKKAT: Şifreyi Streamlit Cloud "Secrets" panelinden alacak şekilde güncelledim.
+# DİKKAT: GROQ_API_KEY, Streamlit Cloud "Settings > Secrets" kısmına eklenmelidir.
 try:
-    GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
-except:
-    st.error("Hata: GROQ_API_KEY bulunamadı! Lütfen Streamlit Cloud Secrets paneline ekleyin.")
+    if "GROQ_API_KEY" in st.secrets:
+        GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+    else:
+        st.error("Hata: GROQ_API_KEY bulunamadı! Lütfen Secrets paneline ekleyin.")
+        st.stop()
+except Exception as e:
+    st.error(f"Secrets erişim hatası: {e}")
     st.stop()
 
 st.set_page_config(page_title="LGS Matematik Strateji Atölyesi", layout="wide")
@@ -92,21 +96,27 @@ with st.sidebar:
     mode = st.selectbox("Giriş Türü:", ["Öğrenci Girişi", "Öğretmen (Admin)"])
     
     if mode == "Öğretmen (Admin)":
-        if st.text_input("Şifre:", type="password") != "tez2024": st.stop()
+        if st.text_input("Şifre:", type="password") != "tez2024": 
+            st.stop()
         if os.path.isfile("tez_verileri_8sinif_final.csv"):
-            st.dataframe(pd.read_csv("tez_verileri_8sinif_final.csv"))
-            st.download_button("📥 Verileri Yedekle", pd.read_csv("tez_verileri_8sinif_final.csv").to_csv(index=False), "tez_yedek.csv")
+            df_csv = pd.read_csv("tez_verileri_8sinif_final.csv")
+            st.dataframe(df_csv)
+            st.download_button("📥 Verileri İndir (CSV)", df_csv.to_csv(index=False), "tez_verileri.csv")
+        else:
+            st.info("Henüz kaydedilmiş veri bulunmuyor.")
         st.stop()
     
-    student_id = st.text_input("Öğrenci No:", placeholder="Örn: 8A-45")
-    if not student_id: st.warning("Devam etmek için numaranızı girin."); st.stop()
+    student_id = st.text_input("Öğrenci No:", placeholder="Örn: 8A-12")
+    if not student_id:
+        st.warning("Devam etmek için öğrenci numaranızı girin.")
+        st.stop()
     
     st.divider()
     st.markdown("### 🪜 Adımlar")
     step_list = list(BASAMAK_TALIMATLARI.keys())
     step_index = step_list.index(st.session_state.current_step)
     
-    new_step = st.radio("Aşamayı Değiştir:", step_list, index=step_index)
+    new_step = st.radio("Aşamayı Seçin:", step_list, index=step_index)
     
     if new_step != st.session_state.current_step:
         st.session_state.current_step = new_step
@@ -116,6 +126,7 @@ with st.sidebar:
 # --- 6. ANA EKRAN ---
 st.title("🎯 LGS Matematik Strateji İstasyonu")
 
+# Fotoğraf Sabitleme Mekanizması
 if st.session_state.uploaded_file_data is None:
     up_file = st.file_uploader("Soru Fotoğrafını Yükle", type=["png", "jpg", "jpeg"])
     if up_file:
@@ -123,7 +134,7 @@ if st.session_state.uploaded_file_data is None:
         st.rerun()
 else:
     st.image(st.session_state.uploaded_file_data, use_container_width=True)
-    if st.button("❌ Fotoğrafı Değiştir"):
+    if st.button("❌ Fotoğrafı Değiştir / Yeni Soru"):
         st.session_state.uploaded_file_data = None
         st.rerun()
 
@@ -133,6 +144,7 @@ col_draw, col_chat = st.columns([1.2, 0.8], gap="large")
 
 with col_draw:
     st.markdown(f"#### 🖌️ {st.session_state.current_step} - Karalama Alanı")
+    
     canvas_result = st_canvas(
         fill_color="rgba(255, 165, 0, 0.3)",
         stroke_width=3,
@@ -141,17 +153,19 @@ with col_draw:
         height=450,
         drawing_mode="freedraw",
         initial_drawing=st.session_state.canvas_storage[st.session_state.current_step],
-        key=f"canvas_lgs_v1_{st.session_state.current_step.replace(' ', '_')}",
+        key=f"canvas_lgs_vfinal_{st.session_state.current_step.replace(' ', '_')}",
     )
+    
     if canvas_result.json_data is not None:
         st.session_state.canvas_storage[st.session_state.current_step] = canvas_result.json_data
 
 with col_chat:
     st.markdown(f"### 💬 {st.session_state.current_step} - Rehber Bot")
+    
     step_chat = st.session_state.chat_storage[st.session_state.current_step]
     
-    chat_display = st.container(height=400)
-    with chat_display:
+    chat_container = st.container(height=400)
+    with chat_container:
         for m in step_chat:
             with st.chat_message(m["role"]):
                 st.markdown(m["content"])
@@ -159,22 +173,14 @@ with col_chat:
     if prompt := st.chat_input("Düşünceni buraya yaz..."):
         duration = round(time.time() - st.session_state.step_start_time, 2)
         
-        user_msg = {"role": "user", "content": prompt}
-        step_chat.append(user_msg)
-        log_kaydet({"tarih": datetime.now(), "ogrenci_id": student_id, "basamak": st.session_state.current_step, "sure_sn": duration, "rol": "user", "icerik": prompt})
+        # 1. Kullanıcı mesajını kaydet
+        log_kaydet({
+            "tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "ogrenci_id": student_id,
+            "basamak": st.session_state.current_step,
+            "sure_sn": duration,
+            "rol": "user",
+            "icerik": prompt
+        })
         
-        try:
-            res = requests.post(
-                "https://api.groq.com/openai/v1/chat/completions",
-                headers={"Authorization": f"Bearer {GROQ_API_KEY}"},
-                json={
-                    "model": "llama-3.3-70b-versatile",
-                    "messages": [{"role": "system", "content": f"Sen bir matematik rehberisin. CEVAP VERME. KURALLAR: {BASAMAK_TALIMATLARI[st.session_state.current_step]}"}] + step_chat,
-                    "temperature": 0.1
-                }
-            ).json()
-            ans = res['choices'][0]['message']['content']
-            
-            assistant_msg = {"role": "assistant", "content": ans}
-            step_chat.append(assistant_msg)
-            log_kaydet({"tarih": datetime.now(), "ogrenci_id": student_id, "basamak": st.session_state.current_step,
+        step_chat.append({"role": "user", "content": prompt
