@@ -17,7 +17,7 @@ except Exception as e:
     st.error(f"Secrets erişim hatası: {e}")
     st.stop()
 
-st.set_page_config(page_title="LGS Matematik Strateji Atölyesi", layout="wide")
+st.set_page_config(page_title="Algoritmik Problem Çözme Rehberi", layout="wide")
 
 # --- 2. AKADEMİK PROTOKOLLER (TAM METİN - HİÇ KISALTILMADI) ---
 BASAMAK_TALIMATLARI = {
@@ -105,7 +105,7 @@ with st.sidebar:
         st.stop()
     
     student_id = st.text_input("Öğrenci No:", placeholder="Örn: 8A-12")
-    if not student_id: st.warning("Numaranızı girin."); st.stop()
+    if not student_id: st.warning("Kullanıcı adınızı girin."); st.stop()
     
     st.divider()
     step_list = list(BASAMAK_TALIMATLARI.keys())
@@ -118,7 +118,7 @@ with st.sidebar:
         st.rerun()
 
 # --- 6. ANA EKRAN ---
-st.title("🎯 LGS Matematik Strateji İstasyonu")
+st.title("🎯 Algoritmik Düşünme İle Problem Çözme İstasyonu")
 
 if st.session_state.uploaded_file_data is None:
     up_file = st.file_uploader("Soru Fotoğrafını Yükle", type=["png", "jpg", "jpeg"])
@@ -232,3 +232,4 @@ if st.button("🏁 Çözümü Bitir ve Özetini Al"):
         st.info(f"Bravo! Bu soruda şu adımları izledin: {', '.join(user_inputs[:3])}...")
     else:
         st.info("Harika bir başlangıç yaptın, bir sonraki soruda görüşürüz!")
+
