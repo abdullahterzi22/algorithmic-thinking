@@ -7,11 +7,10 @@ from datetime import datetime
 from streamlit_drawable_canvas import st_canvas
 
 # --- 1. AYARLAR VE GÜVENLİK ---
-# API anahtarı artık Secrets panelinden çekiliyor
 try:
     GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 except:
-    st.error("Hata: API anahtarı (GROQ_API_KEY) Secrets panelinde bulunamadı!")
+    st.error("Hata: Secrets panelinde GROQ_API_KEY bulunamadı!")
     st.stop()
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
@@ -19,7 +18,7 @@ MODEL_NAME = "llama-3.3-70b-versatile"
 
 st.set_page_config(page_title="Algoritmik Düşünme Atölyesi", layout="wide")
 
-# --- 2. AKADEMİK PROTOKOLLER (TAM METİN - EKSİKSİZ) ---
+# --- 2. AKADEMİK PROTOKOLLER (TAM METİN) ---
 BASAMAK_TALIMATLARI = {
 "1. Ayrıştırma": """Amaç: Öğrencinin problemi alt bileşenlerine ayırmasını sağlamak.
 Zorunlu davranışlar:
@@ -28,9 +27,7 @@ Zorunlu davranışlar:
 - Problemi en az iki alt probleme ayırtmasını iste.
 - Sayısal ilişkileri tanımlat.
 Yasak:
-- Çözüm yolu önermek.
-- İşlem yaptırmak.
-- Sonuca yaklaşan ipucu vermek.""",
+- Çözüm yolu önermek. - İşlem yaptırmak. - Sonuca yaklaşan ipucu vermek.""",
 
 "2. Soyutlama": """Amaç: Problemin matematiksel yapısını ortaya çıkarmak.
 Zorunlu davranışlar:
@@ -39,27 +36,23 @@ Zorunlu davranışlar:
 - Gereksiz bilgileri ayırt ettir.
 - Eğer uygunsa örüntü veya genel yapı düşündür.
 Yasak:
-- EKOK/EBOB gibi kavramı doğrudan söylemek.
-- Stratejiyi açıkça belirtmek.""",
+- EKOK/EBOB gibi kavramı doğrudan söylemek. - Stratejiyi açıkça belirtmek.""",
 
 "3. Algoritma Tasarımı": """Amaç: Öğrencinin kendi çözüm planını oluşturmasını sağlamak.
 Zorunlu davranışlar:
-- Adım adım plan oluşturmasını iste (Örn: "Önce ne yapacaksın, sonra hangi adımı izleyeceksin?").
+- Adım adım plan oluşturmasını iste.
 - Neden bu yöntemi seçtiğini sorgula.
 - Başka bir yöntem mümkün mü diye düşündür.
-- Çözümün genellenebilirliğini sorgula.
 Yasak:
-- İşlem adımlarını doğrudan vermek.
-- Hesap sonucu söylemek.""",
+- İşlem adımlarını doğrudan vermek. - Hesap sonucu söylemek.""",
 
 "4. Hata Ayıklama": """Amaç: Öğrencinin çözümünü kontrol etmesini sağlamak.
 Zorunlu davranışlar:
 - Sonucun problem koşullarını sağlayıp sağlamadığını sorgulat.
 - Alternatif doğrulama yolu düşündür.
-- Mantıksal tutarlılık kontrolü yaptır (Örn: "Bulduğun bu sonuç sorudaki mantığa uyuyor mu?").
+- Mantıksal tutarlılık kontrolü yaptır.
 Yasak:
-- Sonucu doğru veya yanlış diye kesin olarak belirtmek.
-- Doğru cevabı ima etmek."""
+- Sonucu doğru veya yanlış diye kesin olarak belirtmek. - Doğru cevabı ima etmek."""
 }
 
 METABILISSEL_SORULAR = {
@@ -75,15 +68,15 @@ def log_kaydet(data):
     df = pd.DataFrame([data])
     df.to_csv(dosya, mode='a', index=False, header=not os.path.isfile(dosya), encoding="utf-8-sig")
 
-# --- 4. SESSION STATE ---
-if "uploaded_file_data" not in st.session_state:
-    st.session_state.uploaded_file_data = None
+# --- 4. SESSION STATE (BELLEK) ---
 if "chat_storage" not in st.session_state:
     st.session_state.chat_storage = {s: [] for s in BASAMAK_TALIMATLARI.keys()}
+if "uploaded_file_data" not in st.session_state:
+    st.session_state.uploaded_file_data = None
 if "current_step" not in st.session_state:
     st.session_state.current_step = "1. Ayrıştırma"
 
-# --- 5. SIDEBAR (PANEL) ---
+# --- 5. SIDEBAR ---
 with st.sidebar:
     st.title("👨‍🏫 Araştırma Paneli")
     mode = st.selectbox("Giriş Türü:", ["Öğrenci Girişi", "Öğretmen (Admin)"])
@@ -92,20 +85,17 @@ with st.sidebar:
         sifre = st.text_input("Şifre:", type="password")
         if sifre == "tez2024":
             st.success("Admin Paneli Aktif")
-            dosya_yolu = "tez_verileri_final.csv"
-            if os.path.isfile(dosya_yolu):
+            if os.path.isfile("tez_verileri_final.csv"):
                 try:
-                    df_csv = pd.read_csv(dosya_yolu, sep=None, engine='python', on_bad_lines='skip')
-                    st.write("### 📊 Veri Kayıtları")
+                    df_csv = pd.read_csv("tez_verileri_final.csv", sep=None, engine='python', on_bad_lines='skip')
                     st.dataframe(df_csv.tail(20))
-                    csv_data = df_csv.to_csv(index=False).encode('utf-8-sig')
-                    st.download_button("📥 Verileri İndir (CSV)", csv_data, "tez_verileri.csv", "text/csv")
+                    st.download_button("📥 Verileri İndir", df_csv.to_csv(index=False).encode('utf-8-sig'), "tez_verileri.csv", "text/csv")
                 except: st.error("Veri okuma hatası!")
         st.stop()
         
     student_id = st.text_input("Öğrenci No / Adı:", placeholder="Örn: 8A-123")
     if not student_id:
-        st.warning("Lütfen giriş yapın.")
+        st.warning("Giriş yapın.")
         st.stop()
         
     st.divider()
@@ -131,11 +121,11 @@ col1, col2 = st.columns([1, 1], gap="large")
 
 with col1:
     st.write("🖌️ **Karalama ve Planlama Alanı**")
-    st_canvas(fill_color="rgba(255, 165, 0, 0.3)", stroke_width=3, stroke_color="#000", background_color="#fff", height=320, drawing_mode="freedraw", key=f"can_f_{st.session_state.current_step.replace(' ', '')}")
+    st_canvas(fill_color="rgba(255, 165, 0, 0.3)", stroke_width=3, stroke_color="#000", background_color="#fff", height=320, drawing_mode="freedraw", key=f"can_vfinal_{st.session_state.current_step.replace(' ', '')}")
     
     st.write("---")
     st.info(f"🧠 **Öz-Yansıtma Sorusu:**\n\n{METABILISSEL_SORULAR[st.session_state.current_step]}")
-    m_cevap = st.text_area("Düşünceni buraya yaz:", key=f"meta_f_{st.session_state.current_step[0]}")
+    m_cevap = st.text_area("Düşünceni buraya yaz:", key=f"meta_vfinal_{st.session_state.current_step[0]}")
     if st.button("Düşüncemi Kaydet"):
         if m_cevap:
             log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": st.session_state.current_step, "tip": "Metabiliş", "icerik": m_cevap})
@@ -143,45 +133,32 @@ with col1:
 
     st.write("---")
     st.write("⭐ **Bu adımdaki çözümünden ne kadar eminsin?**")
-    confidence = st.select_slider("Derece:", options=["Hiç Emin Değilim", "Kararsızım", "Biraz Eminim", "Çok Eminim"], value="Kararsızım", key=f"conf_f_{st.session_state.current_step}")
+    confidence = st.select_slider("Derece:", options=["Hiç Emin Değilim", "Kararsızım", "Biraz Eminim", "Çok Eminim"], value="Kararsızım", key=f"conf_vfinal_{st.session_state.current_step}")
     if st.button("Eminlik Derecesini Kaydet"):
-        log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": st.session_state.current_step, "tip": "Eminlik Derecesi", "icerik": confidence})
-        st.success(f"Kaydedildi: {confidence}")
+        log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": st.session_state.current_step, "tip": "Eminlik", "icerik": confidence})
+        st.success("Eminlik kaydedildi.")
 
-    st.write("---")
     if st.button("🏁 Çözümü Bitir ve Özetini Al"):
         with st.spinner("Süreç analiz ediliyor..."):
             try:
-                hist_full = str(st.session_state.chat_storage)
                 res = requests.post(GROQ_URL, headers={"Authorization": f"Bearer {GROQ_API_KEY}"}, json={
                     "model": MODEL_NAME,
-                    "messages": [{"role": "system", "content": "Öğrencinin çözüm sürecini özetleyen teşvik edici bir kapanış mesajı yaz."}, {"role": "user", "content": f"Öğrenci: {student_id}, Süreç: {hist_full}"}]
+                    "messages": [{"role": "system", "content": "Öğrencinin çözüm sürecini takdir eden teşvik edici bir özet yaz."}, {"role": "user", "content": str(st.session_state.chat_storage)}]
                 }).json()
-                summary = res['choices'][0]['message']['content']
-                st.info(summary)
-                log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": "FINAL", "tip": "Final Özeti", "icerik": summary})
-            except: st.error("Özet alınamadı.")
+                st.info(res['choices'][0]['message']['content'])
+                log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": "FINAL", "tip": "Ozet", "icerik": res['choices'][0]['message']['content']})
+            except: st.error("Bağlantı hatası!")
 
 with col2:
     st.write("💬 **Rehber Bot**")
     chat_container = st.container(height=550)
-    with chat_container:
-        for m in st.session_state.chat_storage[st.session_state.current_step]:
-            with st.chat_message(m["role"]): st.write(m["content"])
+    
+    # Mevcut mesajları çiz
+    for m in st.session_state.chat_storage[st.session_state.current_step]:
+        chat_container.chat_message(m["role"]).write(m["content"])
 
+    # Mesaj girişi
     if p := st.chat_input("Mesajını yaz..."):
+        # 1. Önce kullanıcı mesajını ekle ve kaydet
         st.session_state.chat_storage[st.session_state.current_step].append({"role": "user", "content": p})
-        log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": st.session_state.current_step, "tip": "Öğrenci", "icerik": p})
-        
-        with st.spinner("Düşünüyor..."):
-            try:
-                r = requests.post(GROQ_URL, headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}, json={
-                    "model": MODEL_NAME,
-                    "messages": [{"role": "system", "content": f"SEN BİR MATEMATİK REHBERİSİN. ŞU ANKİ PROTOKOL: {BASAMAK_TALIMATLARI[st.session_state.current_step]}. ASLA ÇÖZÜM VERME, SADECE PROTOKOLE GÖRE YÖNLENDİR."}] + st.session_state.chat_storage[st.session_state.current_step],
-                    "temperature": 0.4
-                }, timeout=20).json()
-                ans = r['choices'][0]['message']['content']
-                st.session_state.chat_storage[st.session_state.current_step].append({"role": "assistant", "content": ans})
-                log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": st.session_state.current_step, "tip": "Bot", "icerik": ans})
-                st.rerun()
-            except: st.error("Bağlantı hatası!")
+        log_kaydet({"tari
