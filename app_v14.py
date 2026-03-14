@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 from streamlit_drawable_canvas import st_canvas
 
-# --- 1. AYARLAR VE GÜVENLİK (SECRETS) ---
+# --- 1. AYARLAR VE GÜVENLİK ---
 try:
     GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 except:
@@ -18,42 +18,47 @@ MODEL_NAME = "llama-3.3-70b-versatile"
 
 st.set_page_config(page_title="Algoritmik Düşünme Atölyesi", layout="wide")
 
-# --- 2. AKADEMİK PROTOKOLLER (TAM METİN - EKSİKSİZ) ---
+# --- 2. AKADEMİK PROTOKOLLER (TAM METİN - NOKTASINA DOKUNULMADI) ---
 BASAMAK_TALIMATLARI = {
 "1. Ayrıştırma": """Amaç: Öğrencinin problemi alt bileşenlerine ayırmasını sağlamak.
 Zorunlu davranışlar:
-- Verilenleri tek tek fark ettir.
+- Verilenleri tek tek fark ettir (Örn: "Sence bu soruda bize hangi bilgiler verilmiş?").
 - İstenen bilgiyi açıkça söylet.
 - Problemi en az iki alt probleme ayırtmasını iste.
 - Sayısal ilişkileri tanımlat.
-Yasaklar: Çözüm yolu önermek, işlem yaptırmak, ipucu vermek.""",
+Yasaklar:
+- Çözüm yolu önermek. - İşlem yaptırmak. - Sonuca yaklaşan ipucu vermek.""",
 
 "2. Soyutlama": """Amaç: Problemin matematiksel yapısını ortaya çıkarmak.
 Zorunlu davranışlar:
-- Bu problemin hangi tür probleme benzediğini sordur.
+- Bu problemin hangi tür probleme (EBOB, EKOK, Üslü Sayı vb.) benzediğini sordur.
 - Önceki bilgileri hatırlat.
 - Gereksiz bilgileri ayırt ettir.
-- Örüntü veya genel yapı düşündür.
-Yasaklar: Kavramı (EBOB/EKOK vb.) doğrudan söylemek, strateji belirtmek.""",
+- Eğer uygunsa örüntü veya genel yapı düşündür.
+Yasaklar:
+- EKOK/EBOB gibi kavramı doğrudan söylemek. - Stratejiyi açıkça belirtmek.""",
 
 "3. Algoritma Tasarımı": """Amaç: Öğrencinin kendi çözüm planını oluşturmasını sağlamak.
 Zorunlu davranışlar:
-- Adım adım plan oluşturmasını iste.
+- Adım adım plan oluşturmasını iste (Örn: "Önce ne yapacaksın, sonra hangi adımı izleyeceksin?").
 - Neden bu yöntemi seçtiğini sorgula.
 - Başka bir yöntem mümkün mü diye düşündür.
-Yasaklar: İşlem adımlarını doğrudan vermek, hesap sonucu söylemek.""",
+- Çözümün genellenebilirliğini sorgula.
+Yasaklar:
+- İşlem adımlarını doğrudan vermek. - Hesap sonucu söylemek.""",
 
 "4. Hata Ayıklama": """Amaç: Öğrencinin çözümünü kontrol etmesini sağlamak.
 Zorunlu davranışlar:
 - Sonucun problem koşullarını sağlayıp sağlamadığını sorgulat.
 - Alternatif doğrulama yolu düşündür.
-- Mantıksal tutarlılık kontrolü yaptır.
-Yasaklar: Sonucu doğru/yanlış diye kesin belirtmek, doğru cevabı ima etmek."""
+- Mantıksal tutarlılık kontrolü yaptır (Örn: "Bulduğun bu sonuç sorudaki mantığa uyuyor mu?").
+Yasaklar:
+- Sonucu doğru veya yanlış diye kesin olarak belirtmek. - Doğru cevabı ima etmek."""
 }
 
 METABILISSEL_SORULAR = {
     "1. Ayrıştırma": "Bu problemi parçalara ayırırken en çok hangi bilgi dikkatini çekti?",
-    "2. Soyutlama": "Bu soruda özellikle dikkat etmemiz gereken noktalar nelerdir?",
+    "2. Soyutlama": "Bu soruda özellikle dikkat etmemiz gereken noktalar nelerdir? Sence gereksiz bilgiler hangileri?",
     "3. Algoritma Tasarımı": "Çözüm adımlarını planlarken nasıl bir yol izledin?",
     "4. Hata Ayıklama": "Bulduğun sonucun mantıklı olduğundan nasıl emin oldun?"
 }
@@ -84,30 +89,6 @@ with st.sidebar:
             if os.path.isfile("tez_verileri_final.csv"):
                 try:
                     df_csv = pd.read_csv("tez_verileri_final.csv", on_bad_lines='skip')
-                    st.dataframe(df_csv.tail(15))
-                    csv_indir = df_csv.to_csv(index=False).encode('utf-8-sig')
-                    st.download_button("📥 Verileri İndir", csv_indir, "tez_verileri.csv", "text/csv")
-                except: st.error("Veri okuma hatası!")
-        st.stop()
-        
-    student_id = st.text_input("Öğrenci No:", placeholder="Örn: 123")
-    if not student_id:
-        st.warning("Lütfen giriş yapın.")
-        st.stop()
-        
-    st.divider()
-    steps = list(BASAMAK_TALIMATLARI.keys())
-    sel = st.radio("Aşamalar:", steps, index=steps.index(st.session_state.current_step))
-    if sel != st.session_state.current_step:
-        st.session_state.current_step = sel
-        st.rerun()
-
-# --- 6. ANA EKRAN ---
-st.title("🎯 Algoritmik Düşünme Atölyesi")
-st.write(f"### Mevcut Basamak: {st.session_state.current_step}")
-
-if st.session_state.uploaded_file_data is None:
-    up = st.file_uploader("Soru Fotoğrafı Yükle", type=["png", "jpg", "jpeg"])
-    if up:
-        st.session_state.uploaded_file_data = up
-        st.rerun()
+                    st.write(f"Toplam Kayıt: {len(df_csv)}")
+                    st.dataframe(df_csv.tail(20))
+                    csv_indir = df_csv.to_csv
