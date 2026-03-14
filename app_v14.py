@@ -18,7 +18,7 @@ MODEL_NAME = "llama-3.3-70b-versatile"
 
 st.set_page_config(page_title="Algoritmik Düşünme Atölyesi", layout="wide")
 
-# --- 2. AKADEMİK PROTOKOLLER (TAM METİN) ---
+# --- 2. AKADEMİK PROTOKOLLER (TAM METİN - EKSİKSİZ) ---
 BASAMAK_TALIMATLARI = {
 "1. Ayrıştırma": """Amaç: Öğrencinin problemi alt bileşenlerine ayırmasını sağlamak.
 Zorunlu davranışlar:
@@ -58,7 +58,7 @@ Yasak:
 
 METABILISSEL_SORULAR = {
     "1. Ayrıştırma": "Bu problemi parçalara ayırırken en çok hangi bilgi dikkatini çekti?",
-    "2. Soyutlama": "Bu soruda özellikle dikkat etmemiz gereken noktalar nelerdir?",
+    "2. Soyutlama": "Bu soruda özellikle dikkat etmemiz gereken noktalar nelerdir? Gereksiz bilgiler var mı?",
     "3. Algoritma Tasarımı": "Çözüm adımlarını planlarken nasıl bir yol izledin?",
     "4. Hata Ayıklama": "Bulduğun sonucun mantıklı olduğundan nasıl emin oldun?"
 }
@@ -89,5 +89,43 @@ with st.sidebar:
             if os.path.isfile("tez_verileri_final.csv"):
                 try:
                     df_csv = pd.read_csv("tez_verileri_final.csv", sep=None, engine='python', on_bad_lines='skip')
-                    st.dataframe(df_csv.tail(15))
-                    st.download_button("📥 Verileri İndir", df_csv.to_csv(index=False).encode('utf-8-sig'), "tez_verileri.csv",
+                    st.dataframe(df_csv.tail(10))
+                    csv_indir = df_csv.to_csv(index=False).encode('utf-8-sig')
+                    st.download_button(label="📥 Verileri İndir", data=csv_indir, file_name="tez_verileri.csv", mime="text/csv")
+                except:
+                    st.error("Veri okuma hatası!")
+        st.stop()
+        
+    student_id = st.text_input("Öğrenci No:", placeholder="Örn: 123")
+    if not student_id:
+        st.warning("Lütfen giriş yapın.")
+        st.stop()
+        
+    st.divider()
+    step_options = list(BASAMAK_TALIMATLARI.keys())
+    sel = st.radio("Aşamalar:", step_options, index=step_options.index(st.session_state.current_step))
+    if sel != st.session_state.current_step:
+        st.session_state.current_step = sel
+        st.rerun()
+
+# --- 6. ANA EKRAN ---
+st.title("🎯 Algoritmik Düşünme İstasyonu")
+st.write(f"### Mevcut Basamak: {st.session_state.current_step}")
+
+if st.session_state.uploaded_file_data is None:
+    up = st.file_uploader("Soru Fotoğrafı Yükle", type=["png", "jpg", "jpeg"])
+    if up:
+        st.session_state.uploaded_file_data = up
+        st.rerun()
+else:
+    st.image(st.session_state.uploaded_file_data, width=400)
+    if st.button("❌ Soruyu Değiştir"):
+        st.session_state.uploaded_file_data = None
+        st.rerun()
+
+st.divider()
+col1, col2 = st.columns([1, 1], gap="large")
+
+with col1:
+    st.write("🖌️ **Karalama Alanı**")
+    st_canvas(fill_color="rgba(255, 165, 0, 0.3)", stroke_width=3, stroke_color="#000", background_color="#fff", height=320, drawing_mode="freedraw", key=f"cvs_{st.session_state.current_step[0]}")
