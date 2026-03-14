@@ -13,12 +13,12 @@ except:
     st.error("Hata: Secrets panelinde GROQ_API_KEY bulunamadı!")
     st.stop()
 
-GROQ_URL = "https://api.api.groq.com/openai/v1/chat/completions"
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 MODEL_NAME = "llama-3.3-70b-versatile"
 
 st.set_page_config(page_title="Algoritmik Düşünme Atölyesi", layout="wide")
 
-# --- 2. AKADEMİK PROTOKOLLER (TAM METİN - EKSİKSİZ) ---
+# --- 2. AKADEMİK PROTOKOLLER (TAM METİN) ---
 BASAMAK_TALIMATLARI = {
 "1. Ayrıştırma": """Amaç: Öğrencinin problemi alt bileşenlerine ayırmasını sağlamak.
 Zorunlu davranışlar:
@@ -51,16 +51,16 @@ Yasak:
 Zorunlu davranışlar:
 - Sonucun problem koşullarını sağlayıp sağlamadığını sorgulat.
 - Alternatif doğrulama yolu düşündür.
-- Mantıksal tutarlılık kontrolü yaptır (Örn: "Bulduğun bu sonuç sorudaki mantığa uyuyor mu?").
+- Mantıksal tutarlılık kontrolü yaptır.
 Yasak:
 - Sonucu doğru veya yanlış diye kesin olarak belirtmek. - Doğru cevabı ima etmek."""
 }
 
 METABILISSEL_SORULAR = {
     "1. Ayrıştırma": "Bu problemi parçalara ayırırken en çok hangi bilgi dikkatini çekti?",
-    "2. Soyutlama": "Bu soruda özellikle dikkat etmemiz gereken noktalar nelerdir? Gereksiz olduğunu düşündüğün yerler var mı?",
+    "2. Soyutlama": "Bu soruda özellikle dikkat etmemiz gereken noktalar nelerdir?",
     "3. Algoritma Tasarımı": "Çözüm adımlarını planlarken nasıl bir yol izledin?",
-    "4. Hata Ayıklama": "Bulduğun sonucun mantıklı olduğundan nasıl emin oldun? Farklı bir strateji kullanmayı düşünsen ne yapardın?"
+    "4. Hata Ayıklama": "Bulduğun sonucun mantıklı olduğundan nasıl emin oldun?"
 }
 
 # --- 3. VERİ SİSTEMİ ---
@@ -89,26 +89,5 @@ with st.sidebar:
             if os.path.isfile("tez_verileri_final.csv"):
                 try:
                     df_csv = pd.read_csv("tez_verileri_final.csv", sep=None, engine='python', on_bad_lines='skip')
-                    st.dataframe(df_csv.tail(20))
-                    st.download_button("📥 Verileri İndir", df_csv.to_csv(index=False).encode('utf-8-sig'), "tez_verileri.csv", "text/csv")
-                except: st.error("Veri okuma hatası!")
-        st.stop()
-        
-    student_id = st.text_input("Öğrenci No:", placeholder="Örn: 8A-123")
-    if not student_id:
-        st.warning("Giriş yapın.")
-        st.stop()
-        
-    st.divider()
-    steps = list(BASAMAK_TALIMATLARI.keys())
-    sel = st.radio("Aşamalar:", steps, index=steps.index(st.session_state.current_step))
-    if sel != st.session_state.current_step:
-        st.session_state.current_step = sel
-        st.rerun()
-
-# --- 6. ANA EKRAN ---
-st.title("🎯 Algoritmik Düşünme İstasyonu")
-st.write(f"### Mevcut Basamak: {st.session_state.current_step}")
-
-if st.session_state.uploaded_file_data is None:
-    up = st.file_uploader("
+                    st.dataframe(df_csv.tail(15))
+                    st.download_button("📥 Verileri İndir", df_csv.to_csv(index=False).encode('utf-8-sig'), "tez_verileri.csv",
