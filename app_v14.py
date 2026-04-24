@@ -19,7 +19,7 @@ MODEL_NAME = "llama-3.3-70b-versatile"
 
 st.set_page_config(page_title="Algoritmik Düşünme Atölyesi", layout="wide")
 
-# --- 2. AKADEMİK PROTOKOLLER (TAM METİN - EKSİKSİZ) ---
+# --- 2. AKADEMİK PROTOKOLLER ---
 BASAMAK_TALIMATLARI = {
 "1. Ayrıştırma": """Amaç: Öğrencinin problemi alt bileşenlerine ayırmasını sağlamak.
 Zorunlu davranışlar:
@@ -48,6 +48,7 @@ Zorunlu davranışlar:
 - Neden bu yöntemi seçtiğini sorgula.
 - Başka bir yöntem mümkün mü diye düşündür.
 - Çözümün genellenebilirliğini sorgula.
+- Akış şeması oluşturması için destekle.
 Yasak:
 - İşlem adımlarını doğrudan vermek.
 - Hesap sonucu söylemek.""",
@@ -69,6 +70,53 @@ METABILISSEL_SORULAR = {
     "4. Hata Ayıklama": "Bulduğun sonucun mantıklı olduğundan nasıl emin oldun? Farklı bir strateji kullanmayı düşünsen ne yapardın?"
 }
 
+SYSTEM_PROMPT = """
+
+Rolün: Ortaokul matematik öğretmeni ve rehberisin.
+
+KESİN KURALLAR:
+- ASLA doğrudan çözüm verme.
+- ASLA işlem sonucu söyleme.
+- ASLA formülü doğrudan yazma.
+- Öğrenci yerine çözme.
+
+GÖREVİN:
+- Öğrenciyi adım adım düşündürmek
+- Soru sorarak yönlendirmek
+- Öğrencinin hatasını fark ettirmek
+- Metabilişsel düşünmeyi desteklemek
+
+GÖRSEL İŞLEME TALİMATI:
+- Önce görseldeki matematik problemini analiz et
+- Verilenleri ve isteneni zihinsel olarak ayır
+- Emin olmadığın kısımları belirt
+- Gerekirse öğrenciden netleştirme iste
+
+PEDAGOJİK YAKLAŞIM:
+- Sadece soru sor
+- Kısa ve yönlendirici ol
+- Aynı anda tek beceriye odaklan
+- Öğrencinin seviyesine uygun ilerle
+
+ASLA YAPMA:
+- "Cevap şudur"
+- "Sonuç budur"
+- Uzun açıklama
+- Tek seferde çözüm
+
+Görseldeki matematik problemini dikkatlice analiz et.
+
+Adımlar:
+1. Görseldeki metni ve sayıları belirle
+2. Problem türünü tahmin et
+3. Eksik veya belirsiz kısımları belirt
+
+Eğer görsel net değilse öğrenciden açıklama iste.
+
+AMAÇ:
+Öğrenci çözümü KENDİ bulmalı.
+"""
+
 # --- 3. VERİ SİSTEMİ ---
 def log_kaydet(data):
     dosya = "tez_verileri_final.csv"
@@ -82,8 +130,10 @@ if "chat_storage" not in st.session_state:
     st.session_state.chat_storage = {s: [] for s in BASAMAK_TALIMATLARI.keys()}
 if "current_step" not in st.session_state:
     st.session_state.current_step = "1. Ayrıştırma"
+if "canvas_data" not in st.session_state:
+    st.session_state.canvas_data = {} # Her basamağın çizimini burada tutacağız
 
-# --- 5. SIDEBAR (PANEL) ---
+# --- 5. SIDEBAR ---
 with st.sidebar:
     st.title("👨‍🏫 Araştırma Paneli")
     mode = st.selectbox("Giriş Türü:", ["Öğrenci Girişi", "Öğretmen (Admin)"])
@@ -99,89 +149,145 @@ with st.sidebar:
                     st.write("### 📊 Veri Kayıtları")
                     st.dataframe(df_csv.tail(20))
                     csv_data = df_csv.to_csv(index=False).encode('utf-8-sig')
-                    st.download_button("📥 Verileri İndir (CSV)", csv_data, "tez_verileri.csv", "text/csv")
-                except: st.error("Veri okuma hatası!")
+                    st.download_button("📥 Tüm Verileri İndir (CSV)", csv_data, "tez_data.csv", "text/csv")
+                except Exception as e:
+                    st.error(f"Dosya hatası: {e}")
+            else:
+                st.info("Henüz veri kaydı yok.")
         st.stop()
         
-    student_id = st.text_input("Öğrenci No / Adı:", placeholder="Örn: 8A-123")
+    student_id = st.text_input("Öğrenci No:", placeholder="Örn: Hakan")
     if not student_id:
-        st.warning("Lütfen giriş yapın.")
+        st.warning("Devam etmek için giriş yapın.")
         st.stop()
         
     st.divider()
-    steps = list(BASAMAK_TALIMATLARI.keys())
-    sel = st.radio("Aşamalar:", steps, index=steps.index(st.session_state.current_step))
+    st.write("🖌️ **Akış Şeması Araçları**")
+    tool_map = {
+        "Dikdörtgen (İşlem)": "rect",
+        "Elips (Başla/Bitir)": "circle",
+        "Ok/Çizgi": "line",
+        "Serbest Çizim": "freedraw",
+        "Düzenle/Taşı": "transform",
+	"Çokgen (Paralelkenar ve Baklava Çizimi)": "polygon"
+    }
+    secilen_etiket = st.selectbox("Araç Seçin:", list(tool_map.keys()))
+    drawing_mode = tool_map[secilen_etiket]
+    
+    # Rengin şeffaflığını sabitliyoruz (Hatayı önlemek için Hex kullanıyoruz)
+    stroke_color = st.color_picker("Çizgi Rengi:", "#000000")
+    fill_color = st.color_picker("Kutu Rengi:", "#EEEEEE")
+
+    st.divider()
+    step_list = list(BASAMAK_TALIMATLARI.keys())
+    cur_idx = step_list.index(st.session_state.current_step)
+    sel = st.radio("Aşamayı Seçin:", step_list, index=cur_idx)
+    
     if sel != st.session_state.current_step:
         st.session_state.current_step = sel
         st.rerun()
 
 # --- 6. ANA EKRAN ---
-st.title("🎯 Algoritmik Düşünme İstasyonu")
+st.title("🎯 Algoritmik Problem Çözme Rehberi")
 st.write(f"### Mevcut Basamak: {st.session_state.current_step}")
 
+# Fotoğraf Bölümü
 if st.session_state.uploaded_file_data is None:
     up = st.file_uploader("Soru Fotoğrafı Yükle", type=["png", "jpg", "jpeg"])
-    if up: st.session_state.uploaded_file_data = up; st.rerun()
+    if up: 
+        st.session_state.uploaded_file_data = up
+        st.rerun()
 else:
-    st.image(st.session_state.uploaded_file_data, width=400)
-    if st.button("❌ Soruyu Değiştir"): st.session_state.uploaded_file_data = None; st.rerun()
+    st.image(st.session_state.uploaded_file_data, width=450)
+    if st.button("❌ Soruyu Değiştir"): 
+        st.session_state.uploaded_file_data = None
+        st.rerun()
 
 st.divider()
-col1, col2 = st.columns([1, 1], gap="large")
+col1, col2 = st.columns([1.3, 1], gap="large")
 
 with col1:
-    st.write("🖌️ **Karalama ve Planlama Alanı**")
-    st_canvas(fill_color="rgba(255, 165, 0, 0.3)", stroke_width=3, stroke_color="#000", background_color="#fff", height=320, drawing_mode="freedraw", key=f"can_f_{st.session_state.current_step.replace(' ', '')}")
+    st.write("🖼️ **Tasarım ve Planlama Alanı**")
+    st.caption("Sol menüden 'rect' ile kutu çizebilir, 'line' ile bağlayabilir, 'transform' ile kutuları taşıyabilirsiniz.")
     
+    canvas_result = st_canvas(
+    fill_color=fill_color,        # Sidebar'daki renk seçiciye bağlı
+    stroke_color=stroke_color,    # Sidebar'daki renk seçiciye bağlı
+    stroke_width=3,
+    background_color="#ffffff",
+    height=450,
+    drawing_mode=drawing_mode,
+    update_streamlit=True,
+    # Hem hafıza hem düzen için en kritik satır:
+    key=f"canvas_v36_{st.session_state.current_step.replace(' ', '_')}"
+)
+    
+    if st.button("🖼️ Tasarımı Kaydet"):
+        if canvas_result.json_data:
+            log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": st.session_state.current_step, "tip": "Cizim", "icerik": str(canvas_result.json_data)})
+            st.success("Tasarım veritabanına kaydedildi!")
+
     st.write("---")
-    st.info(f"🧠 **Öz-Yansıtma Sorusu:**\n\n{METABILISSEL_SORULAR[st.session_state.current_step]}")
-    m_cevap = st.text_area("Düşünceni buraya yaz:", key=f"meta_f_{st.session_state.current_step[0]}")
-    if st.button("Düşüncemi Kaydet"):
-        if m_cevap:
-            log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": st.session_state.current_step, "tip": "Metabiliş", "icerik": m_cevap})
-            st.success("Kaydedildi!")
+    st.info(f"🧠 **Öz-Yansıtma:** {METABILISSEL_SORULAR[st.session_state.current_step]}")
+    m_cevap = st.text_area("Düşünceni buraya yaz...", key=f"meta_area_{st.session_state.current_step[0]}")
+    if st.button("💾 Düşüncemi Kaydet"):
+        log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": st.session_state.current_step, "tip": "Metabiliş", "icerik": m_cevap})
+        st.success("Kaydedildi!")
 
     st.write("---")
     st.write("⭐ **Bu adımdaki çözümünden ne kadar eminsin?**")
-    confidence = st.select_slider("Derece:", options=["Hiç Emin Değilim", "Kararsızım", "Biraz Eminim", "Çok Eminim"], value="Kararsızım", key=f"conf_f_{st.session_state.current_step}")
-    if st.button("Eminlik Derecesini Kaydet"):
-        log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": st.session_state.current_step, "tip": "Eminlik Derecesi", "icerik": confidence})
-        st.success(f"Kaydedildi: {confidence}")
+    confidence = st.select_slider(
+        "Derecelendir:",
+        options=["Hiç Emin Değilim", "Kararsızım", "Biraz Eminim", "Çok Eminim"],
+        value="Kararsızım",
+        key=f"slider_{st.session_state.current_step}"
+    )
+    if st.button("📈 Eminlik Derecesini Kaydet"):
+        log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": st.session_state.current_step, "tip": "Eminlik", "icerik": confidence})
+        st.success(f"Eminlik: {confidence} olarak kaydedildi.")
 
     st.write("---")
     if st.button("🏁 Çözümü Bitir ve Özetini Al"):
         with st.spinner("Süreç analiz ediliyor..."):
             try:
                 hist_full = str(st.session_state.chat_storage)
-                res = requests.post(GROQ_URL, headers={"Authorization": f"Bearer {GROQ_API_KEY}"}, json={
+                r_final = requests.post(GROQ_URL, headers={"Authorization": f"Bearer {GROQ_API_KEY}"}, json={
                     "model": MODEL_NAME,
-                    "messages": [{"role": "system", "content": "Öğrencinin çözüm sürecini özetleyen teşvik edici bir kapanış mesajı yaz."}, {"role": "user", "content": f"Öğrenci: {student_id}, Süreç: {hist_full}"}]
+                    "messages": [{"role": "system", "content": "Öğrencinin tüm çözüm sürecini matematiksel düşünme becerileri açısından özetleyen teşvik edici bir kapanış mesajı yaz."}, 
+                                 {"role": "user", "content": f"Öğrenci: {student_id}, Süreç: {hist_full}"}]
                 }).json()
-                summary = res['choices'][0]['message']['content']
-                st.info(summary)
-                log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": "FINAL", "tip": "Final Özeti", "icerik": summary})
-            except: st.error("Özet alınamadı.")
+                final_text = r_final['choices'][0]['message']['content']
+                st.info(final_text)
+                log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": "FİNAL", "tip": "Final Özeti", "icerik": final_text})
+            except:
+                st.error("Özet hazırlanamadı.")
 
 with col2:
     st.write("💬 **Rehber Bot**")
     chat_container = st.container(height=550)
-    with chat_container:
-        for m in st.session_state.chat_storage[st.session_state.current_step]:
-            with st.chat_message(m["role"]): st.write(m["content"])
+    
+    for m in st.session_state.chat_storage[st.session_state.current_step]:
+        chat_container.chat_message(m["role"]).write(m["content"])
 
-    if p := st.chat_input("Mesajını yaz..."):
+    if p := st.chat_input("Düşünceni veya sorunu buraya yaz..."):
         st.session_state.chat_storage[st.session_state.current_step].append({"role": "user", "content": p})
         log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": st.session_state.current_step, "tip": "Öğrenci", "icerik": p})
         
-        with st.spinner("Düşünüyor..."):
+        with st.spinner("Rehber Bot yanıt veriyor..."):
             try:
-                r = requests.post(GROQ_URL, headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}, json={
+                head = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
+                payload = {
                     "model": MODEL_NAME,
-                    "messages": [{"role": "system", "content": f"SEN BİR MATEMATİK REHBERİSİN. ŞU ANKİ PROTOKOL: {BASAMAK_TALIMATLARI[st.session_state.current_step]}. ASLA ÇÖZÜM VERME, SADECE PROTOKOLE GÖRE YÖNLENDİR."}] + st.session_state.chat_storage[st.session_state.current_step],
-                    "temperature": 0.4
-                }, timeout=20).json()
+                    "messages": [
+                        {"role": "system", "content": f"SEN BİR MATEMATİK REHBERİSİN. PROTOKOL: {BASAMAK_TALIMATLARI[st.session_state.current_step]}. ASLA ÇÖZÜM VERME."},
+                        *st.session_state.chat_storage[st.session_state.current_step]
+                    ], "temperature": 0.4
+                }
+                r = requests.post(GROQ_URL, headers=head, json=payload, timeout=20).json()
                 ans = r['choices'][0]['message']['content']
+                
                 st.session_state.chat_storage[st.session_state.current_step].append({"role": "assistant", "content": ans})
                 log_kaydet({"tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "id": student_id, "basamak": st.session_state.current_step, "tip": "Bot", "icerik": ans})
                 st.rerun()
-            except: st.error("Bağlantı hatası!")
+            except Exception as e:
+                st.error("Bağlantı hatası.")
