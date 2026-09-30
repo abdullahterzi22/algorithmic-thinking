@@ -1904,7 +1904,7 @@ with st.sidebar:
     # ADMIN
     # ========================================================
 
-    if mode == "Öğretmen (Admin)"):
+    if mode == "Öğretmen (Admin)":
 
         st.subheader(
             "🔐 Öğretmen Girişi"
