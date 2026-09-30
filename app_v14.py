@@ -26,7 +26,7 @@ st.set_page_config(
 # 2. GEMINI AYARLARI
 # ============================================================
 
-MODEL_NAME = "gemini-2.5-flash"
+MODEL_NAME = "gemini-3.8-flash"
 
 try:
     GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
