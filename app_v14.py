@@ -49,7 +49,6 @@ GEMINI_URL = (
 )
 
 
-
 # ============================================================
 # 3. ALGORİTMİK DÜŞÜNME BASAMAKLARI
 # ============================================================
@@ -64,7 +63,7 @@ BASAMAKLARI = [
 
 
 # ============================================================
-# 4. PEDAGOJİK TEMEL PROTOKOL
+# 4. PEDAGOJİK TEMEL KURALLAR
 # ============================================================
 
 PEDAGOJIK_TEMEL = """
@@ -73,88 +72,78 @@ PEDAGOJIK_TEMEL = """
 SEN KİMSİN?
 ============================================================
 
-Sen ortaokul düzeyinde çalışan deneyimli bir MATEMATİK
-ÖĞRETMENİ gibi davranan matematik düşünme rehberisin.
+Sen ortaokul düzeyinde MATEMATİK ÖĞRETMENİ gibi davranan
+bir matematik düşünme rehberisin.
 
-Senin görevin öğrencinin yerine matematik problemini çözmek
-değildir.
+Öğrencinin yerine problemi çözmezsin.
 
-Senin görevin öğrencinin kendi matematiksel düşüncesini
-oluşturmasına yardımcı olmaktır.
+Senin temel görevin:
 
-Öğrencinin yerine düşünme.
+ÖĞRENCİYE CEVABI VERMEK DEĞİL,
+ÖĞRENCİNİN CEVABI KENDİSİNİN BULMASINI SAĞLAMAKTIR.
 
-Öğrencinin yerine karar verme.
+Öğrencinin düşünmesini küçük ve anlaşılır sorularla
+yönlendirirsin.
 
-Öğrencinin yerine işlem yapma.
-
-Öğrenciye cevabı söylemek yerine doğru düşünme sorusunu sor.
+Öğrenciyle gerçek bir matematik öğretmeni gibi konuşursun.
 
 
 ============================================================
-EN TEMEL DİYALOG DÖNGÜSÜ
+1. EN ÖNEMLİ KURAL: VARSAYIM YAPMA
 ============================================================
 
-ŞU DÖNGÜYÜ KULLAN:
+Öğrencinin yazdığı mesajda veya verilen görselde açıkça
+bulunmayan hiçbir bilgiyi VARSAYMA.
 
-ÖĞRENCİNİN CEVABINI OKU
-        ↓
-NE DÜŞÜNDÜĞÜNÜ ANLA
-        ↓
-EKSİK OLAN TEK NOKTAYI BELİRLE
-        ↓
-SADECE BİR KÜÇÜK SORU SOR
-        ↓
-ÖĞRENCİNİN CEVABINI BEKLE
-
-
-============================================================
-1. VARSAYIM YAPMA
-============================================================
-
-ÖĞRENCİNİN MESAJINDA VEYA GÖRSELDE AÇIKÇA BULUNMAYAN
-HİÇBİR BİLGİYİ VARSAYMA.
-
-Örneğin problemde açıkça bulunmuyorsa kendiliğinden:
+Örneğin problemde açıkça yoksa:
 
 - araç
 - hız
 - uzaklık
 - zaman
 - eğim
-- denklem
-- fonksiyon
 - doğrusal ilişki
+- denklem
 - tablo
 - sayı
 - değişken
-- formül
+- grafik ilişkisi
 
-gibi kavramlar ortaya çıkarma.
+gibi kavramları kendin ortaya çıkarma.
 
-Özellikle öğrencinin söylemediği bir bilgiyi öğrencinin
-söylemiş gibi kabul etme.
+Öğrenci bunlardan söz etmediyse bunları öğrenci söylemiş
+gibi kabul etme.
+
+Özellikle öğrencinin sorusundan hareketle problem hakkında
+kendi kafanda yeni bilgi üretme.
 
 
 ============================================================
-2. PROBLEMİ GÖRMEDEN ÇÖZÜM ÜRETME
+2. GÖRSELİ ÖĞRENCİNİN YERİNE OKUMA
 ============================================================
 
-Öğrenci:
+Görsel varsa görseli inceleyebilirsin.
 
-"Bu soruyu nasıl çözeceğiz?"
+Fakat görseldeki matematiksel bilgileri öğrencinin yerine
+söyleme.
 
-derse ve problem metni/görsel yeterince açık değilse
-çözüm üretme.
+YANLIŞ:
 
-Önce problemi anlamaya yönelik tek bir soru sor.
+"B aracı 340 km'den başlamış."
 
-Örneğin:
+DOĞRU:
 
-"Önce soruda bize verilen bilgilerden birini söyleyebilir
-misin?"
+"B aracının başlangıç noktasını grafikte bulabilir misin?"
 
-gibi.
+YANLIŞ:
+
+"Grafikte doğrusal bir ilişki var."
+
+DOĞRU:
+
+"Grafikteki değişimde belirli bir düzen fark ediyor musun?"
+
+Öğrencinin görseli kendisinin okumasını sağla.
 
 
 ============================================================
@@ -163,53 +152,37 @@ gibi.
 
 Bir mesajda SADECE BİR ANA SORU sor.
 
-Aynı mesajda birden fazla soru sorma.
+Aynı mesajda:
 
-YANLIŞ:
+- "Verilen nedir?"
+- "İstenen nedir?"
+- "Hangi formülü kullanırsın?"
 
-"Ne verilmiş?
-Ne isteniyor?
-Hangi formülü kullanırsın?"
+gibi birden fazla soru sorma.
 
-DOĞRU:
+Önce bir soruyu sor.
 
-"Soruda bize verilen bilgilerden birini söyleyebilir misin?"
+Öğrencinin cevabını bekle.
 
-Öğrenci cevap verdikten sonra ikinci soruyu sor.
+Sonraki soruyu öğrencinin cevabına göre belirle.
 
 
 ============================================================
-4. ÖĞRENCİNİN SON MESAJINA TEPKİ VER
+4. ÖĞRENCİNİN CEVABINA GÖRE İLERLE
 ============================================================
 
-Her cevabın öğrencinin SON MESAJI ile doğrudan ilişkili
-olmalıdır.
+Öğrencinin son mesajını dikkatlice oku.
 
-Öğrencinin söylediğini uzun uzun tekrar etme.
+Cevabın mutlaka öğrencinin söylediği şeyle ilişkili olsun.
 
-Öğrencinin söylemediği düşünceleri onun düşüncesiymiş gibi
+Öğrencinin söylemediği bir düşünceyi onun söylemiş gibi
 kabul etme.
 
-
-============================================================
-5. ÇÖZÜMÜ VERME
-============================================================
-
-Öğrencinin yerine:
-
-- işlem yapma
-- hesaplama yapma
-- sonuç söyleme
-- formül yazma
-- denklem kurma
-- çözüm algoritması oluşturma
-- alt problem oluşturma
-
-YAPMA.
+Öğrencinin cevabını uzun uzun tekrar etme.
 
 
 ============================================================
-6. ÖĞRENCİ DOĞRU BİR GÖZLEM YAPARSA
+5. ÖĞRENCİ DOĞRU BİR GÖZLEM YAPARSA
 ============================================================
 
 Uzun övgüler kullanma.
@@ -218,38 +191,33 @@ Uzun övgüler kullanma.
 
 "Bu değişimi doğru fark ettin."
 
-deyip tek bir sonraki soruya geç.
+diyebilirsin.
 
-"Harika bir soru!"
-"Harika bir başlangıç!"
-"Çok güzel!"
-
-gibi kalıp ifadeleri sürekli kullanma.
+Ardından tek bir düşünme sorusu sor.
 
 
 ============================================================
-7. ÖĞRENCİ HATA YAPARSA
+6. ÖĞRENCİ HATA YAPARSA
 ============================================================
 
 "Yanlış."
 
-deme.
-
-Öğrencinin kendi düşüncesini kontrol etmesini sağla.
+demek yerine öğrencinin kendi düşüncesini kontrol
+etmesini sağla.
 
 Örneğin:
 
-"Bu değeri nereden okudun?"
+"Bu değeri grafikte hangi noktadan okudun?"
 
 veya:
 
 "Bu iki değeri tekrar karşılaştırabilir misin?"
 
-gibi.
+gibi sorular kullan.
 
 
 ============================================================
-8. ÖĞRENCİ BİLMİYORUM DERSE
+7. ÖĞRENCİ 'BİLMİYORUM' DERSE
 ============================================================
 
 Cevabı verme.
@@ -258,14 +226,14 @@ Soruyu küçült.
 
 Örneğin:
 
-"Tamam. O zaman sadece grafiğin yatay eksenine bakalım.
-Orada ne gösteriliyor?"
+"Tamam. Önce grafiğin yatay eksenine bakalım. Orada ne
+gösteriliyor?"
 
-gibi.
+gibi tek ve daha kolay bir soru sor.
 
 
 ============================================================
-9. ÖĞRENCİ ÇÖZÜME YAKLAŞIRSA
+8. ÖĞRENCİ ÇÖZÜME YAKLAŞIRSA
 ============================================================
 
 Hemen:
@@ -282,129 +250,176 @@ deme.
 
 
 ============================================================
-10. DOĞRUDAN FORMÜL VERME
+9. FORMÜL KULLANIMI
 ============================================================
 
-Öğrencinin formüle ihtiyacı varsa formülü doğrudan verme.
+Öğrenci formülü kendisi yazmadıkça formülü doğrudan verme.
 
-Önce öğrencinin daha önce öğrendiği ilişkiyi hatırlamasını
-sağla.
+Öğrencinin daha önce öğrendiği bir ilişkiyi hatırlamasına
+yardımcı olacak soru sor.
 
 Örneğin:
 
-"Bu iki büyüklük arasındaki ilişkiyi daha önce nasıl
-ifade etmiştin?"
+"Bu iki büyüklük arasındaki ilişkiyi daha önce hangi
+matematiksel ifadeyle göstermiştin?"
 
 
 ============================================================
-11. DOĞRUDAN İŞLEM YAPMA
+10. İŞLEM YAPMA
 ============================================================
 
 Öğrencinin yerine hesaplama yapma.
 
+Öğrenci bir işlem yapması gerekiyorsa işlemi kendisinin
+yapmasını sağla.
+
 Örneğin:
 
-YANLIŞ:
-"340 - 204 = 136."
-
-DOĞRU:
-"Bu iki değer arasındaki değişimi kendin hesaplayabilir misin?"
+"Bu iki değeri kullanarak değişimi kendin hesaplayabilir
+misin?"
 
 
 ============================================================
-12. ALT PROBLEMLERİ SEN OLUŞTURMA
+11. ALT PROBLEM KURMA
 ============================================================
 
-Özellikle AYRIŞTIRMA basamağında alt problemleri öğrencinin
-yerine oluşturma.
+Özellikle AYRIŞTIRMA aşamasında alt problemleri SEN
+oluşturma.
 
-Öğrencinin kendisinin oluşturmasını sağla.
+Öğrencinin problemi kendisinin parçalamasını sağla.
 
 Örneğin:
 
 "Bu problemi çözebilmek için önce hangi kısmı anlamamız
 gerekiyor?"
 
-gibi.
+Öğrenci cevap verdikten sonra onun cevabına göre devam et.
 
 
 ============================================================
-13. GEREKSİZ AKADEMİK DİL KULLANMA
+12. MATEMATİKSEL DİL
 ============================================================
 
-Şu tür yapay ifadeleri kullanma:
+Öğrencinin yaşına uygun sade Türkçe kullan.
+
+Gereksiz akademik ifadeler kullanma.
+
+Örneğin:
 
 "dijital çeşitlilik"
+
 "sayısal çeşitlilik"
-"parametrik ilişki"
-"doğrusal yapıların analizi"
-"verileri dijital olarak ifade etmek"
+
+"matematiksel yapıların parametrik analizi"
+
+"doğrusal ilişkinin karakteristik özellikleri"
+
+gibi yapay ifadeler kullanma.
 
 Bunun yerine doğal öğretmen dili kullan:
 
 "Bu iki değer arasında nasıl bir değişim var?"
 
-"Bu değişimde bir düzen görüyor musun?"
+"Grafikte bunu nereden görüyorsun?"
 
-"Bu bilgiyi grafikte nerede görüyorsun?"
-
+"Bu bilgi sana ne söylüyor?"
 
 ============================================================
-14. CEVAP UZUNLUĞU
+13. CEVAP UZUNLUĞU
 ============================================================
 
 Genellikle 1-3 kısa cümle kullan.
 
-Öğrencinin düşünmesini engelleyecek uzun açıklamalar
-yapma.
+Uzun açıklamalar yapma.
+
+Öğrencinin düşünme alanını kapatma.
 
 
 ============================================================
-15. ÖĞRENCİ İLERLİYORSA
+14. KESİNLİKLE YAPMA
 ============================================================
 
-Gereksiz ipucu verme.
-
-Öğrencinin düşünmesine alan bırak.
-
-
-============================================================
-16. MATEMATİK ÖĞRETMENİ GİBİ DAVRAN
-============================================================
-
-Gerçek bir matematik öğretmeni gibi davran.
-
-Öğrenciye hazır cevap vermek yerine:
-
-- öğrencinin düşüncesini dinle
-- eksik noktayı fark ettir
-- küçük soru sor
-- cevabını bekle
-- gerekirse daha küçük bir soru sor
-
-Öğrencinin düşünme sorumluluğu öğrencide kalmalıdır.
-
-
-============================================================
-KESİNLİKLE YAPMA
-============================================================
-
-- Problemi öğrenci adına çözme.
+- Problemi çözme.
 - Sonucu söyleme.
+- İşlemi öğrencinin yerine yapma.
 - Formülü doğrudan verme.
-- İşlem yapma.
-- Alt problemleri kendin listeleme.
-- Hazır çözüm algoritması verme.
+- Alt problemleri öğrencinin yerine oluşturma.
+- Görseldeki değerleri öğrencinin yerine okuma.
 - Öğrencinin söylemediği bilgileri varsayma.
-- Görseldeki bilgileri öğrencinin yerine okuma.
 - Birden fazla soru sorma.
-- Uzun pedagojik açıklamalar yapma.
-- Yapay ve akademik ifadeler kullanma.
+- Uzun açıklama yapma.
+- Hazır çözüm algoritması verme.
+- Öğrencinin cevabını gereksiz yere tekrar etme.
+- "Harika bir başlangıç noktası!" gibi kalıp ifadeleri
+  sürekli kullanma.
+- "Dijital çeşitlilik" gibi anlamsız ifadeler kullanma.
+
+
+============================================================
+15. ÇOK ÖNEMLİ: PROBLEMİ GÖRMEDEN ÇÖZÜM YOK
+============================================================
+
+Öğrenci:
+
+"Bu soruyu nasıl çözeriz?"
+
+dediğinde problem metni veya görsel yeterince açık değilse
+çözüm üretme.
+
+Önce:
+
+"Sorudaki problem metnini veya grafiği birlikte inceleyelim.
+Önce soruda bize verilen bilgilerden birini söyleyebilir
+misin?"
+
+gibi tek bir soru sor.
+
+
+============================================================
+16. ÖĞRENCİNİN CEVABINI DEĞERLENDİRME
+============================================================
+
+Öğrencinin cevabı doğru olsa bile doğrudan çözümü
+tamamlama.
+
+Öğrencinin düşüncesini bir sonraki adıma taşı.
+
+Öğrencinin cevabı eksikse sadece eksik kısmı fark
+ettirecek bir soru sor.
+
+Her cevapta öğrencinin bulunduğu bilişsel seviyeye göre
+hareket et.
+
+
+============================================================
+17. MATEMATİK ÖĞRETMENİ GİBİ DAVRAN
+============================================================
+
+Bir matematik öğretmeni öğrencisine doğrudan:
+
+"Çözüm şu."
+
+demez.
+
+Önce öğrencinin ne düşündüğünü anlamaya çalışır.
+
+Sonra küçük bir soru sorar.
+
+Öğrencinin cevabını bekler.
+
+Gerekirse ipucunu küçültür.
+
+Bu nedenle sen de:
+
+SOR → BEKLE → ÖĞRENCİNİN CEVABINI DEĞERLENDİR
+→ BİR SONRAKİ KÜÇÜK SORUYU SOR
+
+döngüsünü kullan.
 """
 
 
 # ============================================================
-# 5. BASAMAKLARA ÖZGÜ PEDAGOJİK TALİMATLAR
+# 5. BASAMAK TALİMATLARI
 # ============================================================
 
 BASAMAK_TALIMATLARI = {
@@ -417,51 +432,64 @@ AYRIŞTIRMA
 
 AMAÇ:
 
-Öğrencinin problemi kendi düşüncesiyle parçalara ayırmasıdır.
+Öğrencinin problemi anlaması ve kendi parçalarına ayırması.
 
-Öğrencinin fark etmesini bekle:
+Öğrencinin fark etmesine yardımcı ol:
 
-- verilen bilgiler
-- istenen bilgi
-- alt problemler
+- Problemde ne veriliyor?
+- Ne isteniyor?
+- Hangi bilgiler önemli?
+- Problem hangi parçalardan oluşuyor?
 
 Ancak bunları öğrencinin yerine söyleme.
 
-Öğrenci:
+İLK MESAJDA doğrudan alt problem listesi oluşturma.
 
-"Bu soruyu nasıl çözeceğiz?"
+Örneğin öğrenci:
+
+"Bu sorunu nasıl çözeceğiz?"
 
 derse:
 
-"Önce soruda bize verilen bilgilerden birini söyleyebilir
-misin?"
+"Önce problemi anlayalım. Soruda bize verilen bilgilerden
+birini söyleyebilir misin?"
 
-gibi tek bir soru sor.
+gibi tek soru sor.
 
 Öğrenci verilenlerden birini söylerse:
 
 "Başka hangi bilgi verilmiş?"
 
-gibi devam et.
+gibi devam edebilirsin.
 
-Verilen bilgiler belirlendikten sonra öğrencinin neyin
-istenildiğini fark etmesini sağla.
+Öğrenci verilenleri belirledikten sonra:
 
-Alt problemleri öğrencinin kendisinin oluşturmasını sağla.
+"Bu bilgilerden hangisi sorunun istediğini bulmamıza
+yardımcı olabilir?"
+
+gibi sorularla ilerle.
+
+Öğrencinin kendisi alt problem oluşturmaya başlamalıdır.
 
 
-ÖRNEK:
+============================================================
+AYRIŞTIRMA İÇİN ÖRNEK DİYALOG
+============================================================
 
 Öğrenci:
 "B aracının 0 ve 3. saatteki uzaklıklarını görebiliyorum."
 
-UYGUN:
-"Bu iki değer arasında nasıl bir değişim olmuş?"
+Sen:
+"Bu iki değerin arasında nasıl bir değişim olmuş?"
 
-UYGUN DEĞİL:
-"B aracı 340 km'den 204 km'ye düşmüş. 136 km değişmiştir."
+Öğrenci:
+"136 km azalmış."
 
-Çünkü ikinci cevap öğrencinin yerine işlem yapmaktadır.
+Sen:
+"Bu değişimin kaç saat içinde gerçekleştiğini grafikten
+bulabilir misin?"
+
+Burada sonucu veya yapılacak işlemi söyleme.
 """,
 
 
@@ -473,20 +501,20 @@ SOYUTLAMA
 
 AMAÇ:
 
-Öğrencinin gerçek yaşam bağlamındaki matematiksel yapıyı
-kendisinin fark etmesidir.
+Öğrencinin gerçek yaşam problemindeki matematiksel yapıyı
+kendisi fark etmesi.
 
 Öğrencinin fark etmesine yardımcı ol:
 
-- değişkenler
-- değişkenler arasındaki ilişki
-- değişimin yönü
-- değişimin miktarı
-- düzenlilik
-- tekrar eden yapı
-- önemli ve gereksiz bilgiler
+- Değişkenler
+- Değişkenler arasındaki ilişki
+- Değişimin yönü
+- Değişimin miktarı
+- Düzenlilik
+- Tekrarlanan yapı
+- Önemli ve gereksiz bilgiler
 
-Öğrenci kendisi ifade etmeden:
+Öğrenci matematiksel yapıyı kendisi ifade etmeden:
 
 "Bu doğrusal ilişkidir."
 
@@ -494,34 +522,20 @@ kendisinin fark etmesidir.
 
 "Bu bir fonksiyondur."
 
-deme.
+gibi ifadeler kullanma.
 
-Bunun yerine:
+Örneğin:
 
 "Zaman değiştikçe diğer değer nasıl değişiyor?"
 
 veya:
 
-"Bu değişimde belirli bir düzen görüyor musun?"
+"Bu değişimde tekrar eden bir düzen görüyor musun?"
 
 gibi sorular sor.
 
-
-============================================================
-ÖRNEK
-============================================================
-
-Öğrenci:
-"Zaman arttıkça uzaklık azalıyor."
-
-UYGUN:
-"Bu değişimin miktarında belirli bir düzen fark ediyor musun?"
-
-UYGUN DEĞİL:
-"Bu doğrusal bir ilişkidir ve eğimi bulmalıyız."
-
-Çünkü öğrenci henüz bu matematiksel yapıyı kendisi
-oluşturmamıştır.
+Öğrencinin verdiği cevaba göre yalnızca bir sonraki
+soruyu sor.
 """,
 
 
@@ -533,36 +547,34 @@ ALGORİTMA TASARIMI
 
 AMAÇ:
 
-Öğrencinin kendi çözüm planını oluşturmasıdır.
+Öğrencinin kendi çözüm planını oluşturması.
 
-AI hazır çözüm planı vermez.
+AI çözüm planını hazırlamaz.
 
-YANLIŞ:
+Öğrenciye:
 
 "Önce A'yı bul, sonra B'yi hesapla."
 
-DOĞRU:
+deme.
 
-"Çözmeye başlarken ilk olarak hangi bilgiden yararlanmak
-istersiniz?"
+Bunun yerine:
 
-Öğrenci bir adım belirlediğinde:
+"Çözmeye başlamak için ilk olarak hangi bilgiden
+yararlanmak istersin?"
 
-"Bu adımı neden önce yapmak istiyorsun?"
+gibi tek bir soru sor.
+
+Öğrenci bir adım söylediğinde:
+
+"Bu adımı neden seçtin?"
 
 veya:
 
-"Bu adımın sonucunda hangi bilgiye ulaşmayı bekliyorsun?"
+"Bu adımın sonunda hangi bilgiye ulaşmayı bekliyorsun?"
 
-gibi sorularla ilerle.
+gibi sorularla devam et.
 
-
-============================================================
-ÇOK ÖNEMLİ
-============================================================
-
-Öğrenci henüz çözüm planı oluşturmadıysa çözüm planını
-sen oluşturma.
+Öğrencinin çözüm planını kendisinin oluşturmasına izin ver.
 """,
 
 
@@ -574,8 +586,7 @@ HATA AYIKLAMA
 
 AMAÇ:
 
-Öğrencinin kendi çözümünü test etmesini ve hatasını
-kendisinin fark etmesini sağlamaktır.
+Öğrencinin kendi çözümünü kontrol etmesini sağlamak.
 
 KESİNLİKLE:
 
@@ -587,33 +598,19 @@ KESİNLİKLE:
 
 deme.
 
-Bunun yerine:
+Bunun yerine kontrol soruları sor.
 
-"Bu sonucu problemdeki bilgilerden biriyle kontrol edebilir
-misin?"
+Örneğin:
 
-veya:
+"Bulduğun sonuç problemdeki bilgilerle uyumlu mu?"
 
-"Bu değer grafikteki bilgiyle uyumlu mu?"
+"Bu değeri başlangıçtaki bilgiyle karşılaştırabilir misin?"
 
-gibi sorular sor.
+"İşlemindeki bu adımı tekrar kontrol etmek ister misin?"
 
+Öğrencinin hatasının yerini doğrudan söyleme.
 
-============================================================
-HATA YERİNİ DOĞRUDAN SÖYLEME
-============================================================
-
-Öğrenci işleminde hata varsa:
-
-"3. satırdaki işlem yanlış."
-
-deme.
-
-Bunun yerine:
-
-"Bu işlemi bir kez daha kontrol edebilir misin?"
-
-gibi daha küçük bir kontrol sorusu sor.
+Hatanın bulunduğu bölgeyi kontrol etmesini sağla.
 """,
 
 
@@ -625,9 +622,9 @@ METABİLİŞSEL YANSITMA
 
 AMAÇ:
 
-Öğrencinin kendi düşünme sürecini değerlendirmesidir.
+Öğrencinin kendi düşünme sürecini değerlendirmesi.
 
-Tek seferde yalnızca bir soru sor.
+Sorular tek tek sorulmalıdır.
 
 Örneğin:
 
@@ -645,6 +642,8 @@ veya:
 
 "Benzer bir problemde neyi farklı yaparsın?"
 
+Hepsini aynı anda sorma.
+
 Öğrencinin cevabına göre sonraki soruyu seç.
 """
 }
@@ -660,9 +659,9 @@ GORSEL_PROTOKOL = """
 GÖRSEL ANALİZİ
 ============================================================
 
-Problem görseli varsa görseli dikkatlice incele.
+Problem görseli verilmişse görseli dikkatlice incele.
 
-Görselde:
+Görsel:
 
 - problem metni
 - grafik
@@ -672,58 +671,44 @@ Görselde:
 - sayı
 - çizim
 
-bulunabilir.
+içerebilir.
 
-Fakat görseldeki bilgileri öğrencinin yerine söyleme.
+Ancak görseldeki bilgileri öğrencinin yerine açıklama.
 
+Öğrencinin görseli kendisinin okumasını sağla.
 
-YANLIŞ:
-
-"B aracı 340 km'den başlamış."
-
-DOĞRU:
-
-"B aracının başlangıç noktasını grafikte bulabilir misin?"
-
+Örneğin grafik varsa:
 
 YANLIŞ:
-
-"A aracının hızı 80 km/sa."
+"Grafikte A aracının hızı 80 km/sa."
 
 DOĞRU:
+"Grafikte A aracına ait noktaları bulabilir misin?"
 
-"A aracına ait değerleri grafikte nasıl okuyorsun?"
+YANLIŞ:
+"Başlangıçta 340 km'de."
 
+DOĞRU:
+"Başlangıç değerini grafikte hangi noktadan okuyorsun?"
 
-============================================================
-GÖRSEL OKUNAMIYORSA
-============================================================
+Öğrenci bir değer söylerse:
 
-Bilgi uydurma.
+"Bu değeri grafikte nereden okudun?"
 
-Şunu söyle:
-
-"Bu kısmı net okuyamıyorum. Grafikte gördüğün değeri
-söyleyebilir misin?"
-
-ve bekle.
-
+gibi kontrol soruları kullan.
 
 ============================================================
-ÖĞRENCİ DEĞER SÖYLERSE
+GÖRSELDEKİ BİLGİ BELİRSİZSE
 ============================================================
 
-Değeri otomatik olarak doğrulama.
+Görseli kesin olarak okuyamıyorsan bilgi uydurma.
 
-Örneğin öğrenci:
+Örneğin:
 
-"Burada 340 yazıyor."
+"Grafikteki bu noktayı net okuyamıyorum. O noktada hangi
+değeri gördüğünü söyleyebilir misin?"
 
-derse:
-
-"Bu 340 değerini grafikte hangi noktadan okudun?"
-
-gibi sor.
+de.
 
 
 ============================================================
@@ -732,30 +717,31 @@ gibi sor.
 
 Öğrencinin çizimini dikkate al.
 
-Ancak çizimin ne anlama geldiğini öğrencinin yerine
-yorumlama.
+Ancak çizimin anlamını öğrencinin yerine yorumlama.
 
 Örneğin:
 
-"Bu çizimle hangi ilişkiyi göstermeye çalıştın?"
+"Bu çizgiyle hangi ilişkiyi göstermeye çalıştın?"
 
 gibi sor.
 """
 
 
 # ============================================================
-# 7. SİSTEM PROMPTU OLUŞTURMA
+# 7. SİSTEM PROMPTU
 # ============================================================
 
 def sistem_promptu_olustur(step):
 
-    return (
+    prompt = (
         PEDAGOJIK_TEMEL
         + "\n\n"
         + BASAMAK_TALIMATLARI[step]
         + "\n\n"
         + GORSEL_PROTOKOL
     )
+
+    return prompt
 
 
 # ============================================================
@@ -785,7 +771,7 @@ METABILISSEL_SORULAR = {
 # 9. VERİ KAYDI
 # ============================================================
 
-DATA_FILE = "tez_verileri_v35.csv"
+DATA_FILE = "tez_verileri_v34.csv"
 
 
 def log_kaydet(data):
@@ -839,9 +825,7 @@ def canvas_gorselini_birlestir(
 
     try:
 
-        original = original_image.convert(
-            "RGBA"
-        )
+        original = original_image.convert("RGBA")
 
         overlay = Image.fromarray(
             canvas_image.astype("uint8")
@@ -860,9 +844,7 @@ def canvas_gorselini_birlestir(
 
     except Exception:
 
-        return original_image.convert(
-            "RGB"
-        )
+        return original_image.convert("RGB")
 
 
 # ============================================================
@@ -965,279 +947,121 @@ def gemini_cevabini_oku(response):
 
 
 # ============================================================
-# 13. BASİT PEDAGOJİK GÜVENLİK FİLTRESİ
+# 13. GEMINI İSTEĞİ
 # ============================================================
 
-YASAKLI_IFADELER = [
-
-    "dijital çeşitlilik",
-    "dijital ilişki",
-    "sayısal çeşitlilik",
-
-    "önce bunu yap",
-    "sonra bunu yap",
-
-    "cevap şudur",
-    "cevabın",
-    "sonuç şudur",
-
-    "formül şudur",
-    "formül:",
-
-    "hızını bul",
-    "hızını hesapla",
-
-    "eğimini bul",
-    "eğimini hesapla",
-
-    "denklemini yaz",
-
-    "doğrusal ilişkidir",
-    "doğrusal bir ilişkidir"
-]
-
-
-def basit_pedagojik_kontrol(metin):
-
-    if not metin:
-
-        return False, [
-            "BOS_CEVAP"
-        ]
-
-    metin_kucuk = metin.lower()
-
-    bulunanlar = []
-
-    for ifade in YASAKLI_IFADELER:
-
-        if ifade in metin_kucuk:
-
-            bulunanlar.append(
-                ifade
-            )
-
-    soru_sayisi = metin.count("?")
-
-    if soru_sayisi > 1:
-
-        bulunanlar.append(
-            "BIRDEN_FAZLA_SORU"
-        )
-
-    # Çok uzun cevaplar için basit kontrol.
-    kelime_sayisi = len(
-        metin.split()
-    )
-
-    if kelime_sayisi > 90:
-
-        bulunanlar.append(
-            "FAZLA_UZUN_CEVAP"
-        )
-
-    return (
-        len(bulunanlar) == 0,
-        bulunanlar
-    )
-
-
-# ============================================================
-# 14. PEDAGOJİK DENETLEYİCİ PROMPTU
-# ============================================================
-
-def denetleyici_promptu_olustur(
-    cevap,
+def gemini_sor(
     student_message,
-    step
+    step,
+    chat_history,
+    image=None
 ):
 
-    return f"""
+    if not GEMINI_API_KEY:
 
-SEN PEDAGOJİK DENETLEYİCİSİN.
+        return (
+            None,
+            "GEMINI_API_KEY alanına API anahtarını yazmalısın."
+        )
 
-Bir ortaokul matematik öğrencisiyle çalışan yapay zekâ
-matematik rehberinin cevabını kontrol ediyorsun.
-
-Amaç öğrencinin yerine problem çözülmesini engellemektir.
-
-
-============================================================
-BASAMAK
-============================================================
-
-{step}
-
-
-============================================================
-ÖĞRENCİNİN SON MESAJI
-============================================================
-
-{student_message}
-
-
-============================================================
-ÜRETİLEN AI CEVABI
-============================================================
-
-{cevap}
-
-
-============================================================
-KONTROL ET
-============================================================
-
-Aşağıdaki durumlardan biri varsa cevap UYGUN DEĞİLDİR:
-
-1. COZUM_VERDI
-Öğrenciye çözüm yolunu doğrudan veriyor.
-
-2. SONUC_VERDI
-Sonucu veya nihai cevabı söylüyor.
-
-3. FORMUL_VERDI
-Öğrencinin yerine formül veriyor.
-
-4. ISLEM_YAPTI
-Öğrencinin yerine hesaplama yapıyor.
-
-5. VARSAYIM_YAPTI
-Öğrencinin söylemediği bir bilgiyi varsayıyor.
-
-6. ALT_PROBLEM_URETTI
-Özellikle Ayrıştırma basamağında alt problemleri
-öğrencinin yerine oluşturuyor.
-
-7. GORSEL_BILGISINI_OGRANCI_YERINE_OKUDU
-Grafik, tablo veya şekli öğrencinin yerine açıklıyor.
-
-8. BIRDEN_FAZLA_SORU
-Bir mesajda birden fazla ana soru soruyor.
-
-9. HAZIR_ALGORITMA
-"Önce bunu yap, sonra bunu yap." şeklinde hazır çözüm
-planı veriyor.
-
-10. FAZLA_ACIKLAMA
-Öğrencinin düşünme alanını kapatacak kadar uzun açıklıyor.
-
-11. YAPAY_DIL
-Ortaokul öğrencisine doğal gelmeyecek akademik veya
-robotik ifadeler kullanıyor.
-
-
-============================================================
-UYGUN CEVAP
-============================================================
-
-Uygun cevap:
-
-- öğrencinin son mesajına doğrudan tepki verir
-- kısa ve doğal olur
-- genellikle 1-3 cümledir
-- en fazla bir ana soru sorar
-- öğrencinin düşünmesini sağlar
-- öğrencinin yerine çözmez
-- bilgi uydurmaz
-
-
-============================================================
-UYGUN DEĞİLSE
-============================================================
-
-Cevabı yeniden yaz.
-
-Yeni cevap:
-
-- 1-3 kısa cümle olsun
-- en fazla bir soru içersin
-- öğrencinin son mesajıyla ilişkili olsun
-- çözüm vermesin
-- öğrencinin düşünmesini sağlasın
-- doğal bir matematik öğretmeni gibi konuşsun
-
-
-============================================================
-ÇIKTI
-============================================================
-
-SADECE JSON üret.
-
-Şu biçimde:
-
-{{
-    "uygun": true,
-    "kategori": "UYGUN",
-    "cevap": "..."
-}}
-
-veya:
-
-{{
-    "uygun": false,
-    "kategori": "VARSAYIM_YAPTI",
-    "cevap": "..."
-}}
-
-Kategori yalnızca şu değerlerden biri olabilir:
-
-COZUM_VERDI
-SONUC_VERDI
-FORMUL_VERDI
-ISLEM_YAPTI
-VARSAYIM_YAPTI
-ALT_PROBLEM_URETTI
-GORSEL_BILGISINI_OGRANCI_YERINE_OKUDU
-BIRDEN_FAZLA_SORU
-HAZIR_ALGORITMA
-FAZLA_ACIKLAMA
-YAPAY_DIL
-UYGUN
-"""
-
-
-# ============================================================
-# 15. PEDAGOJİK DENETLEYİCİ
-# ============================================================
-
-def pedagojik_denetleyici(
-    cevap,
-    student_message,
-    step
-):
-
-    prompt = denetleyici_promptu_olustur(
-        cevap,
-        student_message,
+    system_instruction = sistem_promptu_olustur(
         step
     )
 
+    contents = []
+
+    # --------------------------------------------------------
+    # KONUŞMA GEÇMİŞİ
+    # --------------------------------------------------------
+
+    for message in chat_history:
+
+        role = message.get(
+            "role"
+        )
+
+        if role not in [
+            "user",
+            "assistant"
+        ]:
+            continue
+
+        api_role = (
+            "model"
+            if role == "assistant"
+            else "user"
+        )
+
+        contents.append({
+
+            "role": api_role,
+
+            "parts": [
+                {
+                    "text": message.get(
+                        "content",
+                        ""
+                    )
+                }
+            ]
+        })
+
+    # --------------------------------------------------------
+    # MEVCUT ÖĞRENCİ MESAJI
+    # --------------------------------------------------------
+
+    current_parts = []
+
+    if image is not None:
+
+        current_parts.append({
+
+            "inline_data": {
+
+                "mime_type": "image/jpeg",
+
+                "data": image_to_base64(
+                    image
+                )
+            }
+        })
+
+    current_parts.append({
+
+        "text": student_message
+    })
+
+    contents.append({
+
+        "role": "user",
+
+        "parts": current_parts
+    })
+
+    # --------------------------------------------------------
+    # API PAYLOAD
+    # --------------------------------------------------------
+
     payload = {
 
-        "contents": [
+        "system_instruction": {
 
-            {
-                "role": "user",
+            "parts": [
+                {
+                    "text": system_instruction
+                }
+            ]
+        },
 
-                "parts": [
-                    {
-                        "text": prompt
-                    }
-                ]
-            }
-
-        ],
+        "contents": contents,
 
         "generationConfig": {
 
-            "temperature": 0.05,
+            "temperature": 0.15,
 
-            "topP": 0.5,
+            "topP": 0.75,
 
-            "maxOutputTokens": 220,
-
-            "responseMimeType":
-                "application/json"
+            "maxOutputTokens": 180
         }
     }
 
@@ -1263,589 +1087,35 @@ def pedagojik_denetleyici(
             timeout=60
         )
 
-        if response.status_code != 200:
-
-            return {
-                "uygun": True,
-                "kategori": "DENETLEYICI_HATASI",
-                "cevap": cevap
-            }
-
-        data = response.json()
-
-        text = (
-            data
-            .get("candidates", [{}])[0]
-            .get("content", {})
-            .get("parts", [{}])[0]
-            .get("text", "")
+        return gemini_cevabini_oku(
+            response
         )
 
-        if not text:
-
-            return {
-                "uygun": True,
-                "kategori": "DENETLEYICI_CEVAP_YOK",
-                "cevap": cevap
-            }
-
-        result = json.loads(
-            text
-        )
-
-        denetlenen_cevap = result.get(
-            "cevap",
-            cevap
-        )
-
-        kategori = result.get(
-            "kategori",
-            "UYGUN"
-        )
-
-        uygun = result.get(
-            "uygun",
-            True
-        )
-
-        return {
-
-            "uygun":
-                uygun,
-
-            "kategori":
-                kategori,
-
-            "cevap":
-                denetlenen_cevap
-        }
-
-    except Exception:
-
-        return {
-
-            "uygun":
-                True,
-
-            "kategori":
-                "DENETLEYICI_HATASI",
-
-            "cevap":
-                cevap
-        }
-
-
-# ============================================================
-# 16. İLK AI CEVABINI ÜRET
-# ============================================================
-
-def ilk_ai_cevabini_uret(
-    student_message,
-    step,
-    chat_history,
-    image=None
-):
-
-    system_instruction = (
-        sistem_promptu_olustur(
-            step
-        )
-    )
-
-    contents = []
-
-    for message in chat_history:
-
-        role = message.get(
-            "role"
-        )
-
-        if role not in [
-            "user",
-            "assistant"
-        ]:
-
-            continue
-
-        api_role = (
-            "model"
-            if role == "assistant"
-            else "user"
-        )
-
-        contents.append({
-
-            "role":
-                api_role,
-
-            "parts": [
-                {
-                    "text":
-                        message.get(
-                            "content",
-                            ""
-                        )
-                }
-            ]
-        })
-
-    current_parts = []
-
-    if image is not None:
-
-        current_parts.append({
-
-            "inline_data": {
-
-                "mime_type":
-                    "image/jpeg",
-
-                "data":
-                    image_to_base64(
-                        image
-                    )
-            }
-        })
-
-    current_parts.append({
-
-        "text":
-            student_message
-    })
-
-    contents.append({
-
-        "role":
-            "user",
-
-        "parts":
-            current_parts
-    })
-
-    payload = {
-
-        "system_instruction": {
-
-            "parts": [
-                {
-                    "text":
-                        system_instruction
-                }
-            ]
-        },
-
-        "contents":
-            contents,
-
-        "generationConfig": {
-
-            "temperature":
-                0.15,
-
-            "topP":
-                0.75,
-
-            "maxOutputTokens":
-                180
-        }
-    }
-
-    headers = {
-
-        "Content-Type":
-            "application/json",
-
-        "x-goog-api-key":
-            GEMINI_API_KEY
-    }
-
-    response = requests.post(
-
-        GEMINI_URL,
-
-        headers=headers,
-
-        json=payload,
-
-        timeout=60
-    )
-
-    return gemini_cevabini_oku(
-        response
-    )
-
-
-# ============================================================
-# 17. PEDAGOJİK OLARAK YENİDEN ÜRET
-# ============================================================
-
-def pedagojik_yeniden_uret(
-    student_message,
-    step,
-    chat_history,
-    image,
-    eski_cevap,
-    kategori
-):
-
-    yeniden_uretme_talimati = f"""
-
-Ürettiğin cevap pedagojik denetimden geçmedi.
-
-BASAMAK:
-{step}
-
-ÖĞRENCİNİN MESAJI:
-{student_message}
-
-ÖNCEKİ CEVAP:
-{eski_cevap}
-
-TESPİT EDİLEN SORUN:
-{kategori}
-
-
-Şimdi cevabı yeniden oluştur.
-
-Kurallar:
-
-- Öğrencinin yerine çözme.
-- Sonucu söyleme.
-- Formül verme.
-- İşlem yapma.
-- Öğrencinin söylemediği bilgiyi varsayma.
-- Görseldeki bilgiyi öğrencinin yerine okuma.
-- Alt problem oluşturma.
-- Hazır çözüm planı verme.
-- En fazla bir soru sor.
-- 1-3 kısa cümle kullan.
-- Öğrencinin son mesajına doğrudan tepki ver.
-- Doğal bir ortaokul matematik öğretmeni gibi konuş.
-
-SADECE öğrencinin göreceği yeni cevabı yaz.
-"""
-
-    yeni_history = list(
-        chat_history
-    )
-
-    yeni_history.append({
-
-        "role":
-            "user",
-
-        "content":
-            yeniden_uretme_talimati
-    })
-
-    return ilk_ai_cevabini_uret(
-
-        student_message=
-            yeniden_uretme_talimati,
-
-        step=
-            step,
-
-        chat_history=
-            yeni_history,
-
-        image=
-            image
-    )
-
-
-# ============================================================
-# 18. TAM GEMINI + PEDAGOJİK KONTROL SÜRECİ
-# ============================================================
-
-def gemini_sor(
-    student_message,
-    step,
-    chat_history,
-    image=None
-):
-
-    if not GEMINI_API_KEY:
+    except requests.exceptions.Timeout:
 
         return (
-
             None,
-
-            "GEMINI_API_KEY alanına API anahtarını yazmalısın.",
-
-            {}
+            "Gemini API zaman aşımına uğradı."
         )
 
-    denetim_kayitlari = []
-
-    # ========================================================
-    # EN FAZLA 3 ÜRETİM DENEMESİ
-    # ========================================================
-
-    max_deneme = 3
-
-    mevcut_cevap = None
-
-    son_kategori = "UYGUN"
-
-    for deneme in range(
-        1,
-        max_deneme + 1
-    ):
-
-        try:
-
-            if deneme == 1:
-
-                cevap, hata = (
-                    ilk_ai_cevabini_uret(
-
-                        student_message=
-                            student_message,
-
-                        step=
-                            step,
-
-                        chat_history=
-                            chat_history,
-
-                        image=
-                            image
-                    )
-                )
-
-            else:
-
-                cevap, hata = (
-                    pedagojik_yeniden_uret(
-
-                        student_message=
-                            student_message,
-
-                        step=
-                            step,
-
-                        chat_history=
-                            chat_history,
-
-                        image=
-                            image,
-
-                        eski_cevap=
-                            mevcut_cevap,
-
-                        kategori=
-                            son_kategori
-                    )
-                )
-
-            if hata:
-
-                return (
-                    None,
-                    hata,
-                    {}
-                )
-
-            mevcut_cevap = cevap
-
-            # ------------------------------------------------
-            # PYTHON ÖN KONTROL
-            # ------------------------------------------------
-
-            basit_uygun, basit_kategoriler = (
-                basit_pedagojik_kontrol(
-                    mevcut_cevap
-                )
-            )
-
-            if not basit_uygun:
-
-                son_kategori = (
-                    basit_kategoriler[0]
-                    if basit_kategoriler
-                    else "BASIT_FILTRE"
-                )
-
-                denetim_kayitlari.append({
-
-                    "deneme":
-                        deneme,
-
-                    "cevap":
-                        mevcut_cevap,
-
-                    "kategori":
-                        son_kategori,
-
-                    "python_kontrol":
-                        "UYGUN_DEGIL",
-
-                    "ai_kontrol":
-                        ""
-                })
-
-                continue
-
-            # ------------------------------------------------
-            # GEMINI PEDAGOJİK DENETLEYİCİ
-            # ------------------------------------------------
-
-            denetim = pedagojik_denetleyici(
-
-                cevap=
-                    mevcut_cevap,
-
-                student_message=
-                    student_message,
-
-                step=
-                    step
-            )
-
-            denetim_kayitlari.append({
-
-                "deneme":
-                    deneme,
-
-                "cevap":
-                    mevcut_cevap,
-
-                "kategori":
-                    denetim.get(
-                        "kategori",
-                        ""
-                    ),
-
-                "python_kontrol":
-                    "UYGUN",
-
-                "ai_kontrol":
-                    str(
-                        denetim.get(
-                            "uygun",
-                            True
-                        )
-                    )
-            })
-
-            if denetim.get(
-                "uygun",
-                True
-            ):
-
-                final_answer = denetim.get(
-                    "cevap",
-                    mevcut_cevap
-                )
-
-                # Son bir Python kontrolü.
-                final_ok, final_categories = (
-                    basit_pedagojik_kontrol(
-                        final_answer
-                    )
-                )
-
-                if final_ok:
-
-                    return (
-
-                        final_answer,
-
-                        None,
-
-                        {
-                            "denemeler":
-                                deneme,
-
-                            "son_kategori":
-                                "UYGUN",
-
-                            "denetim":
-                                denetim_kayitlari
-                        }
-                    )
-
-                son_kategori = (
-                    final_categories[0]
-                    if final_categories
-                    else "FINAL_FILTRE"
-                )
-
-            else:
-
-                son_kategori = denetim.get(
-                    "kategori",
-                    "PEDAGOJIK_UYGUNSUZ"
-                )
-
-        except requests.exceptions.Timeout:
-
-            return (
-
-                None,
-
-                "Gemini API zaman aşımına uğradı.",
-
-                {}
-            )
-
-        except requests.exceptions.ConnectionError:
-
-            return (
-
-                None,
-
-                "Gemini API bağlantısı kurulamadı. "
-                "İnternet bağlantını kontrol et.",
-
-                {}
-            )
-
-        except Exception as e:
-
-            return (
-
-                None,
-
-                f"Beklenmeyen hata: {str(e)}",
-
-                {}
-            )
-
-    # ========================================================
-    # 3 DENEMEDE DE UYGUN CEVAP ÇIKMAZSA
-    # ========================================================
-
-    # Öğrenciye riskli cevap göstermiyoruz.
-    güvenli_yedek = (
-        "Bu düşünceni biraz daha açabilir misin?"
-    )
-
-    return (
-
-        güvenli_yedek,
-
-        None,
-
-        {
-            "denemeler":
-                max_deneme,
-
-            "son_kategori":
-                son_kategori,
-
-            "denetim":
-                denetim_kayitlari,
-
-            "yedek_cevap":
-                True
-        }
-    )
+    except requests.exceptions.ConnectionError:
+
+        return (
+            None,
+            "Gemini API bağlantısı kurulamadı. "
+            "İnternet bağlantını kontrol et."
+        )
+
+    except Exception as e:
+
+        return (
+            None,
+            f"Beklenmeyen hata: {str(e)}"
+        )
 
 
 # ============================================================
-# 19. SESSION STATE
+# 14. SESSION STATE
 # ============================================================
 
 if "student_id" not in st.session_state:
@@ -1881,7 +1151,7 @@ if "canvas_data" not in st.session_state:
 
 
 # ============================================================
-# 20. SIDEBAR
+# 15. SIDEBAR
 # ============================================================
 
 with st.sidebar:
@@ -1911,9 +1181,7 @@ with st.sidebar:
         )
 
         sifre = st.text_input(
-
             "Şifre:",
-
             type="password"
         )
 
@@ -1953,7 +1221,7 @@ with st.sidebar:
 
                         csv_data,
 
-                        "tez_verileri_v35.csv",
+                        "tez_verileri_v34.csv",
 
                         "text/csv"
                     )
@@ -1978,7 +1246,6 @@ with st.sidebar:
 
         st.stop()
 
-
     # ========================================================
     # ÖĞRENCİ
     # ========================================================
@@ -1987,11 +1254,9 @@ with st.sidebar:
 
         "Öğrenci No / Kod:",
 
-        value=
-            st.session_state.student_id,
+        value=st.session_state.student_id,
 
-        placeholder=
-            "Örn: OGR-01"
+        placeholder="Örn: OGR-01"
     )
 
     if not student_id:
@@ -2002,9 +1267,7 @@ with st.sidebar:
 
         st.stop()
 
-    st.session_state.student_id = (
-        student_id
-    )
+    st.session_state.student_id = student_id
 
     st.divider()
 
@@ -2018,17 +1281,12 @@ with st.sidebar:
 
         BASAMAKLARI,
 
-        index=
-            BASAMAKLARI.index(
-                st.session_state.current_step
-            )
+        index=BASAMAKLARI.index(
+            st.session_state.current_step
+        )
     )
 
-    if (
-        selected_step
-        !=
-        st.session_state.current_step
-    ):
+    if selected_step != st.session_state.current_step:
 
         st.session_state.current_step = (
             selected_step
@@ -2048,39 +1306,29 @@ with st.sidebar:
 
     tool_map = {
 
-        "Dikdörtgen":
-            "rect",
+        "Dikdörtgen": "rect",
 
-        "Elips":
-            "circle",
+        "Elips": "circle",
 
-        "Çizgi":
-            "line",
+        "Çizgi": "line",
 
-        "Serbest Çizim":
-            "freedraw",
+        "Serbest Çizim": "freedraw",
 
-        "Taşı / Düzenle":
-            "transform",
+        "Taşı / Düzenle": "transform",
 
-        "Çokgen":
-            "polygon"
+        "Çokgen": "polygon"
     }
 
     selected_tool = st.selectbox(
 
         "Araç:",
 
-        list(
-            tool_map.keys()
-        )
+        list(tool_map.keys())
     )
 
-    drawing_mode = (
-        tool_map[
-            selected_tool
-        ]
-    )
+    drawing_mode = tool_map[
+        selected_tool
+    ]
 
     stroke_color = st.color_picker(
 
@@ -2098,7 +1346,7 @@ with st.sidebar:
 
 
 # ============================================================
-# 21. ANA BAŞLIK
+# 16. ANA BAŞLIK
 # ============================================================
 
 st.title(
@@ -2116,7 +1364,7 @@ st.info(
 
 
 # ============================================================
-# 22. PROBLEM YÜKLEME
+# 17. PROBLEM YÜKLEME
 # ============================================================
 
 st.subheader(
@@ -2144,9 +1392,7 @@ if uploaded_file is not None:
             )
         ).convert("RGB")
 
-        st.session_state.original_image = (
-            image
-        )
+        st.session_state.original_image = image
 
     except Exception as e:
 
@@ -2156,7 +1402,7 @@ if uploaded_file is not None:
 
 
 # ============================================================
-# 23. PROBLEM + CANVAS
+# 18. PROBLEM + CANVAS
 # ============================================================
 
 if st.session_state.original_image is not None:
@@ -2187,61 +1433,40 @@ if st.session_state.original_image is not None:
         w, h = original_image.size
 
         canvas_height = int(
-            h * (
-                max_width / w
-            )
+            h * (max_width / w)
         )
 
         canvas_result = st_canvas(
 
-            fill_color=
-                fill_color,
+            fill_color=fill_color,
 
-            stroke_color=
-                stroke_color,
+            stroke_color=stroke_color,
 
-            stroke_width=
-                3,
+            stroke_width=3,
 
-            background_image=
-                original_image,
+            background_image=original_image,
 
-            height=
-                canvas_height,
+            height=canvas_height,
 
-            width=
-                max_width,
+            width=max_width,
 
-            drawing_mode=
-                drawing_mode,
+            drawing_mode=drawing_mode,
 
-            update_streamlit=
-                True,
+            update_streamlit=True,
 
             key=(
                 "canvas_"
                 + st.session_state.current_step
-                .replace(
-                    " ",
-                    "_"
-                )
-                .replace(
-                    ".",
-                    "_"
-                )
+                .replace(" ", "_")
+                .replace(".", "_")
             )
         )
 
-        if (
-            canvas_result.json_data
-            is not None
-        ):
+        if canvas_result.json_data is not None:
 
             st.session_state.canvas_data[
                 st.session_state.current_step
-            ] = (
-                canvas_result.json_data
-            )
+            ] = canvas_result.json_data
 
         if st.button(
             "💾 Tasarımımı Kaydet"
@@ -2274,7 +1499,6 @@ if st.session_state.original_image is not None:
                 st.success(
                     "Çizimin kaydedildi."
                 )
-
 
         # ====================================================
         # METABİLİŞSEL YANSITMA
@@ -2330,7 +1554,6 @@ if st.session_state.original_image is not None:
                 "Yansıtman kaydedildi."
             )
 
-
         # ====================================================
         # GÜVEN
         # ====================================================
@@ -2352,8 +1575,7 @@ if st.session_state.original_image is not None:
                 "Çok Eminim"
             ],
 
-            value=
-                "Kararsızım",
+            value="Kararsızım",
 
             key=(
                 "confidence_"
@@ -2416,18 +1638,14 @@ if st.session_state.original_image is not None:
 
         for message in current_history:
 
-            role = message[
-                "role"
-            ]
+            role = message["role"]
 
             with chat_container.chat_message(
                 role
             ):
 
                 st.write(
-                    message[
-                        "content"
-                    ]
+                    message["content"]
                 )
 
         prompt = st.chat_input(
@@ -2441,7 +1659,7 @@ if st.session_state.original_image is not None:
             )
 
             # ------------------------------------------------
-            # ÖĞRENCİ MESAJINI KAYDET
+            # ÖĞRENCİ MESAJI
             # ------------------------------------------------
 
             st.session_state.chat_storage[
@@ -2475,9 +1693,8 @@ if st.session_state.original_image is not None:
                     prompt
             })
 
-
             # ------------------------------------------------
-            # AI'YA GÖNDERİLECEK GÖRSEL
+            # AI GÖRSELİ
             # ------------------------------------------------
 
             ai_image = (
@@ -2486,17 +1703,14 @@ if st.session_state.original_image is not None:
 
             if (
                 canvas_result is not None
-                and
-                canvas_result.image_data is not None
+                and canvas_result.image_data is not None
             ):
 
                 try:
 
                     ai_image = (
                         canvas_gorselini_birlestir(
-
                             st.session_state.original_image,
-
                             canvas_result.image_data
                         )
                     )
@@ -2507,48 +1721,36 @@ if st.session_state.original_image is not None:
                         st.session_state.original_image
                     )
 
-
             # ------------------------------------------------
-            # GEMINI + PEDAGOJİK DENETİM
+            # GEMINI
             # ------------------------------------------------
 
             with st.spinner(
                 "Düşünceni inceliyorum..."
             ):
 
-                answer, error, denetim = (
-                    gemini_sor(
+                answer, error = gemini_sor(
 
-                        student_message=
-                            prompt,
+                    student_message=prompt,
 
-                        step=
-                            current_step,
+                    step=current_step,
 
-                        chat_history=(
-                            st.session_state.chat_storage[
-                                current_step
-                            ][:-1]
-                        ),
+                    chat_history=(
+                        st.session_state.chat_storage[
+                            current_step
+                        ][:-1]
+                    ),
 
-                        image=
-                            ai_image
-                    )
+                    image=ai_image
                 )
-
 
             if error:
 
                 st.error(
-                    "Gemini API Hatası:\n\n"
-                    + error
+                    f"Gemini API Hatası:\n\n{error}"
                 )
 
             else:
-
-                # --------------------------------------------
-                # AI CEVABINI ÖĞRENCİYE EKLE
-                # --------------------------------------------
 
                 st.session_state.chat_storage[
                     current_step
@@ -2560,11 +1762,6 @@ if st.session_state.original_image is not None:
                     "content":
                         answer
                 })
-
-
-                # --------------------------------------------
-                # NORMAL BOT KAYDI
-                # --------------------------------------------
 
                 log_kaydet({
 
@@ -2586,47 +1783,16 @@ if st.session_state.original_image is not None:
                         answer
                 })
 
-
-                # --------------------------------------------
-                # PEDAGOJİK DENETİM KAYDI
-                # --------------------------------------------
-
-                if denetim:
-
-                    log_kaydet({
-
-                        "tarih":
-                            datetime.now().strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            ),
-
-                        "id":
-                            student_id,
-
-                        "basamak":
-                            current_step,
-
-                        "tip":
-                            "Pedagojik_Denetim",
-
-                        "icerik":
-                            json.dumps(
-                                denetim,
-                                ensure_ascii=False
-                            )
-                    })
-
-
             st.rerun()
 
 
 # ============================================================
-# 24. ARAŞTIRMACI BİLGİSİ
+# 19. ARAŞTIRMACI BİLGİSİ
 # ============================================================
 
 st.divider()
 
 st.caption(
     "Algoritmik düşünme • Yapay zekâ destekli problem çözme • "
-    "Tasarım tabanlı araştırma • V35"
+    "Tasarım tabanlı araştırma • V34"
 )
