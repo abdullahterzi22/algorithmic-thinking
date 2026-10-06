@@ -32,7 +32,7 @@ MODEL_NAME = "gemini-2.5-flash"
 try:
     GEMINI_API_KEY = st.secrets[""]
 except Exception:
-    GEMINI_API_KEY = ""
+    GEMINI_API_KEY = "AIzaSyCnzirRmwImq3DQEwZt1eIX2OmiE3WPZho"
 
 GEMINI_URL = (
     f"https://generativelanguage.googleapis.com/"
