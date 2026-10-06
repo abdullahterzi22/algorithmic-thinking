@@ -1,64 +1,60 @@
-# ============================================================
-# ALGORİTMİK PROBLEM ÇÖZME REHBERİ
-# Konu: DOĞRUSAL İLİŞKİLER
-# ============================================================
-
 import streamlit as st
 import requests
 import pandas as pd
 import os
-import json
-import base64
 import io
+import base64
+import json
 import re
-from datetime import datetime
-
 from PIL import Image
+from datetime import datetime
 from streamlit_drawable_canvas import st_canvas
 
 
 # ============================================================
-# SAYFA AYARLARI
+# 1. SAYFA AYARLARI
 # ============================================================
 
 st.set_page_config(
-    page_title="Algoritmik Problem Çözme Atölyesi",
-    page_icon="🎯",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_title="Algoritmik Düşünme Atölyesi - V37",
+    page_icon="🧠",
+    layout="wide"
 )
 
 
 # ============================================================
-# SABİTLER
+# 2. GEMINI API
 # ============================================================
 
-MODEL_NAME = "gemini-2.5-flash"
-
-DATA_FILE = "tez_verileri_final.csv"
-
-GEMINI_URL = (
-    "https://generativelanguage.googleapis.com/v1beta/models/"
-    f"{MODEL_NAME}:generateContent"
-)
-
-
-# ============================================================
-# GEMINI API ANAHTARI
-# ============================================================
+# API anahtarı kodun içine yazılmaz.
+# Streamlit Cloud -> Settings -> Secrets bölümünden okunur.
+#
+# Secrets alanına:
+# GEMINI_API_KEY = "AIza...."
+#
+# şeklinde eklemelisin.
 
 try:
     GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 except Exception:
-    GEMINI_API_KEY = ""
+    # Yerel bilgisayarda çalıştırırken istersen
+    # ortam değişkeninden de okunabilir.
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 if not GEMINI_API_KEY:
     st.error(
-        "⚠️ Gemini API anahtarı bulunamadı.\n\n"
-        "Streamlit Cloud → Settings → Secrets bölümüne "
-        '`GEMINI_API_KEY = "AIza...."` şeklinde ekleyin.'
+        "GEMINI_API_KEY bulunamadı. "
+        "Streamlit Cloud -> Settings -> Secrets bölümüne "
+        'GEMINI_API_KEY = "AIza...." şeklinde ekleyin.'
     )
     st.stop()
+
+MODEL_NAME = "gemini-3.1-flash-lite"
+
+GEMINI_URL = (
+    f"https://generativelanguage.googleapis.com/"
+    f"v1beta/models/{MODEL_NAME}:generateContent"
+)
 
 # ============================================================
 # 3. ALGORİTMİK DÜŞÜNME BASAMAKLARI
