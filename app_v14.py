@@ -1,9 +1,11 @@
 import streamlit as st
-import requests
 import pandas as pd
 import os
+import json
 import base64
 from datetime import datetime
+from google import genai
+from google.genai import types
 from streamlit_drawable_canvas import st_canvas
 
 
@@ -19,118 +21,163 @@ st.set_page_config(
 
 
 # ============================================================
-# 2. GEMINI AYARLARI
+# 2. GEMINI API AYARLARI
 # ============================================================
-
-# API anahtarı Streamlit Secrets'tan alınır.
-# .streamlit/secrets.toml içinde:
-#
-# GEMINI_API_KEY = "BURAYA_API_KEY"
-#
 
 try:
     GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 except Exception:
     st.error(
-        "❌ GEMINI_API_KEY bulunamadı.\n\n"
-        "Streamlit Secrets bölümüne GEMINI_API_KEY ekleyin."
+        """
+        ❌ GEMINI_API_KEY bulunamadı.
+
+        Streamlit Secrets bölümüne şu satırı ekleyin:
+
+        GEMINI_API_KEY = "API_KEY_BURAYA"
+        """
     )
     st.stop()
 
 
-# Gemini 2.5 Flash-Lite
-MODEL_NAME = "gemini-2.5-flash-lite"
+# Güncel model
+MODEL_NAME = "gemini-3.5-flash-lite"
 
-GEMINI_URL = (
-    f"https://generativelanguage.googleapis.com/"
-    f"v1beta/models/{MODEL_NAME}:generateContent"
+
+# Gemini istemcisi
+client = genai.Client(
+    api_key=GEMINI_API_KEY
 )
 
 
 # ============================================================
-# 3. AKADEMİK PROTOKOLLER
+# 3. VERİ DOSYASI
+# ============================================================
+
+DATA_FILE = "tez_verileri_final.csv"
+
+
+# ============================================================
+# 4. AKADEMİK BASAMAK TALİMATLARI
 # ============================================================
 
 BASAMAK_TALIMATLARI = {
 
     "1. Ayrıştırma": """
-Amaç:
-Öğrencinin matematik problemini alt bileşenlerine ayırmasını sağlamak.
 
-Zorunlu davranışlar:
-- Verilenleri fark ettir.
-- İstenen bilgiyi açıkça söylet.
-- Problemi uygun alt parçalara ayırmasını sağla.
-- Sayısal ilişkileri fark ettir.
-- Öğrencinin problemi kendi cümleleriyle ifade etmesini destekle.
+AMAÇ:
+Öğrencinin problemi alt bileşenlerine ayırmasını sağlamak.
 
-Yasak:
-- Çözüm yolu önermek.
-- İşlem yaptırmak.
-- Sonuca yaklaşan ipucu vermek.
-- Formül vermek.
-- Cevabı söylemek.
+ÖĞRENCİNİN YAPMASI BEKLENENLER:
+- Verilen bilgileri fark etmek.
+- İstenen bilgiyi belirlemek.
+- Problemi anlamlı parçalara ayırmak.
+- Bilgiler arasındaki ilişkileri fark etmek.
+- Problemi kendi cümleleriyle ifade etmek.
+
+REHBERİN YAPMASI GEREKENLER:
+- Verilenleri fark ettirecek sorular sor.
+- İstenen bilgiyi öğrencinin kendisinin söylemesini sağla.
+- Problemdeki ilişkileri öğrencinin fark etmesini sağla.
+
+YASAK:
+- Çözüm yolu söyleme.
+- İşlem önerme.
+- Formül verme.
+- Cevap verme.
+- Sonuca götüren doğrudan ipucu verme.
 """,
+
 
     "2. Soyutlama": """
-Amaç:
-Öğrencinin problemin matematiksel yapısını ortaya çıkarmasını sağlamak.
 
-Zorunlu davranışlar:
-- Problemde hangi bilgilerin önemli olduğunu düşündür.
-- Gereksiz bilgileri ayırt ettir.
-- Önceki matematiksel bilgileri hatırlat.
-- Benzer problem yapılarıyla bağlantı kurmasını sağla.
-- Uygunsa örüntü veya genel yapı düşündür.
-- Öğrencinin problemi matematiksel bir temsil ile ifade etmesini destekle.
+AMAÇ:
+Öğrencinin problemin altında yatan matematiksel yapıyı
+fark etmesini sağlamak.
 
-Yasak:
-- EBOB, EKOK veya başka bir kavramı doğrudan cevap olarak söylemek.
-- Stratejiyi açıkça belirtmek.
-- İşlem yapmak.
-- Sonucu söylemek.
+ÖĞRENCİNİN YAPMASI BEKLENENLER:
+- Problem için gerekli bilgileri ayırt etmek.
+- Gereksiz bilgileri fark etmek.
+- Önceki matematiksel bilgileri hatırlamak.
+- Benzer problem yapılarıyla ilişki kurmak.
+- Örüntü veya genel yapı fark etmek.
+- Problemi matematiksel bir temsil ile ifade etmek.
+
+REHBERİN YAPMASI GEREKENLER:
+- "Bu bilgilerden hangileri önemli?" gibi sorular sor.
+- Önceki bilgileri hatırlatacak sorular sor.
+- Benzer bir problemle bağlantı kurdur.
+- Öğrencinin kendisinin matematiksel yapıyı keşfetmesini sağla.
+
+YASAK:
+- EBOB olduğunu söyleme.
+- EKOK olduğunu söyleme.
+- Üslü sayı olduğunu söyleme.
+- Kullanılacak yöntemi söyleme.
+- Formül verme.
+- Çözüm verme.
 """,
+
 
     "3. Algoritma Tasarımı": """
-Amaç:
-Öğrencinin kendi çözüm planını oluşturmasını sağlamak.
 
-Zorunlu davranışlar:
-- Adım adım plan oluşturmasını iste.
-- Önce ne yapacağını sorgula.
-- Sonraki adımı öğrencinin belirlemesini sağla.
-- Neden bu yöntemi seçtiğini sorgula.
-- Başka bir yöntem mümkün mü diye düşündür.
-- Çözümün genellenebilirliğini sorgula.
-- Gerekirse akış şeması oluşturmasını destekle.
+AMAÇ:
+Öğrencinin kendi çözüm algoritmasını oluşturmasını sağlamak.
 
-Yasak:
-- İşlem adımlarını doğrudan vermek.
-- Hesap sonucu söylemek.
-- Algoritmayı öğrencinin yerine oluşturmak.
+ÖĞRENCİNİN YAPMASI BEKLENENLER:
+- Çözümün ilk adımını belirlemek.
+- Sonraki adımları planlamak.
+- Adımların sırasını belirlemek.
+- Ara sonuçları düşünmek.
+- Neden bu yöntemi seçtiğini açıklamak.
+- Gerekirse alternatif bir yol düşünmek.
+- Çözümünü akış şeması ile ifade etmek.
+
+REHBERİN YAPMASI GEREKENLER:
+- "İlk olarak ne yapmayı düşünüyorsun?"
+- "Bundan sonra hangi adımı izlersin?"
+- "Bu adımı neden seçtin?"
+- "Bu adımın sonucunu nasıl kullanacaksın?"
+gibi sorularla öğrenciyi yönlendir.
+
+YASAK:
+- Algoritmayı öğrencinin yerine oluşturma.
+- İşlem sırasını söyleme.
+- Formül verme.
+- Sonucu söyleme.
 """,
 
+
     "4. Hata Ayıklama": """
-Amaç:
-Öğrencinin kendi çözümünü kontrol etmesini sağlamak.
 
-Zorunlu davranışlar:
-- Sonucun problem koşullarını sağlayıp sağlamadığını sorgula.
-- Öğrencinin çözümündeki adımları kontrol etmesini sağla.
-- Alternatif doğrulama yolu düşündür.
-- Mantıksal tutarlılığı sorgula.
-- Gerekirse öğrencinin belirli bir adımı yeniden incelemesini sağla.
+AMAÇ:
+Öğrencinin kendi çözümünü test etmesini ve varsa
+uyumsuzlukları kendisinin fark etmesini sağlamak.
 
-Yasak:
-- Sonucu doğrudan doğru veya yanlış olarak söylemek.
+ÖĞRENCİNİN YAPMASI BEKLENENLER:
+- Çözüm adımlarını kontrol etmek.
+- Sonucu problem koşullarıyla karşılaştırmak.
+- Mantıksal tutarlılığı incelemek.
+- Alternatif bir kontrol yolu düşünmek.
+- Gerekirse bir adımı yeniden düzenlemek.
+
+REHBERİN YAPMASI GEREKENLER:
+- Çözümü doğrudan değerlendirme.
+- Öğrencinin kendi çözümünü kontrol etmesini sağla.
+- Problem koşullarıyla karşılaştırma yaptır.
+- Alternatif kontrol yolu düşündür.
+
+YASAK:
+- "Doğru."
+- "Yanlış."
+- "Cevabın doğru."
+- "Burada hata yaptın."
 - Doğru cevabı ima etmek.
-- Çözümü öğrencinin yerine düzeltmek.
 """
 }
 
 
 # ============================================================
-# 4. METABİLİŞSEL SORULAR
+# 5. METABİLİŞSEL SORULAR
 # ============================================================
 
 METABILISSEL_SORULAR = {
@@ -145,80 +192,147 @@ METABILISSEL_SORULAR = {
         "Çözüm adımlarını planlarken nasıl bir yol izledin?",
 
     "4. Hata Ayıklama":
-        "Bulduğun sonucun mantıklı olduğundan nasıl emin oldun? Farklı bir kontrol yolu düşündün mü?"
+        "Bulduğun sonucun mantıklı olduğundan nasıl emin oldun? Farklı bir kontrol yolu düşündün?"
 }
 
 
 # ============================================================
-# 5. GENEL SİSTEM PROMPTU
+# 6. ANA PEDAGOJİK SİSTEM PROMPTU
 # ============================================================
 
 SYSTEM_PROMPT = """
 
-ROLÜN:
-Ortaokul matematik öğrencisine rehberlik eden bir öğretmensin.
+SEN BİR ORTAOKUL MATEMATİK ÖĞRETMENİ VE REHBERİSİN.
 
-TEMEL AMAÇ:
-Öğrencinin matematik problemini KENDİSİNİN çözmesini sağlamak.
+Öğrencinin matematik problemini kendisinin çözmesini
+sağlamakla görevlisin.
 
-KESİN KURALLAR:
+TEMEL İLKE:
+
+ÖĞRENCİ ÇÖZER.
+SEN YALNIZCA DÜŞÜNME SÜRECİNİ YÖNLENDİRİRSİN.
+
+============================================================
+KESİN KURALLAR
+============================================================
 
 1. Asla doğrudan çözüm verme.
-2. Asla işlem sonucunu söyleme.
-3. Asla formülü doğrudan verme.
-4. Öğrenci yerine problem çözme.
-5. Öğrencinin yerine algoritma oluşturma.
-6. Öğrenciye cevabı ima eden ipucu verme.
-7. Uzun açıklamalar yapma.
-8. Aynı anda birden fazla soru sorma.
-9. Her yanıtında yalnızca BİR yönlendirici soru sor.
-10. Öğrencinin cevabını bekle.
 
-YANIT BİÇİMİ:
+2. Asla cevap verme.
 
-- Türkçe yaz.
-- 1-3 kısa cümle kullan.
-- Yanıtın sonunda yalnızca bir soru bulunmalıdır.
-- Önceki öğrencinin söylediğini gereksiz yere tekrar etme.
-- Hazır övgü kalıpları kullanma.
-- "Harika bir başlangıç noktası!" gibi kalıpları kullanma.
+3. Asla işlem sonucunu söyleme.
 
-KULLANABİLECEĞİN YAKLAŞIMLAR:
+4. Asla formülü doğrudan yazma.
 
-- "Bu bilgiyi neden önemli gördün?"
-- "Burada senden ne isteniyor?"
-- "Bu bilgileri nasıl gruplandırabilirsin?"
-- "Bu iki bilgi arasında nasıl bir ilişki görüyorsun?"
-- "İlk adımın ne olmalı?"
-- "Bu adımı neden seçtin?"
-- "Bulduğun sonucu nasıl kontrol edebilirsin?"
+5. Öğrencinin yerine hesaplama yapma.
 
-ASLA ŞUNLARI YAPMA:
+6. Öğrencinin yerine algoritma oluşturma.
 
-- "Cevap ..."
-- "Sonuç ..."
-- "Şu işlemi yap."
-- "Burada EKOK kullanmalısın."
-- "Burada EBOB kullanmalısın."
-- "Önce 6 ve 8'in..."
-- "Şimdi şu formülü kullan."
-- "Yanlış yaptın."
-- "Doğru cevap şu."
+7. Öğrencinin yapması gereken işlemi doğrudan söyleme.
 
-ÖĞRENCİNİN HATASINI DOĞRUDAN SÖYLEME.
+8. Öğrencinin hatasını doğrudan söyleme.
 
-Bunun yerine öğrencinin kendi hatasını fark etmesini sağlayacak
-tek bir kısa soru sor.
+9. "Doğru", "yanlış", "hata yaptın" gibi
+   kesin değerlendirmeler kullanma.
+
+10. Öğrenciye aynı anda birden fazla soru sorma.
+
+11. Her mesajda yalnızca BİR yönlendirici soru sor.
+
+12. Öğrencinin cevabını bekle.
+
+13. Uzun açıklama yapma.
+
+14. Liste halinde çözüm verme.
+
+15. Öğrencinin düşüncesini kendin tamamlamaya çalışma.
+
+============================================================
+YANIT UZUNLUĞU
+============================================================
+
+Her yanıt:
+
+- En fazla 2 kısa cümle.
+- En fazla 1 soru.
+- Doğal Türkçe.
+- Öğrencinin yaş seviyesine uygun.
+
+============================================================
+SORU SORMA KURALI
+============================================================
+
+Öğrencinin son mesajına göre yalnızca bir sonraki
+düşünme adımını hedefle.
+
+Örneğin öğrenci verilenleri söylüyorsa:
+
+"Bu bilgilerden hangilerinin problemde kullanılacağını
+nasıl belirleyebilirsin?"
+
+Öğrenci bir çözüm adımı söylüyorsa:
+
+"Bu adımı seçmenin sebebi nedir?"
+
+Öğrenci sonuç söylüyorsa:
+
+"Bu sonucu problemdeki koşullardan hangisiyle
+karşılaştırabilirsin?"
+
+============================================================
+YASAK ÖRNEKLER
+============================================================
+
+"Önce EKOK'u bulmalısın."
+
+"6 ve 8'in EKOK'u 24'tür."
+
+"Bu soruda EKOK kullanılır."
+
+"Formülü yazalım."
+
+"Cevap 40 TL."
+
+"İlk olarak 6'yı 8'e böl."
+
+"Burada hata yaptın."
+
+"Doğru cevap bu."
+
+============================================================
+İZİN VERİLEN YAKLAŞIM
+============================================================
+
+"Problemde bize hangi bilgiler verilmiş?"
+
+"Problemde senden ne isteniyor?"
+
+"Bu bilgileri nasıl gruplandırabilirsin?"
+
+"Bu iki bilgi arasında nasıl bir ilişki görüyorsun?"
+
+"Benzer bir problemi daha önce nasıl düşünmüştün?"
+
+"İlk adımının ne olması gerektiğine nasıl karar verdin?"
+
+"Bu adımın sonucunu nasıl kontrol edebilirsin?"
+
+============================================================
+ÖNEMLİ
+============================================================
+
+Öğrenci bir şeyi eksik veya belirsiz söylediğinde
+cevabı tamamlamaya çalışma.
+
+Öğrencinin kendisinin fark etmesini sağlayacak
+tek bir soru sor.
 
 """
 
 
 # ============================================================
-# 6. DOSYAYA KAYIT
+# 7. VERİ KAYIT FONKSİYONU
 # ============================================================
-
-DATA_FILE = "tez_verileri_final.csv"
-
 
 def log_kaydet(data):
 
@@ -236,215 +350,392 @@ def log_kaydet(data):
 
     except Exception as e:
 
-        st.warning(f"Veri kaydedilemedi: {e}")
+        st.warning(
+            f"Veri kaydedilemedi: {e}"
+        )
 
 
 # ============================================================
-# 7. GÖRSELİ GEMINI'YE HAZIRLAMA
+# 8. GÖRSELİ BASE64'E ÇEVİR
 # ============================================================
 
-def dosyayi_base64_yap(file):
+def image_to_base64(uploaded_file):
 
     return base64.b64encode(
-        file.getvalue()
+        uploaded_file.getvalue()
     ).decode("utf-8")
 
 
 # ============================================================
-# 8. GEMINI'YE MESAJ GÖNDERME
+# 9. GÖRSEL PROBLEMİ ANALİZ ET
 # ============================================================
 
-def gemini_cevap_al(
-    current_step,
-    chat_history,
-    image_file=None
-):
+def analyze_problem_image(uploaded_file):
 
-    stage_instruction = BASAMAK_TALIMATLARI[current_step]
-
-    full_system = f"""
-{SYSTEM_PROMPT}
-
-ŞU ANDAKİ BASAMAK:
-{current_step}
-
-BU BASAMAĞIN AKADEMİK PROTOKOLÜ:
-{stage_instruction}
-"""
-
-    contents = []
-
-    # --------------------------------------------------------
-    # Sistem + konuşma bağlamı
-    # --------------------------------------------------------
-
-    conversation_text = full_system + "\n\n"
-
-    conversation_text += "ÖNCEKİ KONUŞMA:\n"
-
-    for message in chat_history:
-
-        role = message["role"]
-
-        if role == "user":
-            conversation_text += f"ÖĞRENCİ: {message['content']}\n"
-
-        elif role == "assistant":
-            conversation_text += f"REHBER: {message['content']}\n"
-
-    conversation_text += """
-
-Şimdi öğrencinin son mesajına uygun şekilde cevap ver.
-
-Yalnızca bu basamağa odaklan.
-
-Tek bir kısa yönlendirici soru sor.
-
-Çözüm verme.
-"""
-
-    contents.append({
-        "text": conversation_text
-    })
-
-
-    # --------------------------------------------------------
-    # Görsel varsa Gemini'ye gönder
-    # --------------------------------------------------------
-
-    if image_file is not None:
-
-        image_base64 = dosyayi_base64_yap(image_file)
-
-        mime_type = image_file.type
-
-        contents.append({
-            "inline_data": {
-                "mime_type": mime_type,
-                "data": image_base64
-            }
-        })
-
-
-    # --------------------------------------------------------
-    # Gemini payload
-    # --------------------------------------------------------
-
-    payload = {
-
-        "contents": [
-            {
-                "role": "user",
-                "parts": contents
-            }
-        ],
-
-        "generationConfig": {
-
-            "temperature": 0.2,
-
-            "topP": 0.8,
-
-            "maxOutputTokens": 200
-        }
-    }
-
-
-    headers = {
-        "Content-Type": "application/json"
-    }
-
-
-    # --------------------------------------------------------
-    # API isteği
-    # --------------------------------------------------------
-
-    response = requests.post(
-        GEMINI_URL,
-        headers=headers,
-        params={"key": GEMINI_API_KEY},
-        json=payload,
-        timeout=60
-    )
-
-
-    # --------------------------------------------------------
-    # Hata kontrolü
-    # --------------------------------------------------------
-
-    if response.status_code != 200:
-
-        try:
-            error_detail = response.json()
-
-        except:
-            error_detail = response.text
-
-        raise Exception(
-            f"Gemini API Hatası ({response.status_code}): "
-            f"{error_detail}"
-        )
-
-
-    data = response.json()
-
-
-    # --------------------------------------------------------
-    # Cevabı çıkar
-    # --------------------------------------------------------
+    if uploaded_file is None:
+        return None
 
     try:
 
-        answer = (
-            data["candidates"][0]
-            ["content"]["parts"][0]["text"]
+        image_data = uploaded_file.getvalue()
+
+        mime_type = uploaded_file.type
+
+        prompt = """
+
+Bu görselde bir matematik problemi bulunmaktadır.
+
+Görseli ÖĞRENCİYE ÇÖZÜM VERMEK için değil,
+rehber öğretmenin problem bağlamını anlayabilmesi için analiz et.
+
+Şunları belirle:
+
+1. Problem metni.
+2. Verilen sayısal bilgiler.
+3. İstenen bilgi.
+4. Varsa tablo, grafik veya şekil.
+5. Görseldeki önemli matematiksel ilişkiler.
+6. Görselde okunamayan veya belirsiz bir bölüm varsa belirt.
+
+ÇÖZÜM YAPMA.
+
+İŞLEM YAPMA.
+
+CEVAP BULMA.
+
+EBOB, EKOK veya başka bir yöntemi çözüm olarak önerme.
+
+Yalnızca problem bağlamını çıkar.
+"""
+
+        response = client.models.generate_content(
+
+            model=MODEL_NAME,
+
+            contents=[
+
+                types.Part.from_bytes(
+                    data=image_data,
+                    mime_type=mime_type
+                ),
+
+                prompt
+            ]
         )
 
-        return answer.strip()
+        return response.text.strip()
 
-    except Exception:
+    except Exception as e:
+
+        return f"Görsel analiz edilemedi: {e}"
+
+
+# ============================================================
+# 10. GEMINI İLE YENİ ETKİLEŞİM BAŞLAT
+# ============================================================
+
+def yeni_interaction_baslat(
+    current_step,
+    problem_analysis
+):
+
+    stage_instruction = (
+        BASAMAK_TALIMATLARI[
+            current_step
+        ]
+    )
+
+    prompt = f"""
+
+{SYSTEM_PROMPT}
+
+============================================================
+MEVCUT BASAMAK
+============================================================
+
+{current_step}
+
+============================================================
+BU BASAMAĞIN AKADEMİK PROTOKOLÜ
+============================================================
+
+{stage_instruction}
+
+============================================================
+PROBLEM ANALİZİ
+============================================================
+
+{problem_analysis}
+
+============================================================
+GÖREV
+============================================================
+
+Öğrenci henüz bu basamakta herhangi bir cevap vermedi.
+
+Bu nedenle çözüm verme.
+
+Yalnızca öğrencinin bu basamağa başlamasını sağlayacak
+TEK bir kısa yönlendirici soru sor.
+
+Başka açıklama yapma.
+"""
+
+    try:
+
+        interaction = client.interactions.create(
+
+            model=MODEL_NAME,
+
+            input=prompt,
+
+            store=True
+        )
+
+        return interaction
+
+    except Exception as e:
 
         raise Exception(
-            f"Gemini yanıtı beklenen formatta değil: {data}"
+            f"Gemini etkileşimi başlatılamadı: {e}"
         )
 
 
 # ============================================================
-# 9. SESSION STATE
+# 11. ÖĞRENCİ CEVABINA GEMINI YANITI
+# ============================================================
+
+def gemini_ogrenci_cevabi(
+    current_step,
+    student_message,
+    previous_interaction_id,
+    problem_analysis
+):
+
+    stage_instruction = (
+        BASAMAK_TALIMATLARI[
+            current_step
+        ]
+    )
+
+    prompt = f"""
+
+{SYSTEM_PROMPT}
+
+============================================================
+MEVCUT BASAMAK
+============================================================
+
+{current_step}
+
+============================================================
+AKADEMİK PROTOKOL
+============================================================
+
+{stage_instruction}
+
+============================================================
+PROBLEM BAĞLAMI
+============================================================
+
+{problem_analysis}
+
+============================================================
+ÖĞRENCİNİN SON MESAJI
+============================================================
+
+{student_message}
+
+============================================================
+GÖREV
+============================================================
+
+Öğrencinin SON mesajını değerlendir.
+
+Ancak çözümü sen yapma.
+
+Öğrencinin yerine düşünme.
+
+Yalnızca öğrencinin bir sonraki düşünme adımını
+destekle.
+
+TEK BİR KISA SORU SOR.
+
+Birden fazla soru sorma.
+
+Açıklama yapma.
+
+Çözüm verme.
+
+Formül verme.
+
+İşlem sonucu verme.
+
+Cevabı söyleme.
+
+Öğrencinin hatasını doğrudan söyleme.
+"""
+
+    try:
+
+        interaction = client.interactions.create(
+
+            model=MODEL_NAME,
+
+            input=prompt,
+
+            previous_interaction_id=
+                previous_interaction_id,
+
+            store=True
+        )
+
+        return interaction
+
+    except Exception as e:
+
+        raise Exception(
+            f"Gemini yanıt oluşturamadı: {e}"
+        )
+
+
+# ============================================================
+# 12. FİNAL ÖZETİ
+# ============================================================
+
+def final_ozet_olustur(
+    student_id,
+    chat_storage
+):
+
+    process_text = ""
+
+    for stage, messages in chat_storage.items():
+
+        process_text += (
+            f"\n\n===== {stage} =====\n"
+        )
+
+        for message in messages:
+
+            process_text += (
+                f"{message['role']}: "
+                f"{message['content']}\n"
+            )
+
+
+    prompt = f"""
+
+Sen bir ortaokul matematik öğretmenisin.
+
+Aşağıdaki öğrencinin algoritmik düşünme sürecini
+öğretmen gözüyle değerlendir.
+
+ÖNEMLİ:
+
+Problemi yeniden çözme.
+
+Cevabı söyleme.
+
+Yeni bir çözüm yolu verme.
+
+Öğrencinin çözümünü değiştirme.
+
+Bunun yerine şu başlıklarda kısa bir değerlendirme yap:
+
+1. Ayrıştırma
+2. Soyutlama
+3. Algoritma Tasarımı
+4. Hata Ayıklama
+
+Her başlık altında öğrencinin süreçte
+ne yaptığını kısaca belirt.
+
+Sonunda öğrencinin algoritmik düşünme süreciyle ilgili
+kısa bir genel değerlendirme yap.
+
+Öğrenci:
+{student_id}
+
+ÖĞRENCİNİN SÜRECİ:
+
+{process_text}
+"""
+
+    try:
+
+        interaction = client.interactions.create(
+
+            model=MODEL_NAME,
+
+            input=prompt,
+
+            store=False
+        )
+
+        return interaction.output_text.strip()
+
+    except Exception as e:
+
+        raise Exception(
+            f"Final özeti oluşturulamadı: {e}"
+        )
+
+
+# ============================================================
+# 13. SESSION STATE
 # ============================================================
 
 if "uploaded_file_data" not in st.session_state:
+
     st.session_state.uploaded_file_data = None
+
+
+if "problem_analysis" not in st.session_state:
+
+    st.session_state.problem_analysis = None
 
 
 if "chat_storage" not in st.session_state:
 
     st.session_state.chat_storage = {
-        s: []
-        for s in BASAMAK_TALIMATLARI.keys()
+
+        stage: []
+
+        for stage in BASAMAK_TALIMATLARI
+    }
+
+
+if "interaction_ids" not in st.session_state:
+
+    st.session_state.interaction_ids = {
+
+        stage: None
+
+        for stage in BASAMAK_TALIMATLARI
     }
 
 
 if "current_step" not in st.session_state:
 
-    st.session_state.current_step = "1. Ayrıştırma"
-
-
-if "canvas_data" not in st.session_state:
-
-    st.session_state.canvas_data = {}
+    st.session_state.current_step = (
+        "1. Ayrıştırma"
+    )
 
 
 # ============================================================
-# 10. SIDEBAR
+# 14. SIDEBAR
 # ============================================================
 
 with st.sidebar:
 
     st.title("👨‍🏫 Araştırma Paneli")
 
+
     mode = st.selectbox(
+
         "Giriş Türü:",
+
         [
             "Öğrenci Girişi",
             "Öğretmen (Admin)"
@@ -452,9 +743,9 @@ with st.sidebar:
     )
 
 
-    # --------------------------------------------------------
-    # ADMIN
-    # --------------------------------------------------------
+    # ========================================================
+    # ADMIN PANELİ
+    # ========================================================
 
     if mode == "Öğretmen (Admin)":
 
@@ -463,40 +754,62 @@ with st.sidebar:
             type="password"
         )
 
+
         if sifre == "tez2024":
 
-            st.success("Admin Paneli Aktif")
+            st.success(
+                "Admin Paneli Aktif"
+            )
+
 
             if os.path.isfile(DATA_FILE):
 
                 try:
 
                     df_csv = pd.read_csv(
+
                         DATA_FILE,
+
                         sep=None,
+
                         engine="python",
+
                         on_bad_lines="skip"
                     )
 
-                    st.write("### 📊 Veri Kayıtları")
+
+                    st.write(
+                        "### 📊 Veri Kayıtları"
+                    )
+
 
                     st.dataframe(
-                        df_csv.tail(20),
+
+                        df_csv.tail(30),
+
                         use_container_width=True
                     )
 
+
                     csv_data = (
+
                         df_csv
                         .to_csv(index=False)
                         .encode("utf-8-sig")
                     )
 
+
                     st.download_button(
+
                         "📥 Tüm Verileri İndir",
+
                         csv_data,
+
                         "tez_data.csv",
+
                         "text/csv"
                     )
+
 
                 except Exception as e:
 
@@ -504,28 +817,33 @@ with st.sidebar:
                         f"Dosya hatası: {e}"
                     )
 
+
             else:
 
                 st.info(
                     "Henüz veri kaydı yok."
                 )
 
+
         st.stop()
 
 
-    # --------------------------------------------------------
-    # ÖĞRENCİ
-    # --------------------------------------------------------
+    # ========================================================
+    # ÖĞRENCİ GİRİŞİ
+    # ========================================================
 
     student_id = st.text_input(
+
         "Öğrenci No:",
+
         placeholder="Örn: Hakan"
     )
+
 
     if not student_id:
 
         st.warning(
-            "Devam etmek için giriş yapın."
+            "Devam etmek için öğrenci numaranızı girin."
         )
 
         st.stop()
@@ -534,13 +852,14 @@ with st.sidebar:
     st.divider()
 
 
-    # --------------------------------------------------------
-    # CANVAS ARAÇLARI
-    # --------------------------------------------------------
+    # ========================================================
+    # AKIŞ ŞEMASI ARAÇLARI
+    # ========================================================
 
     st.write(
         "🖌️ **Akış Şeması Araçları**"
     )
+
 
     tool_map = {
 
@@ -554,13 +873,14 @@ with st.sidebar:
 
         "Düzenle/Taşı": "transform",
 
-        "Çokgen":
-            "polygon"
+        "Çokgen": "polygon"
     }
 
 
     secilen_etiket = st.selectbox(
+
         "Araç Seçin:",
+
         list(tool_map.keys())
     )
 
@@ -571,13 +891,17 @@ with st.sidebar:
 
 
     stroke_color = st.color_picker(
+
         "Çizgi Rengi:",
+
         "#000000"
     )
 
 
     fill_color = st.color_picker(
+
         "Kutu Rengi:",
+
         "#EEEEEE"
     )
 
@@ -585,55 +909,70 @@ with st.sidebar:
     st.divider()
 
 
-    # --------------------------------------------------------
+    # ========================================================
     # AŞAMA SEÇİMİ
-    # --------------------------------------------------------
+    # ========================================================
 
     step_list = list(
         BASAMAK_TALIMATLARI.keys()
     )
 
-    cur_idx = step_list.index(
+
+    current_index = step_list.index(
         st.session_state.current_step
     )
 
 
-    sel = st.radio(
+    selected_step = st.radio(
+
         "Aşamayı Seçin:",
+
         step_list,
-        index=cur_idx
+
+        index=current_index
     )
 
 
-    if sel != st.session_state.current_step:
+    if selected_step != (
+        st.session_state.current_step
+    ):
 
-        st.session_state.current_step = sel
+        st.session_state.current_step = (
+            selected_step
+        )
 
         st.rerun()
 
 
 # ============================================================
-# 11. ANA EKRAN
+# 15. ANA BAŞLIK
 # ============================================================
 
 st.title(
     "🎯 Algoritmik Problem Çözme Rehberi"
 )
 
+
 st.write(
+
     f"### Mevcut Basamak: "
     f"{st.session_state.current_step}"
 )
 
 
 # ============================================================
-# 12. SORU FOTOĞRAFI
+# 16. PROBLEM FOTOĞRAFI
 # ============================================================
 
-if st.session_state.uploaded_file_data is None:
+if (
+    st.session_state.uploaded_file_data
+    is None
+):
 
-    up = st.file_uploader(
+    uploaded = st.file_uploader(
+
         "📷 Soru Fotoğrafı Yükle",
+
         type=[
             "png",
             "jpg",
@@ -641,17 +980,60 @@ if st.session_state.uploaded_file_data is None:
         ]
     )
 
-    if up:
 
-        st.session_state.uploaded_file_data = up
+    if uploaded is not None:
+
+        st.session_state.uploaded_file_data = (
+            uploaded
+        )
+
+
+        with st.spinner(
+            "Problem analiz ediliyor..."
+        ):
+
+            analysis = (
+                analyze_problem_image(
+                    uploaded
+                )
+            )
+
+
+        st.session_state.problem_analysis = (
+            analysis
+        )
+
+
+        # ----------------------------------------------------
+        # Yeni problem için etkileşimleri temizle
+        # ----------------------------------------------------
+
+        st.session_state.interaction_ids = {
+
+            stage: None
+
+            for stage in BASAMAK_TALIMATLARI
+        }
+
+
+        st.session_state.chat_storage = {
+
+            stage: []
+
+            for stage in BASAMAK_TALIMATLARI
+        }
+
 
         st.rerun()
+
 
 else:
 
     st.image(
+
         st.session_state.uploaded_file_data,
-        width=450
+
+        width=500
     )
 
 
@@ -659,29 +1041,67 @@ else:
         "❌ Soruyu Değiştir"
     ):
 
-        st.session_state.uploaded_file_data = None
+        st.session_state.uploaded_file_data = (
+            None
+        )
 
-        # Eski sohbetleri temizlemiyoruz.
-        # İstersen burada temizleyebiliriz.
+        st.session_state.problem_analysis = (
+            None
+        )
+
+
+        st.session_state.interaction_ids = {
+
+            stage: None
+
+            for stage in BASAMAK_TALIMATLARI
+        }
+
+
+        st.session_state.chat_storage = {
+
+            stage: []
+
+            for stage in BASAMAK_TALIMATLARI
+        }
+
 
         st.rerun()
+
+
+# ============================================================
+# 17. PROBLEM ANALİZİ
+# ============================================================
+
+if st.session_state.problem_analysis:
+
+    with st.expander(
+        "🔎 Problem analizini göster",
+        expanded=False
+    ):
+
+        st.write(
+            st.session_state.problem_analysis
+        )
 
 
 st.divider()
 
 
 # ============================================================
-# 13. İKİ SÜTUN
+# 18. İKİ SÜTUN
 # ============================================================
 
 col1, col2 = st.columns(
+
     [1.3, 1],
+
     gap="large"
 )
 
 
 # ============================================================
-# SOL SÜTUN
+# 19. SOL SÜTUN
 # ============================================================
 
 with col1:
@@ -689,6 +1109,7 @@ with col1:
     st.write(
         "🖼️ **Tasarım ve Planlama Alanı**"
     )
+
 
     st.caption(
         "Akış şemanı burada oluşturabilirsin."
@@ -712,17 +1133,16 @@ with col1:
         update_streamlit=True,
 
         key=(
-            "canvas_v40_"
-            + st.session_state
-            .current_step
+            "canvas_"
+            + st.session_state.current_step
             .replace(" ", "_")
         )
     )
 
 
-    # --------------------------------------------------------
+    # ========================================================
     # TASARIM KAYDET
-    # --------------------------------------------------------
+    # ========================================================
 
     if st.button(
         "🖼️ Tasarımı Kaydet"
@@ -742,31 +1162,33 @@ with col1:
                     student_id,
 
                 "basamak":
-                    st.session_state
-                    .current_step,
+                    st.session_state.current_step,
 
                 "tip":
                     "Cizim",
 
                 "icerik":
-                    str(
-                        canvas_result.json_data
+                    json.dumps(
+                        canvas_result.json_data,
+                        ensure_ascii=False
                     )
             })
 
+
             st.success(
-                "Tasarım kaydedildi!"
+                "Tasarım veritabanına kaydedildi!"
             )
 
 
     st.write("---")
 
 
-    # --------------------------------------------------------
+    # ========================================================
     # METABİLİŞ
-    # --------------------------------------------------------
+    # ========================================================
 
     st.info(
+
         "🧠 **Öz-Yansıtma:** "
         + METABILISSEL_SORULAR[
             st.session_state.current_step
@@ -775,11 +1197,12 @@ with col1:
 
 
     m_cevap = st.text_area(
+
         "Düşünceni buraya yaz...",
+
         key=(
-            "meta_area_"
-            + st.session_state
-            .current_step[0]
+            "meta_"
+            + st.session_state.current_step
         )
     )
 
@@ -800,8 +1223,7 @@ with col1:
                 student_id,
 
             "basamak":
-                st.session_state
-                .current_step,
+                st.session_state.current_step,
 
             "tip":
                 "Metabiliş",
@@ -810,17 +1232,18 @@ with col1:
                 m_cevap
         })
 
+
         st.success(
-            "Kaydedildi!"
+            "Düşüncen kaydedildi!"
         )
 
 
     st.write("---")
 
 
-    # --------------------------------------------------------
+    # ========================================================
     # EMİNLİK
-    # --------------------------------------------------------
+    # ========================================================
 
     st.write(
         "⭐ **Bu adımdaki çözümünden "
@@ -833,16 +1256,20 @@ with col1:
         "Derecelendir:",
 
         options=[
+
             "Hiç Emin Değilim",
+
             "Kararsızım",
+
             "Biraz Eminim",
+
             "Çok Eminim"
         ],
 
         value="Kararsızım",
 
         key=(
-            "slider_"
+            "confidence_"
             + st.session_state.current_step
         )
     )
@@ -864,8 +1291,7 @@ with col1:
                 student_id,
 
             "basamak":
-                st.session_state
-                .current_step,
+                st.session_state.current_step,
 
             "tip":
                 "Eminlik",
@@ -874,8 +1300,9 @@ with col1:
                 confidence
         })
 
+
         st.success(
-            f"Eminlik: {confidence}"
+            f"Eminlik derecen: {confidence}"
         )
 
 
@@ -891,135 +1318,28 @@ with col1:
     ):
 
         with st.spinner(
-            "Süreç analiz ediliyor..."
+            "Çözüm süreci analiz ediliyor..."
         ):
 
             try:
 
-                hist_full = ""
-
-                for stage, messages in (
-                    st.session_state
-                    .chat_storage
-                    .items()
-                ):
-
-                    hist_full += (
-                        f"\n\n### {stage}\n"
-                    )
-
-                    for m in messages:
-
-                        hist_full += (
-                            f"{m['role']}: "
-                            f"{m['content']}\n"
-                        )
-
-
-                final_prompt = f"""
-
-Sen bir ortaokul matematik öğretmenisin.
-
-Aşağıdaki öğrencinin algoritmik problem çözme sürecini
-incele.
-
-Öğrencinin çözümünü yeniden çözme.
-
-Cevabı söyleme.
-
-Bunun yerine öğrencinin:
-- problemi ayrıştırma,
-- matematiksel yapıyı soyutlama,
-- çözüm planı oluşturma,
-- çözümünü kontrol etme
-
-süreçlerini kısa ve pedagojik biçimde özetle.
-
-Öğrenciyi değerlendiren öğretmen dili kullan.
-
-Öğrencinin güçlü yönlerini ve geliştirebileceği yönleri
-kısaca belirt.
-
-Öğrenci:
-{student_id}
-
-Süreç:
-{hist_full}
-"""
-
-
-                payload = {
-
-                    "contents": [
-
-                        {
-
-                            "role": "user",
-
-                            "parts": [
-
-                                {
-                                    "text":
-                                        final_prompt
-                                }
-
-                            ]
-                        }
-
-                    ],
-
-                    "generationConfig": {
-
-                        "temperature": 0.3,
-
-                        "topP": 0.8,
-
-                        "maxOutputTokens": 500
-                    }
-                }
-
-
-                r_final = requests.post(
-
-                    GEMINI_URL,
-
-                    params={
-                        "key":
-                            GEMINI_API_KEY
-                    },
-
-                    headers={
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    json=payload,
-
-                    timeout=60
-                )
-
-
-                if r_final.status_code != 200:
-
-                    raise Exception(
-                        r_final.text
-                    )
-
-
-                final_data = (
-                    r_final.json()
-                )
-
-
                 final_text = (
-                    final_data
-                    ["candidates"][0]
-                    ["content"]["parts"][0]
-                    ["text"]
+                    final_ozet_olustur(
+
+                        student_id,
+
+                        st.session_state
+                        .chat_storage
+                    )
                 )
 
 
-                st.info(
+                st.success(
+                    "Süreç değerlendirmesi hazır."
+                )
+
+
+                st.write(
                     final_text
                 )
 
@@ -1049,7 +1369,7 @@ Süreç:
             except Exception as e:
 
                 st.error(
-                    "Özet hazırlanamadı."
+                    "Final özeti hazırlanamadı."
                 )
 
                 st.code(
@@ -1058,7 +1378,7 @@ Süreç:
 
 
 # ============================================================
-# 14. SAĞ SÜTUN – REHBER BOT
+# 20. SAĞ SÜTUN – REHBER BOT
 # ============================================================
 
 with col2:
@@ -1068,123 +1388,71 @@ with col2:
     )
 
 
-    chat_container = st.container(
-        height=550
+    # ========================================================
+    # İLK ETKİLEŞİM
+    # ========================================================
+
+    current_stage = (
+        st.session_state.current_step
     )
 
 
-    # --------------------------------------------------------
-    # GEÇMİŞ MESAJLAR
-    # --------------------------------------------------------
-
-    for m in (
+    if (
+        st.session_state.problem_analysis
+        and
         st.session_state
-        .chat_storage[
-            st.session_state.current_step
-        ]
+        .interaction_ids[
+            current_stage
+        ] is None
+        and
+        len(
+            st.session_state
+            .chat_storage[
+                current_stage
+            ]
+        ) == 0
     ):
 
-        chat_container.chat_message(
-            m["role"]
-        ).write(
-            m["content"]
-        )
-
-
-    # --------------------------------------------------------
-    # ÖĞRENCİ MESAJI
-    # --------------------------------------------------------
-
-    p = st.chat_input(
-        "Düşünceni veya sorunu buraya yaz..."
-    )
-
-
-    if p:
-
-        # ----------------------------------------------------
-        # Öğrenciyi kaydet
-        # ----------------------------------------------------
-
-        st.session_state \
-            .chat_storage[
-                st.session_state.current_step
-            ].append({
-
-                "role":
-                    "user",
-
-                "content":
-                    p
-            })
-
-
-        log_kaydet({
-
-            "tarih":
-                datetime.now()
-                .strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                ),
-
-            "id":
-                student_id,
-
-            "basamak":
-                st.session_state.current_step,
-
-            "tip":
-                "Öğrenci",
-
-            "icerik":
-                p
-        })
-
-
-        # ----------------------------------------------------
-        # GEMINI
-        # ----------------------------------------------------
-
         with st.spinner(
-            "Rehber Bot düşünüyor..."
+            "Rehber hazırlanıyor..."
         ):
 
             try:
 
-                ans = gemini_cevap_al(
+                interaction = (
+                    yeni_interaction_baslat(
 
-                    current_step=
-                        st.session_state
-                        .current_step,
+                        current_stage,
 
-                    chat_history=
                         st.session_state
-                        .chat_storage[
-                            st.session_state
-                            .current_step
-                        ],
-
-                    image_file=
-                        st.session_state
-                        .uploaded_file_data
+                        .problem_analysis
+                    )
                 )
 
 
-                # ------------------------------------------------
-                # BOT CEVABINI KAYDET
-                # ------------------------------------------------
+                answer = (
+                    interaction
+                    .output_text
+                    .strip()
+                )
+
+
+                st.session_state \
+                    .interaction_ids[
+                        current_stage
+                    ] = interaction.id
+
 
                 st.session_state \
                     .chat_storage[
-                        st.session_state
-                        .current_step
+                        current_stage
                     ].append({
 
                         "role":
                             "assistant",
 
                         "content":
-                            ans
+                            answer
                     })
 
 
@@ -1200,13 +1468,193 @@ with col2:
                         student_id,
 
                     "basamak":
-                        st.session_state.current_step,
+                        current_stage,
 
                     "tip":
                         "Bot",
 
                     "icerik":
-                        ans
+                        answer
+                })
+
+
+                st.rerun()
+
+
+            except Exception as e:
+
+                st.error(
+                    "Gemini ilk soruyu oluşturamadı."
+                )
+
+                st.code(
+                    str(e)
+                )
+
+
+    # ========================================================
+    # SOHBET ALANI
+    # ========================================================
+
+    chat_container = st.container(
+        height=550
+    )
+
+
+    for message in (
+
+        st.session_state
+        .chat_storage[
+            current_stage
+        ]
+    ):
+
+        with chat_container.chat_message(
+            message["role"]
+        ):
+
+            st.write(
+                message["content"]
+            )
+
+
+    # ========================================================
+    # ÖĞRENCİ MESAJI
+    # ========================================================
+
+    student_message = st.chat_input(
+
+        "Düşünceni buraya yaz..."
+    )
+
+
+    if student_message:
+
+        # ----------------------------------------------------
+        # Öğrenci mesajını kaydet
+        # ----------------------------------------------------
+
+        st.session_state \
+            .chat_storage[
+                current_stage
+            ].append({
+
+                "role":
+                    "user",
+
+                "content":
+                    student_message
+            })
+
+
+        log_kaydet({
+
+            "tarih":
+                datetime.now()
+                .strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                ),
+
+            "id":
+                student_id,
+
+            "basamak":
+                current_stage,
+
+            "tip":
+                "Öğrenci",
+
+            "icerik":
+                student_message
+        })
+
+
+        # ----------------------------------------------------
+        # GEMINI
+        # ----------------------------------------------------
+
+        with st.spinner(
+            "Rehber Bot düşünüyor..."
+        ):
+
+            try:
+
+                previous_id = (
+                    st.session_state
+                    .interaction_ids[
+                        current_stage
+                    ]
+                )
+
+
+                interaction = (
+                    gemini_ogrenci_cevabi(
+
+                        current_stage,
+
+                        student_message,
+
+                        previous_id,
+
+                        st.session_state
+                        .problem_analysis
+                    )
+                )
+
+
+                answer = (
+                    interaction
+                    .output_text
+                    .strip()
+                )
+
+
+                # ------------------------------------------------
+                # SONRAKİ ETKİLEŞİM ID
+                # ------------------------------------------------
+
+                st.session_state \
+                    .interaction_ids[
+                        current_stage
+                    ] = interaction.id
+
+
+                # ------------------------------------------------
+                # BOT CEVABI
+                # ------------------------------------------------
+
+                st.session_state \
+                    .chat_storage[
+                        current_stage
+                    ].append({
+
+                        "role":
+                            "assistant",
+
+                        "content":
+                            answer
+                    })
+
+
+                log_kaydet({
+
+                    "tarih":
+                        datetime.now()
+                        .strftime(
+                            "%Y-%m-%d %H:%M:%S"
+                        ),
+
+                    "id":
+                        student_id,
+
+                    "basamak":
+                        current_stage,
+
+                    "tip":
+                        "Bot",
+
+                    "icerik":
+                        answer
                 })
 
 
