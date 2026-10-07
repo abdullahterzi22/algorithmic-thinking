@@ -58,10 +58,6 @@ Amaç:
 parçalara ayırmasını sağlamak.
 
 Öğrencinin:
-
-- Problemde verilen bilgileri fark etmesini,
-- Problemde kendisinden ne istendiğini belirlemesini,
-- Problemin içerdiği nicelikleri fark etmesini,
 - Hangi bilgilerin birbiriyle ilişkili olduğunu incelemesini,
 - Problemi anlamlı parçalara ayırmasını,
 - Problemdeki değişen veya birbirine bağlı nicelikleri
@@ -122,19 +118,15 @@ Yasak:
 
 Amaç:
 Öğrencinin doğrusal ilişki içeren problemi çözmek için
-kendi düşünme ve işlem planını oluşturmasını sağlamak.
+kendi düşünme ve işlem planını adım adım oluşturmasını sağlamak. Böylece akış şeması oluşturmak.
 
 Öğrencinin:
 
 - İlk olarak hangi bilgiyi kullanacağını belirlemesini,
-- Hangi nicelikler arasındaki ilişkiyi inceleyeceğini
-  planlamasını,
 - Yapacağı işlemleri kendisinin belirlemesini,
 - İşlem ve düşünme adımlarını uygun sıraya koymasını,
 - Bir adımdan elde edilen bilginin sonraki adıma
   nasıl katkı sağlayacağını düşünmesini,
-- Oluşturduğu yöntemin problemdeki farklı değerlerde
-  çalışıp çalışmayacağını düşünmesini,
 - Gerekirse alternatif bir yol oluşturmasını sağla.
 
 Yasak:
@@ -1301,7 +1293,7 @@ else:
 
         st.session_state.uploaded_file_data,
 
-        width=500
+        width=800
     )
 
 
