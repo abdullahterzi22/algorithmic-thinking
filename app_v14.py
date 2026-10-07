@@ -3,7 +3,9 @@ import requests
 import pandas as pd
 import os
 import base64
+import io
 from datetime import datetime
+from PIL import Image
 from streamlit_drawable_canvas import st_canvas
 
 
@@ -964,6 +966,11 @@ if "current_step" not in st.session_state:
     )
 
 
+if "annotation_reset" not in st.session_state:
+
+    st.session_state.annotation_reset = 0
+
+
 # ============================================================
 # SOL MENÜ
 # ============================================================
@@ -1217,6 +1224,52 @@ st.write(
 
 
 # ============================================================
+# PROBLEM GÖRSELİNİ ÇİZİM ALANINA HAZIRLAMA
+# ============================================================
+
+def get_annotation_background():
+    """Yüklenen problem görselini öğrenci işaretleme alanına hazırlar."""
+    uploaded_file = st.session_state.get("uploaded_file_data")
+
+    if uploaded_file is None:
+        return None, None, None
+
+    try:
+        image = Image.open(
+            io.BytesIO(uploaded_file.getvalue())
+        ).convert("RGB")
+
+        # Problem görselini ekranda yaklaşık 900 px genişliğe
+        # sığdırırken en-boy oranını koru.
+        max_width = 900
+        original_width, original_height = image.size
+
+        display_width = min(
+            original_width,
+            max_width
+        )
+
+        display_height = max(
+            1,
+            int(
+                original_height
+                * display_width
+                / original_width
+            )
+        )
+
+        image = image.resize(
+            (display_width, display_height),
+            Image.LANCZOS
+        )
+
+        return image, display_width, display_height
+
+    except Exception:
+        return None, None, None
+
+
+# ============================================================
 # PROBLEM YÜKLEME
 # ============================================================
 
@@ -1293,8 +1346,91 @@ else:
 
         st.session_state.uploaded_file_data,
 
-        width=800
+        width=900
     )
+
+
+    # --------------------------------------------------------
+    # PROBLEM ÜZERİNDE ÖĞRENCİ İŞAREMLEME ALANI
+    # --------------------------------------------------------
+    annotation_image, annotation_width, annotation_height = (
+        get_annotation_background()
+    )
+
+    if annotation_image is not None:
+        st.write("🖍️ **Problem Üzerinde İşaretleme**")
+        st.caption(
+            "Problem görselinin üzerinde işaretleme yapabilirsin. "
+            "Bu alan yalnızca senin çizimlerin içindir."
+        )
+
+        annotation_col1, annotation_col2 = st.columns([3, 1])
+
+        with annotation_col1:
+            annotation_tool_map = {
+                "Serbest Çizim": "freedraw",
+                "Ok / Çizgi": "line",
+                "Dikdörtgen": "rect",
+                "Elips": "circle"
+            }
+
+            annotation_tool = st.selectbox(
+                "İşaretleme aracı:",
+                list(annotation_tool_map.keys()),
+                key="annotation_tool"
+            )
+
+        with annotation_col2:
+            annotation_color = st.color_picker(
+                "İşaretleme rengi:",
+                "#FF0000",
+                key="annotation_color"
+            )
+
+        annotation_result = st_canvas(
+            fill_color="rgba(255, 255, 255, 0)",
+            stroke_color=annotation_color,
+            stroke_width=3,
+            background_image=annotation_image,
+            height=annotation_height,
+            width=annotation_width,
+            drawing_mode=annotation_tool_map[annotation_tool],
+            update_streamlit=True,
+            key=(
+                "problem_annotation_"
+                + str(st.session_state.annotation_reset)
+            )
+        )
+
+        if st.button(
+            "💾 Problem Üzerindeki İşaretlemeyi Kaydet",
+            key="save_problem_annotation"
+        ):
+            if annotation_result is not None and annotation_result.json_data:
+                log_kaydet({
+                    "tarih":
+                        datetime.now()
+                        .strftime("%Y-%m-%d %H:%M:%S"),
+                    "id": student_id,
+                    "basamak": st.session_state.current_step,
+                    "tip": "Problem Üzeri Çizim",
+                    "icerik": str(annotation_result.json_data)
+                })
+
+                st.success(
+                    "Problem üzerindeki işaretleme kaydedildi."
+                )
+            else:
+                st.info(
+                    "Önce problem üzerinde bir işaretleme yap."
+                )
+
+        if st.button(
+            "🧹 İşaretlemeyi Temizle",
+            key="clear_problem_annotation"
+        ):
+            st.session_state.annotation_reset += 1
+            st.rerun()
 
 
     if st.button(
@@ -1317,6 +1453,8 @@ else:
             for stage
             in BASAMAK_TALIMATLARI
         }
+
+        st.session_state.annotation_reset += 1
 
 
         st.rerun()
