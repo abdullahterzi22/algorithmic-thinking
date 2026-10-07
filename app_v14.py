@@ -685,11 +685,25 @@ else:
         )
 
         # Her rerun'da mevcut çizimi session state'e al.
+        # DİKKAT: streamlit-drawable-canvas'ta image_data bir property
+        # olduğundan, çizim henüz oluşmadığında erişmek RuntimeError üretebilir.
         if annotation_result is not None:
-            if annotation_result.image_data is not None:
-                st.session_state.annotation_image_data = annotation_result.image_data
-            if annotation_result.json_data:
-                st.session_state.annotation_json = annotation_result.json_data
+            try:
+                annotation_json = annotation_result.json_data
+            except Exception:
+                annotation_json = None
+
+            if annotation_json:
+                st.session_state.annotation_json = annotation_json
+
+                # image_data yalnızca gerçekten bir canvas görüntüsü oluştuysa
+                # okunur. Bazı sürümlerde bu property, veri yokken RuntimeError verir.
+                try:
+                    annotation_image_data = annotation_result.image_data
+                    if annotation_image_data is not None:
+                        st.session_state.annotation_image_data = annotation_image_data
+                except (RuntimeError, AttributeError, ValueError):
+                    pass
 
         save_ann_col, clear_ann_col = st.columns(2)
         with save_ann_col:
