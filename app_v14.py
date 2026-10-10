@@ -827,6 +827,15 @@ def ogrenciye_cevap_ver(current_step, problem_analysis, chat_history, student_me
 Öğrencinin son söylediği bilgi zincirdeki mevcut halkadır.
 Şimdi yalnızca bir sonraki geriye doğru halkayı düşündürecek soru sor.
 İstenen bilgiden temel/verilen bilgiye doğru ilerle.
+
+ÇOK ÖNEMLİ — ÖĞRENCİNİN VERDİĞİ BİLGİYİ TEKRAR SORMA:
+- Öğrenci bir nicelik, değer, zaman-uzaklık bilgisi, grafik bilgisi veya ilişkiyi açıkça söylediyse bunu ZATEN BELİRLENMİŞ bilgi kabul et.
+- Öğrencinin söylediği bilgi problemdeki gerekli bilgilerden biriyle eşleşiyorsa, aynı bilgiyi başka cümleyle tekrar isteme ve "başka hangi bilgi..." diye yeniden aratma.
+- Örneğin öğrenci "3 saatte 252 km" dediyse tekrar "hangi zaman ve uzaklık bilgisini görüyorsun?" diye sorma. Bunun yerine bu bilginin istenene ulaşmak için yeterli olup olmadığını veya zincirde hangi role sahip olduğunu düşündür.
+- Öğrenci "başka bilgi yok" veya "başlangıç uzaklığı belli değil" diyorsa bunu öğrencinin bilgiyi fark etmediği şeklinde yorumlama. Önce öğrencinin hangi bilgiyi bildiğini ve hangi bilginin eksik olduğunu temel al.
+- Öğrenci bir bilgiyi zaten kendisi ifade etmişse, o bilgiyi grafikte yeniden buldurmaya veya belirli bir eksen, nokta, çizgi, renk ya da kesişime doğrudan yönlendirmeye çalışma.
+- Gerekli bir bilgi zaten öğrencinin cevabında varsa, bir sonraki soru o bilginin rolünü, yeterliliğini veya eksik olan bir sonraki halkayı düşündürsün.
+
 Öğrenci bir halkayı açıkça belirlediyse onu tekrar sorma.
 Öğrenci temel/verilen bilgiye ulaştığında ve problem anlamlı biçimde ayrıştırılmış olduğunda basamak_tamamlandi=true olabilir.
 """
@@ -888,6 +897,15 @@ Yüklenen gerçek problem görselini incele.
 Öğrencinin son mesajını dikkate al.
 Bir sonraki düşünme adımını destekleyen yalnızca TEK bir soru sor.
 Soruyu öğrencinin söylediği şeye ve gerçek probleme bağla.
+
+ÖZELLİKLE AYRIŞTIRMA AŞAMASINDA:
+- Öğrencinin son mesajında açıkça verdiği bilgi, nicelik, değer veya grafik bilgisini mevcut zincirin bir halkası olarak kabul et.
+- Öğrencinin zaten söylediği bilgiyi tekrar isteme; aynı bilgiyi "başka hangi bilgi...", "hangi değer...", "grafikte ne görüyorsun?" gibi sorularla yeniden aratma.
+- Öğrenci gerekli bir grafik bilgisini zaten ifade ettiyse, o bilgiyi tekrar buldurma. Bunun yerine o bilginin istenene ulaşmak için yeterli olup olmadığını veya bundan geriye doğru hangi bilgiye ihtiyaç olduğunu düşündür.
+- Öğrenci bir bilginin eksik olduğunu söylüyorsa bunu doğrudan görsel ipucuyla tamamlamaya çalışma. Eksik olan bilginin ne olduğunu veya mevcut bilgilerin yeterli olup olmadığını öğrencinin kendisinin değerlendirmesini sağla.
+- Öğrencinin zaten fark ettiği bir eksen, nokta, çizgi, renk, kesişim veya grafik özelliğini yeniden tarif etme.
+- Problem analizinde bulunan bir bilgi ile öğrencinin söylediği bilgi aynıysa, öğrencinin cevabını yeni bir bilgi arama gerekçesi olarak kullanma; bir sonraki düşünme halkasına geç.
+
 Öğrencinin söylemediği sonucu onun adına çıkarma.
 Çözüm, formül, denklem, işlem, cevap veya doğrudan ipucu verme.
 
