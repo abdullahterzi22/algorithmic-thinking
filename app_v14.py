@@ -57,24 +57,41 @@ BASAMAK_TALIMATLARI = {
     "1. Ayrıştırma": """
 
 Amaç:
-Öğrencinin doğrusal ilişki içeren problemi anlamlı
-parçalara ayırmasını sağlamak.
+Öğrencinin problemi yalnızca düşünme gereksinimleri bakımından
+anlamlı parçalara ayırmasını sağlamak.
+
+AYRIŞTIRMA'NIN TEMEL ZİNCİRİ:
+İSTENEN → BUNU BULMAK İÇİN GEREKEN BİLGİ →
+BU BİLGİYİ BULMAK İÇİN GEREKEN BİLGİ → VERİLEN/TEMEL BİLGİ
 
 Öğrencinin:
-- Hangi bilgilerin birbiriyle ilişkili olduğunu incelemesini,
-- Problemi anlamlı parçalara ayırmasını,
-- Problemdeki değişen veya birbirine bağlı nicelikleri
-  fark etmesini sağla.
+- Önce neyin istendiğini belirlemesini,
+- İstenen şeyi belirlemek için hangi bilgiye ihtiyaç olduğunu
+  kendisinin fark etmesini,
+- Gerekli bir bilgi eksikse o bilgiye ulaşmak için hangi
+  bilgiye ihtiyaç olduğunu kendisinin düşünmesini,
+- Elindeki verilen bilgilerin bu zincirde hangi ihtiyacı
+  karşıladığını fark etmesini sağla.
+
+ÇOK ÖNEMLİ:
+Ayrıştırma sırasında öğrencinin henüz söylemediği bir veri
+kaynağını, niceliği, değeri, süreyi, hızı, işlemi, matematiksel
+ilişkiyi, grafik özelliğini veya çözüm adımını sen ortaya çıkarma.
+Öğrenciyi B aracına, hıza, süreye, belirli bir grafik noktasına,
+eksen kesişimine veya herhangi bir hesaplamaya kendin yönlendirme.
 
 Yasak:
-
 - Çözüm yolu söylemek.
 - İşlem önermek.
 - Formül vermek.
 - Denklem vermek.
 - Doğrusal ilişkiyi doğrudan söylemek.
 - Cevabı söylemek.
+- Hız, süre, değişim miktarı veya başka bir çözüm niceliğini
+  öğrencinin yerine ortaya çıkarmak.
 - Öğrencinin yerine problemi parçalara ayırmak.
+- Öğrencinin henüz söylemediği başka bir veri kaynağını
+  (ör. B aracı) soruyla ortaya çıkarmak.
 - Sonuca götüren doğrudan ipucu vermek.
 
 """,
@@ -355,6 +372,27 @@ DOĞRUSAL İLİŞKİLER İÇİN UYGUN SORU TÜRLERİ
 "Bir sonraki adımına geçmek için hangi bilgiye ihtiyacın var?"
 
 "Kuruduğun ilişkiyi problemdeki başka bir değerle nasıl sınayabilirsin?"
+
+============================================================
+AYRIŞTIRMA İÇİN SORU BANKASI SINIRI
+============================================================
+
+Aşağıdaki genel soru türleri yalnızca ilgili basamaklarda kullanılabilir.
+MEVCUT BASAMAK "1. Ayrıştırma" ise bu genel soru bankasını kullanma.
+Özellikle ilişki, değişim, hız, süre, işlem, hesaplama, grafik
+özelliği veya çözüm adımı çağrıştıran sorular üretme.
+
+Ayrıştırmada soru yönü yalnızca geriye doğru olabilir:
+- Ne isteniyor?
+- Bunu belirlemek için hangi bilgi gerekiyor?
+- Bu bilgiye ulaşmak için hangi bilgi gerekiyor?
+- Elindeki verilenlerden hangisi bu ihtiyacı karşılıyor?
+- Şu ana kadarki bilgiler yeterli mi?
+- Eksik olduğunu düşündüğün bilgi nedir?
+
+Öğrenci bir bilgi söylediğinde o bilgi zincirde bir HALKA olarak kabul edilir.
+AI o bilgiyi yeniden aratamaz ve öğrencinin söylemediği bir sonraki halkayı
+sorunun içine yerleştiremez.
 
 ============================================================
 ASLA KULLANMA
@@ -740,13 +778,18 @@ def ilk_soruyu_olustur(current_step, problem_analysis):
     if current_step == "1. Ayrıştırma":
         progression = """
 AYRIŞTIRMA İÇİN ÖZEL İLERLEME:
-Öğrenciyi GERİYE DOĞRU ÇALIŞTIR.
-1. Önce problemde NE İSTENDİĞİNİ fark ettir.
-2. Ardından, isteneni bulabilmek için hangi bilgiye ihtiyaç olduğunu öğrencinin kendisinin söylemesini sağla.
-3. Sonra o bilgiyi bulabilmek için hangi bilgiye ihtiyaç olduğunu sordur.
-4. Bu zinciri temel/verilen bilgilere ulaşıncaya kadar sürdür.
-Öğrenciye zincirin bir sonraki halkasını söyleme.
-"Bunu bulmak için neye ihtiyacın var?" türündeki soru, öğrencinin verdiği son bilgiye göre gerçek probleme bağlanmalıdır.
+Öğrenciyi yalnızca GERİYE DOĞRU düşünme zincirinde ilerlet.
+
+Zincir:
+İSTENEN → GEREKEN BİLGİ → O BİLGİ İÇİN GEREKEN BİLGİ → VERİLEN/TEMEL BİLGİ
+
+İlk soru yalnızca "Ne isteniyor?" veya doğrudan buna eşdeğer,
+probleme özgü bir soru olabilir.
+
+Öğrencinin söylemediği sonraki halkayı ilk soruda veya herhangi bir
+soruda sen ortaya çıkarma. B, A, hız, süre, değişim, grafik noktası,
+eksen, işlem gibi çözüm yönü oluşturan ayrıntıları öğrenci söylemeden
+soruna yerleştirme.
 """
     elif current_step == "2. Soyutlama":
         progression = """
@@ -826,39 +869,80 @@ def ogrenciye_cevap_ver(current_step, problem_analysis, chat_history, student_me
 
     if current_step == "1. Ayrıştırma":
         progression = """
-ÖZEL KURAL — GERİYE DOĞRU AYRIŞTIRMA:
-BU AŞAMADA AMAÇ ÇÖZÜME ULAŞMAK DEĞİLDİR. Amaç yalnızca problemin istenenini, bu istenene ulaşmak için gerekli bilgileri ve bu bilgilerin birbirine bağlılığını öğrencinin kendisinin parçalara ayırmasıdır.
+ÖZEL KURAL — AYRIŞTIRMA / GERİYE DOĞRU ZİNCİR:
 
-Ayrıştırmada şu zinciri takip et:
-İSTENEN → BUNU BULMAK İÇİN GEREKEN BİLGİ → BU BİLGİYİ BULMAK İÇİN GEREKEN BİLGİ → VERİLEN/TEMEL BİLGİ.
+BU AŞAMADA ÇÖZÜM YAPILMAZ.
+Amaç yalnızca öğrencinin problemi şu zincirde kendi başına
+parçalamasıdır:
 
-Öğrenci henüz bu zincirdeki bir halkayı açıkça söylemediyse, o halkayı sen söyleme veya grafik üzerinde gösterme.
-Öğrenci bir halkayı söylediyse onu tamamlanmış kabul et ve yalnızca bir sonraki GERİYE DOĞRU halkayı düşündür.
+İSTENEN
+→ BUNU BULMAK İÇİN GEREKEN BİLGİ
+→ BU BİLGİYİ BULMAK İÇİN GEREKEN BİLGİ
+→ VERİLEN/TEMEL BİLGİ
 
-AYRIŞTIRMA AŞAMASINDA ŞUNLARI SORMA:
+KATI KURAL:
+Öğrencinin henüz söylemediği bir sonraki halkayı SEN ortaya çıkaramazsın.
+Soru, öğrencinin düşünmesi gereken halkayı isim olarak içinde taşımamalıdır.
+
+ÖRNEĞİN:
+Öğrenci "A'nın başlangıç uzaklığını bulmamız gerekiyor" dediyse,
+"bunu bulmak için hangi bilgiye ihtiyacın var?" denebilir.
+
+Ama öğrenci "A'nın verileri yetmiyor" demeden:
+- B aracını,
+- B'nin verilerini,
+- hızı,
+- süreyi,
+- aynı süreyi,
+- değişim miktarını,
+- belirli bir grafik noktasını,
+- ekseni/kesişimi,
+- herhangi bir işlemi
+soruya sokma.
+
+ÖĞRENCİ CEVABINI ÖNCE SINIFLANDIR:
+1. Yeni bir bilgi verdi mi?
+2. Bir bilginin eksik olduğunu mu söyledi?
+3. Elindeki bilgilerin yeterli olmadığını mı söyledi?
+4. Önceki düşüncesini düzeltti mi?
+5. Çözüm/işlem önerisine mi geçti?
+6. Soruyu anlamadığını mı söyledi?
+
+Sonra yalnızca öğrencinin gerçekten söylediği içerikten hareket et.
+
+BİLGİ TEKRARI YASAĞI:
+- Öğrenci "3 saatte 252 km" dediyse bunu tekrar sorma.
+- Öğrenci "B'nin 2 saatte 340'tan 204'e düştüğünü" söylediyse
+  bunu tekrar aratma.
+- Öğrenci "başka A bilgisi yok" dediyse, bunu "A bilgisini bulamadı"
+  şeklinde yorumlama.
+- Öğrencinin söylediği bir veri zaten mevcutsa "başka hangi veri...",
+  "hangi saat...", "grafikte ne görüyorsun?" gibi yeni veri avına çıkma.
+
+AYRIŞTIRMADA KESİNLİKLE SORMA:
 - Nasıl hesaplanır?
-- Hangi formül kullanılır?
 - Hangi işlem yapılır?
-- Hangi ilişki vardır?
+- Hangi formül kullanılır?
+- Hangi ilişkiyi kullanırsın?
+- Hızını nasıl bulursun?
+- Süreyi nasıl bulursun?
+- Hangi saat bilgisini kullanırsın?
+- B aracından nasıl yararlanırsın?
+- Grafikte hangi noktaya bakarsın?
 - Değişim miktarı nedir?
 - Eğim nedir?
 - Denklem nasıl bulunur?
 - Grafikten sonucu nasıl bulursun?
-Bu tür sorular Soyutlama veya Algoritma Tasarımı aşamalarına aittir ve Ayrıştırma sırasında çözüm yoluna yaklaşır.
 
-ÖNCE ÖĞRENCİNİN MESAJINI ANLA:
-Öğrencinin son mesajını önce anlamlandır. Öğrenci bir bilgi verdi, bir bilgiyi reddetti, bir bilginin eksik olduğunu söyledi, önceki cevabını düzeltti veya soruyu anlamadığını belirtti mi ayırt et. Öğrencinin söylediğini farklı bir anlama çekme.
+Bunların tamamı çözüm/soyutlama/algoritma yönlendirmesidir.
 
-ÇOK ÖNEMLİ — ÖĞRENCİNİN VERDİĞİ BİLGİYİ TEKRAR SORMA:
-- Öğrenci bir nicelik, değer, zaman-uzaklık bilgisi, grafik bilgisi veya ilişkiyi açıkça söylediyse bunu ZATEN BELİRLENMİŞ bilgi kabul et.
-- Öğrencinin söylediği bilgi problemdeki gerekli bilgilerden biriyle eşleşiyorsa, aynı bilgiyi başka cümleyle tekrar isteme ve "başka hangi bilgi..." diye yeniden aratma.
-- Örneğin öğrenci "3 saatte 252 km" dediyse tekrar "hangi zaman ve uzaklık bilgisini görüyorsun?" diye sorma. Bunun yerine bu bilginin istenene ulaşmak için yeterli olup olmadığını veya zincirde hangi role sahip olduğunu düşündür.
-- Öğrenci "başka bilgi yok" veya "başlangıç uzaklığı belli değil" diyorsa bunu öğrencinin bilgiyi fark etmediği şeklinde yorumlama. Önce öğrencinin hangi bilgiyi bildiğini ve hangi bilginin eksik olduğunu temel al.
-- Öğrenci bir bilgiyi zaten kendisi ifade etmişse, o bilgiyi grafikte yeniden buldurmaya veya belirli bir eksen, nokta, çizgi, renk ya da kesişime doğrudan yönlendirmeye çalışma.
-- Gerekli bir bilgi zaten öğrencinin cevabında varsa, bir sonraki soru o bilginin rolünü, yeterliliğini veya eksik olan bir sonraki halkayı düşündürsün.
+Öğrenci bir sonraki halkayı kendisi söylediğinde onu tamamlanmış kabul et.
+Sonraki soru yalnızca henüz söylenmemiş bir sonraki GERİYE DOĞRU halkayı
+düşündürsün.
 
-Öğrenci bir halkayı açıkça belirlediyse onu tekrar sorma.
-Öğrenci temel/verilen bilgiye ulaştığında ve problem anlamlı biçimde ayrıştırılmış olduğunda basamak_tamamlandi=true olabilir.
+Öğrenci yeterli ayrıştırmayı kendi ifadeleriyle tamamladıysa
+basamak_tamamlandi=true olabilir; sırf çözüm yoluna ulaşıldığı için
+Ayrıştırma tamamlanmış sayma.
 """
     elif current_step == "2. Soyutlama":
         progression = """
@@ -920,8 +1004,21 @@ Mevcut basamağın amacını, diğer bütün genel kurallardan ÖNCELE.
 Bir sonraki düşünme adımını destekleyen yalnızca TEK bir soru sor.
 
 KRİTİK AŞAMA SINIRI:
-Eğer MEVCUT BASAMAK "1. Ayrıştırma" ise öğrenciyi cevaba, yönteme, işleme, matematiksel ilişkiye veya çözüm planına götüren soru sorma.
-Ayrıştırmada yalnızca "Ne isteniyor?", "Bunu bulmak için hangi bilgi gerekiyor?", "Bu bilgiye ulaşmak için hangi bilgi gerekiyor?", "Elindeki verilenlerden hangisi bu ihtiyacı karşılıyor?" türündeki GERİYE DOĞRU düşünme sorularını kullan.
+Eğer MEVCUT BASAMAK "1. Ayrıştırma" ise öğrenciyi cevaba, yönteme,
+işleme, matematiksel ilişkiye veya çözüm planına götüren soru sorma.
+
+Ayrıştırmada soru yalnızca şu düşünme yönlerinden biri olabilir:
+"Ne isteniyor?"
+"Bunu belirlemek için hangi bilgi gerekiyor?"
+"Bu bilgiye ulaşmak için hangi bilgi gerekiyor?"
+"Elindeki verilenlerden hangisi bu ihtiyacı karşılıyor?"
+"Şu ana kadar belirlediklerin yeterli mi?"
+"Eksik olduğunu düşündüğün bilgi nedir?"
+
+ÖNEMLİ: Soruda öğrencinin henüz söylemediği çözüm kaynağını veya
+çözüm niceliğini isimlendirme. Örneğin öğrenci B'den söz etmediyse
+"B aracının bilgisi", hızdan söz etmediyse "hız", süreden söz etmediyse
+"süre" kelimelerini çözüm yönlendirmesi olarak kullanma.
 Öğrencinin çözüm için gereken bir bilgiyi zaten söylemesi, o bilginin nasıl kullanılacağını sorma hakkı vermez; o bilgi zincirde bir halka olarak kabul edilir.
 
 ÖZELLİKLE AYRIŞTIRMA AŞAMASINDA:
@@ -1055,12 +1152,84 @@ SÜREÇ:
 
 
 # ============================================================
+# DAYANIKLI SOHBET KONTROL NOKTASI
+# ============================================================
+
+CHAT_BACKUP_FILE = "tez_sohbet_yedekleri.json"
+
+def _load_chat_backups():
+    try:
+        if not os.path.isfile(CHAT_BACKUP_FILE):
+            return {}
+        with open(CHAT_BACKUP_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+def _save_chat_backup(student_id):
+    if not student_id:
+        return
+    try:
+        backups = _load_chat_backups()
+        backups[str(student_id)] = {
+            "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "current_step": st.session_state.get("current_step", "1. Ayrıştırma"),
+            "chat_storage": st.session_state.get("chat_storage", {}),
+            "completed_stages": st.session_state.get("completed_stages", []),
+            "last_alt_beceri": st.session_state.get("last_alt_beceri", {}),
+            "problem_analysis": st.session_state.get("problem_analysis"),
+            "problem_session_id": st.session_state.get("problem_session_id"),
+        }
+        with open(CHAT_BACKUP_FILE, "w", encoding="utf-8") as f:
+            json.dump(backups, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+def _restore_chat_backup(student_id):
+    if not student_id:
+        return False
+    try:
+        backups = _load_chat_backups()
+        backup = backups.get(str(student_id))
+        if not isinstance(backup, dict):
+            return False
+        saved_chat = backup.get("chat_storage")
+        if not isinstance(saved_chat, dict):
+            return False
+        normalized_chat = {stage: saved_chat.get(stage, []) for stage in BASAMAK_TALIMATLARI}
+        if not any(normalized_chat.values()):
+            return False
+        st.session_state.chat_storage = normalized_chat
+        saved_step = backup.get("current_step", "1. Ayrıştırma")
+        st.session_state.current_step = saved_step if saved_step in BASAMAK_TALIMATLARI else "1. Ayrıştırma"
+        st.session_state.completed_stages = [s for s in backup.get("completed_stages", []) if s in BASAMAK_TALIMATLARI]
+        st.session_state.last_alt_beceri = backup.get("last_alt_beceri", {}) if isinstance(backup.get("last_alt_beceri", {}), dict) else {}
+        if backup.get("problem_analysis"):
+            st.session_state.problem_analysis = backup["problem_analysis"]
+        st.session_state.problem_session_id = backup.get("problem_session_id")
+        return True
+    except Exception:
+        return False
+
+
+# ============================================================
 # SESSION STATE
 # ============================================================
 
 if "uploaded_file_data" not in st.session_state:
 
     st.session_state.uploaded_file_data = None
+
+
+if "problem_session_id" not in st.session_state:
+
+    st.session_state.problem_session_id = None
+
+
+if "backup_restored_for_student" not in st.session_state:
+
+    st.session_state.backup_restored_for_student = None
 
 
 if "problem_analysis" not in st.session_state:
@@ -1257,6 +1426,11 @@ with st.sidebar:
         )
 
         st.stop()
+
+
+    if st.session_state.backup_restored_for_student != student_id:
+        _restore_chat_backup(student_id)
+        st.session_state.backup_restored_for_student = student_id
 
 
     st.divider()
@@ -1474,6 +1648,7 @@ if (
                 st.session_state.problem_analysis = ""
 
 
+        st.session_state.problem_session_id = datetime.now().strftime("%Y%m%d%H%M%S%f")
         st.session_state.chat_storage = {
             stage: []
             for stage in BASAMAK_TALIMATLARI
@@ -1495,6 +1670,9 @@ if (
 # ============================================================
 
 else:
+
+    if st.session_state.problem_session_id is None:
+        st.session_state.problem_session_id = datetime.now().strftime("%Y%m%d%H%M%S%f")
 
     st.image(
 
@@ -1612,6 +1790,16 @@ else:
         st.session_state.problem_analysis = (
             None
         )
+
+        st.session_state.problem_session_id = None
+
+        try:
+            backups = _load_chat_backups()
+            backups.pop(str(student_id), None)
+            with open(CHAT_BACKUP_FILE, "w", encoding="utf-8") as f:
+                json.dump(backups, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
 
 
         st.session_state.chat_storage = {
@@ -2023,6 +2211,7 @@ with col2:
                 log_kaydet({
                     "tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "id": student_id,
+                    "problem_session_id": st.session_state.get("problem_session_id"),
                     "basamak": current_stage,
                     "alt_beceri": first_skill,
                     "basamak_tamamlandi": False,
@@ -2030,6 +2219,7 @@ with col2:
                     "icerik": first_question
                 })
 
+                _save_chat_backup(student_id)
                 st.rerun()
 
 
@@ -2116,6 +2306,9 @@ with col2:
             "id":
                 student_id,
 
+            "problem_session_id":
+                st.session_state.get("problem_session_id"),
+
             "basamak":
                 current_stage,
 
@@ -2131,6 +2324,10 @@ with col2:
             "icerik":
                 student_message
         })
+
+        # Gemini çağrısından ÖNCE öğrenci mesajını kalıcı kontrol
+        # noktasına yaz.
+        _save_chat_backup(student_id)
 
 
         # ----------------------------------------------------
@@ -2166,6 +2363,7 @@ with col2:
                 log_kaydet({
                     "tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "id": student_id,
+                    "problem_session_id": st.session_state.get("problem_session_id"),
                     "basamak": current_stage,
                     "alt_beceri": alt_beceri,
                     "basamak_tamamlandi": stage_completed,
@@ -2180,6 +2378,8 @@ with col2:
 
                 stages = list(BASAMAK_TALIMATLARI.keys())
                 stage_index = stages.index(current_stage)
+
+                _save_chat_backup(student_id)
 
                 if stage_completed and student_turns >= 2:
                     if current_stage not in st.session_state.completed_stages:
