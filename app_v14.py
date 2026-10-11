@@ -786,6 +786,9 @@ ALT BECERİLER:
 
 {progression}
 
+AŞAMA ÖNCELİĞİ:
+Mevcut basamak 1. Ayrıştırma ise, öğrencinin henüz çözüm yapmasına izin verme. İlk soru yalnızca istenen veya istenene ulaşmak için gerekli bilgi zincirini başlatmalıdır; grafik üzerindeki çözüm yolunu, matematiksel ilişkiyi veya hesaplamayı hedefleme.
+
 PROBLEM ANALİZİ:
 {problem_analysis}
 
@@ -824,9 +827,27 @@ def ogrenciye_cevap_ver(current_step, problem_analysis, chat_history, student_me
     if current_step == "1. Ayrıştırma":
         progression = """
 ÖZEL KURAL — GERİYE DOĞRU AYRIŞTIRMA:
-Öğrencinin son söylediği bilgi zincirdeki mevcut halkadır.
-Şimdi yalnızca bir sonraki geriye doğru halkayı düşündürecek soru sor.
-İstenen bilgiden temel/verilen bilgiye doğru ilerle.
+BU AŞAMADA AMAÇ ÇÖZÜME ULAŞMAK DEĞİLDİR. Amaç yalnızca problemin istenenini, bu istenene ulaşmak için gerekli bilgileri ve bu bilgilerin birbirine bağlılığını öğrencinin kendisinin parçalara ayırmasıdır.
+
+Ayrıştırmada şu zinciri takip et:
+İSTENEN → BUNU BULMAK İÇİN GEREKEN BİLGİ → BU BİLGİYİ BULMAK İÇİN GEREKEN BİLGİ → VERİLEN/TEMEL BİLGİ.
+
+Öğrenci henüz bu zincirdeki bir halkayı açıkça söylemediyse, o halkayı sen söyleme veya grafik üzerinde gösterme.
+Öğrenci bir halkayı söylediyse onu tamamlanmış kabul et ve yalnızca bir sonraki GERİYE DOĞRU halkayı düşündür.
+
+AYRIŞTIRMA AŞAMASINDA ŞUNLARI SORMA:
+- Nasıl hesaplanır?
+- Hangi formül kullanılır?
+- Hangi işlem yapılır?
+- Hangi ilişki vardır?
+- Değişim miktarı nedir?
+- Eğim nedir?
+- Denklem nasıl bulunur?
+- Grafikten sonucu nasıl bulursun?
+Bu tür sorular Soyutlama veya Algoritma Tasarımı aşamalarına aittir ve Ayrıştırma sırasında çözüm yoluna yaklaşır.
+
+ÖNCE ÖĞRENCİNİN MESAJINI ANLA:
+Öğrencinin son mesajını önce anlamlandır. Öğrenci bir bilgi verdi, bir bilgiyi reddetti, bir bilginin eksik olduğunu söyledi, önceki cevabını düzeltti veya soruyu anlamadığını belirtti mi ayırt et. Öğrencinin söylediğini farklı bir anlama çekme.
 
 ÇOK ÖNEMLİ — ÖĞRENCİNİN VERDİĞİ BİLGİYİ TEKRAR SORMA:
 - Öğrenci bir nicelik, değer, zaman-uzaklık bilgisi, grafik bilgisi veya ilişkiyi açıkça söylediyse bunu ZATEN BELİRLENMİŞ bilgi kabul et.
@@ -894,9 +915,14 @@ MEVCUT BASAMAK DİYALOĞU:
 
 GÖREV:
 Yüklenen gerçek problem görselini incele.
-Öğrencinin son mesajını dikkate al.
+Öğrencinin son mesajını önce anlamını koruyarak değerlendir; öğrencinin söylediği bilgiyi kendi varsayımınla değiştirme.
+Mevcut basamağın amacını, diğer bütün genel kurallardan ÖNCELE.
 Bir sonraki düşünme adımını destekleyen yalnızca TEK bir soru sor.
-Soruyu öğrencinin söylediği şeye ve gerçek probleme bağla.
+
+KRİTİK AŞAMA SINIRI:
+Eğer MEVCUT BASAMAK "1. Ayrıştırma" ise öğrenciyi cevaba, yönteme, işleme, matematiksel ilişkiye veya çözüm planına götüren soru sorma.
+Ayrıştırmada yalnızca "Ne isteniyor?", "Bunu bulmak için hangi bilgi gerekiyor?", "Bu bilgiye ulaşmak için hangi bilgi gerekiyor?", "Elindeki verilenlerden hangisi bu ihtiyacı karşılıyor?" türündeki GERİYE DOĞRU düşünme sorularını kullan.
+Öğrencinin çözüm için gereken bir bilgiyi zaten söylemesi, o bilginin nasıl kullanılacağını sorma hakkı vermez; o bilgi zincirde bir halka olarak kabul edilir.
 
 ÖZELLİKLE AYRIŞTIRMA AŞAMASINDA:
 - Öğrencinin son mesajında açıkça verdiği bilgi, nicelik, değer veya grafik bilgisini mevcut zincirin bir halkası olarak kabul et.
