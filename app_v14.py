@@ -1274,15 +1274,16 @@ Yüklenen gerçek problem görselini incele.
 Mevcut basamağın amacını, diğer bütün genel kurallardan ÖNCELE.
 Bir sonraki düşünme adımını destekleyen yalnızca TEK bir soru sor.
 
-V22 YANIT SINIFLANDIRMA VE SORU ÇEŞİTLENDİRME:
-Öğrencinin son mesajını şu türlerden biri olarak değerlendir: (a) doğrudan yanıt, (b) yeni veri/nicelik belirtme, (c) grafikte/soruda zaten bulunduğunu söyleme, (d) eksik/yetersiz bilgi fark etme, (e) işlem önerme, (f) anlamadığını belirtme. Sonraki soruyu bu türe göre seç; aynı türden yanıtı tekrar tekrar isteme.
-- Öğrenci bir veriyi adlandırdıysa o veriyi bulmasını veya söylemesini yeniden isteme.
-- Öğrenci “grafikte yazıyor zaten” gibi bir yanıt verdiyse bunu itiraz/geri bildirim olarak kabul et; grafiği yeniden tarif ettirme. Önceki öğrenci mesajında adı geçen veriye dön ve onun problemde aranan şeyle bağlantısını sorgula.
-- “Hangi bilgiye ihtiyacın var?” ve “Hangi veriyi kullanacaksın?” kalıplarını art arda kullanma.
-- Soruların odağı sırayla değişsin: isteneni belirleme, verilen bilgiyi tanıma, bilginin işlevini açıklama, bilgi zincirinde eksik halkayı fark etme. Aynı odağa, öğrenci yeni bir şey söylemeden geri dönme.
-- Öğrencinin cevabında iki somut veri varsa bunları soru içinde kısaca anabilirsin; ancak bu verilerden hangi işlemin yapılacağını, hangi formülün kullanılacağını veya sonucu söyleme.
+V23 — PROBLEMİ GERÇEKTEN TAKİP ETME:
+- Yalnızca “genel bir rehber” gibi konuşma. Öğrencinin yüklediği problem görselini bu yanıt sırasında incele; problem analizi metnini tek kaynak kabul etme. Görseldeki araç adları, noktalar, zamanlar, uzaklıklar, tablo/grafik etiketleri ve istenen niceliği birbirinden ayırt et.
+- Sorunu oluşturan somut bağlamı ve öğrencinin son iki-üç mesajında söylediği belirli bilgileri kullan. Bir sonraki soruda mümkünse öğrencinin adlandırdığı niceliği/nesneyi açıkça an; “bu bilgi”, “hangi bilgi”, “neye ihtiyacın var” gibi belirsiz ifadeleri tek başına kullanma.
+- Önce öğrencinin son cevabının, hemen önceki soruya gerçekten cevap verip vermediğini belirle. Cevap verdiyse kabul et ve bir sonraki düşünme halkasına geç; aynı soruyu farklı kelimelerle tekrarlama.
+- Öğrenci “grafikte yazıyor zaten” derse bunu, veriyi yeniden istememek gerektiğine dair açık geri bildirim olarak yorumla. Grafikteki veriyi yeniden aratma veya genel bir bağlantı sorusuna kaçma. Görseldeki ve öğrencinin söylediği somut bilgiyi temel alarak, ayrıştırma zincirinde henüz ele alınmamış halkayı düşündüren bir soru sor.
+- “Hangi bilgiye ihtiyacın var?”, “Hangi veriyi kullanacaksın?”, “Bu bilgi nasıl bağlantılı?” kalıplarını art arda veya bağlamdan kopuk kullanma. Bu ifadeler ancak problemdeki somut nicelikle birlikte anlamlıysa kullanılabilir.
+- Öğrencinin verdiği bir veriyi, kendisinin daha önce söylememiş gibi yeniden sorma. Öğrencinin sözünü ettiği iki veri varsa bunları doğru biçimde yansıt; ancak aralarındaki işlemi, formülü, sonucu veya çözüm yolunu söyleme.
+- Görseldeki ayrıntıyı güvenilir biçimde okuyamıyorsan ayrıntı uydurma; öğrenciden yalnızca okunamayan kısmı netleştirmesini iste.
 
-V22 KONUŞMA TUTARLILIĞI KURALI:
+V23 KONUŞMA TUTARLILIĞI KURALI:
 - Mevcut diyalogdaki en son rehber sorusunu ve öğrencinin ona verdiği cevabı birlikte oku.
 - Öğrencinin söylediği bilgiyi tekrar sorma; aynı düşünceyi farklı kelimelerle yeniden sordurma.
 - "Evet/hayır" cevabını yeni bir bilgi gibi ele alma; önceki sorunun cevabı olarak kabul et.
@@ -1342,11 +1343,8 @@ Soru alanında yalnızca öğrencinin göreceği 1-2 kısa cümle ve TEK soru ol
 
     result = parse_guidance_response(raw, current_step)
 
-    # Ayrıştırma aşamasında kısa cevapların yanlış yorumlanmasını,
-    # çözüm adımına kaymayı ve yinelenen soruları ayrıca denetle.
-    if current_step == "1. Ayrıştırma":
-        result = _ayristirma_guard(result, chat_history, student_message)
-
+    # v23: Ayrıştırma yanıtını genel, sabit kalıplarla sonradan değiştirme.
+    # Öğrencinin problem görseline ve tüm konuşmaya dayalı özgün yanıtı korunur.
     return result
 
 
