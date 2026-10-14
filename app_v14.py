@@ -38,7 +38,7 @@ except Exception:
 
 
 MODEL_NAME = "gemini-3.5-flash-lite"
-APP_VERSION = "v21"
+APP_VERSION = "v22"
 
 GEMINI_URL = (
     "https://generativelanguage.googleapis.com/"
@@ -319,7 +319,7 @@ SYSTEM_PROMPT = """
 Sen ortaokul matematik öğrencisine rehberlik eden
 bir matematik öğretmenisin.
 
-SÜRÜM: v21 — öğrenci cevabını önceki soruyla ilişkilendir; tekrar ve aşama kaymasını engelle.
+SÜRÜM: v22 — öğrenci yanıtını sınıflandır; bağlama özgü takip sorusu üret ve bilgi tekrarını engelle.
 
 KONU:
 DOĞRUSAL İLİŞKİLER
@@ -710,7 +710,7 @@ def parse_guidance_response(raw_text, current_step):
 def _normalize_text(text):
     """Tekrar kontrolü için Türkçe metni sadeleştirir."""
     text = str(text or "").casefold()
-    text = text.replace("ı", "i")
+    text = text.translate(str.maketrans({"ı": "i", "ğ": "g", "ü": "u", "ş": "s", "ö": "o", "ç": "c"}))
     text = re.sub(r"[^a-z0-9\s]", " ", text)
     return re.sub(r"\s+", " ", text).strip()
 
@@ -730,60 +730,132 @@ def _affirmative_reply(text):
     }
 
 
+def _previous_student_message(chat_history):
+    """Mevcut yanıttan önceki en son öğrenci mesajını döndürür."""
+    for message in reversed(chat_history or []):
+        if message.get("role") == "user":
+            return str(message.get("content", "")).strip()
+    return ""
+
+
+def _question_seen_before(chat_history, question):
+    """Aynı veya çok benzer bir sorunun daha önce sorulup sorulmadığını denetler."""
+    q = _normalize_text(question)
+    if not q:
+        return False
+    q_words = set(q.split())
+    for message in (chat_history or []):
+        if message.get("role") != "assistant":
+            continue
+        old = _normalize_text(message.get("content", ""))
+        if old == q:
+            return True
+        old_words = set(old.split())
+        if len(q_words | old_words) and len(q_words & old_words) / len(q_words | old_words) > 0.78:
+            return True
+    return False
+
+
 def _ayristirma_guard(result, chat_history, student_message):
-    """Ayrıştırmada çözüm adımına kaymayı ve aynı soruyu yinelemeyi engeller."""
+    """Ayrıştırmada yanıt türünü dikkate alır; bilgi tekrarını ve çözüm adımına kaymayı engeller."""
     question = str(result.get("soru", "")).strip()
     previous_question = _last_assistant_question(chat_history)
+    previous_student = _previous_student_message(chat_history)
     q_norm = _normalize_text(question)
     prev_norm = _normalize_text(previous_question)
     student_norm = _normalize_text(student_message)
+    previous_student_norm = _normalize_text(previous_student)
 
-    # Kısa evet/hayır cevapları, hemen önceki soruya verilmiştir; yeni bir
-    # matematiksel bilgi veya çözüm adımı olarak yorumlanmamalıdır.
+    # 1) Öğrenci grafikteki bilgiyi zaten gösterdiğini söylüyorsa veriyi yeniden aratma.
+    graph_already_seen = any(phrase in student_norm for phrase in (
+        "grafikte yaziyor zaten", "grafikte var zaten", "grafikte yaziyor",
+        "grafikte var", "grafikte gorunuyor", "grafikte goruluyor",
+        "soruda yaziyor zaten", "verilenlerde yaziyor"
+    ))
+    if graph_already_seen:
+        # Önceki öğrenci mesajında somut olarak adlandırılmış verileri takip sorusuna taşı.
+        if ("2 saat" in previous_student_norm or "iki saat" in previous_student_norm) and (
+            "uzak" in previous_student_norm or "mesafe" in previous_student_norm
+        ):
+            tailored = (
+                "Başlangıçtaki ve 2 saat sonraki uzaklıkları seçtin. "
+                "Bu iki bilgiyi kullanarak hangi bilgiyi belirlemeyi amaçlıyorsun?"
+            )
+        elif "baslangic" in previous_student_norm and ("uzak" in previous_student_norm or "mesafe" in previous_student_norm):
+            tailored = (
+                "Başlangıç uzaklığını belirttin. Bu bilgi, problemde aradığın uzaklıkla "
+                "nasıl bir bağlantı kuruyor?"
+            )
+        elif previous_student:
+            tailored = (
+                f"Az önce belirttiğin ‘{previous_student[:110]}’ bilgisini düşün. "
+                "Bu bilgi, belirlemek istediğin şeyle nasıl bağlantılı?"
+            )
+        else:
+            tailored = "Grafikte gördüğün bilgiyi tekrar aramana gerek yok. Bu bilgi, problemde aradığın şeyle nasıl bağlantılı?"
+        result["soru"] = tailored
+        result["basamak_tamamlandi"] = False
+        return result
+
+    # 2) Kısa evet/hayır yanıtını yalnızca hemen önceki soruya verilmiş cevap olarak yorumla.
     if _affirmative_reply(student_message) and any(
         phrase in prev_norm for phrase in ("yeterli mi", "yeterli degil", "eksik mi")
     ):
         if student_norm.startswith("evet") or student_norm == "yeterli":
-            question = "Elindeki hangi verilen bilgi, belirlediğin ihtiyacı karşılıyor?"
+            result["soru"] = "Belirlediğin bilgilerden hangisinin, aradığın şeyi açıklamada en önemli olduğunu düşünüyorsun?"
         else:
-            question = "Eksik olduğunu düşündüğün bilgi nedir?"
-        result["soru"] = question
+            result["soru"] = "Mevcut bilgilerle ilgili hangi noktanın eksik kaldığını düşünüyorsun?"
         result["basamak_tamamlandi"] = False
         return result
 
-    # Ayrıştırmada öğrenci işlem önerisine geçtiyse işlemi ilerletme; onun
-    # hangi bilgiye ulaşmaya çalıştığını kendi sözleriyle netleştirmesini iste.
+    # 3) Öğrenci işlem önerdiyse hesaplamaya geçme; işlemle hangi bilgiyi aradığını netleştir.
     solution_markers = (
-        "farkini al", "farkını al", "toplarim", "toplarım", "cikaririm",
-        "çıkarırım", "bolerim", "bölerim", "carparim", "çarparım",
-        "hesaplarim", "hesaplarım", "islem yap", "işlem yap", "formul",
-        "formül", "denklem", "hizini bul", "hızını bul", "egim", "eğim"
+        "farkini al", "toplarim", "cikaririm", "bolerim", "carparim",
+        "hesaplarim", "islem yap", "formul", "denklem", "hizini bul",
+        "egim", "bolme yap", "carpma yap", "oranini bul"
     )
-    if any(marker in student_norm for marker in map(_normalize_text, solution_markers)):
+    if any(marker in student_norm for marker in solution_markers):
         result["soru"] = (
-            "Bu söylediğin bir işlem adımı. İşleme geçmeden önce, bu adımla "
-            "hangi bilgiyi belirlemeye çalıştığını kendi cümlenle söyleyebilir misin?"
+            "Bu işlemle hangi bilgiyi belirlemeye çalıştığını kendi sözlerinle açıklayabilir misin?"
         )
         result["basamak_tamamlandi"] = False
         return result
 
-    # Ayrıştırma basamağında çözüm/işlem çağrıştıran soruları engelle.
-    forbidden_question_markers = (
-        "hangi adimi atman", "hangi işlemi", "nasil hesap", "nasıl hesap",
-        "hangi formül", "hangi formul", "eğim", "egim", "hızını", "hizini",
-        "süreyi bul", "sureyi bul", "değişim miktarı", "degisim miktari",
-        "denklemi yaz", "işlem yap", "islem yap"
-    )
-    if any(marker in q_norm for marker in map(_normalize_text, forbidden_question_markers)):
-        result["soru"] = "Elindeki hangi verilen bilgi, belirlediğin ihtiyacı karşılıyor?"
+    # 4) Öğrenci somut veri veya nicelik söylediyse onu yeniden isteme; sonraki düşünme halkasını sor.
+    has_concrete_data = any(token in student_norm for token in (
+        "saat", "dakika", "km", "kilometre", "uzaklik", "mesafe", "grafik",
+        "baslangic", "sonraki", "arac", "araci", "veri", "nokta", "deger"
+    ))
+    if has_concrete_data and any(phrase in prev_norm for phrase in (
+        "hangi veri", "hangi bilgiyi", "hangi bilgiye", "hangi deger", "hangi değeri"
+    )):
+        result["soru"] = (
+            "Belirttiğin bu bilgiyi, problemde istenen şeye ulaşmak için nasıl bir ihtiyaçla ilişkilendiriyorsun?"
+        )
         result["basamak_tamamlandi"] = False
         return result
 
-    # Aynı sorunun küçük bir kelime değişikliğiyle yeniden sorulmasını önle.
-    if q_norm and prev_norm and (q_norm == prev_norm or (
-        len(set(q_norm.split()) & set(prev_norm.split())) / max(1, len(set(q_norm.split()) | set(prev_norm.split()))) > 0.78
-    )):
-        result["soru"] = "Şu ana kadar belirlediğin bilgiler, problemde istenen şeyi açıklamak için yeterli mi?"
+    # 5) Ayrıştırma basamağında çözüm/işlem çağrıştıran soruları engelle.
+    forbidden_question_markers = (
+        "hangi adimi atman", "hangi islemi", "nasil hesap", "hangi formul",
+        "egim", "hizini", "sureyi bul", "degisim miktari", "denklemi yaz",
+        "islem yap", "sonucu bul", "hesaplayabilir misin"
+    )
+    if any(marker in q_norm for marker in forbidden_question_markers):
+        result["soru"] = "Belirlediğin bilgilerden hangisinin, aradığın şeyi açıklamada önemli olduğunu düşünüyorsun?"
+        result["basamak_tamamlandi"] = False
+        return result
+
+    # 6) Aynı veya benzer soru tekrar ediyorsa önceki yanıt türüne göre farklı bir takip sorusu seç.
+    if _question_seen_before(chat_history, question):
+        if any(token in student_norm for token in ("b ile", "b araci", "b aracı", "b'nin", "b nin")):
+            result["soru"] = "B ile ilgili belirttiğin bilgilerin, aradığın uzaklığı açıklamak açısından neyi netleştirdiğini düşünüyorsun?"
+        elif any(token in student_norm for token in ("yeterli", "eksik", "bilmiyorum", "emin degilim")):
+            result["soru"] = "Şu ana kadar belirlediklerinden hangisi hâlâ açıklanmaya ihtiyaç duyuyor?"
+        elif has_concrete_data:
+            result["soru"] = "Belirttiğin bilgiyi, problemde istenenle ilişkilendirdiğinde hangi bağlantıyı kuruyorsun?"
+        else:
+            result["soru"] = "Şu ana kadar söylediklerinden hangisi, neyi bulmamız gerektiğini anlamana yardımcı oluyor?"
         result["basamak_tamamlandi"] = False
 
     return result
@@ -1202,7 +1274,15 @@ Yüklenen gerçek problem görselini incele.
 Mevcut basamağın amacını, diğer bütün genel kurallardan ÖNCELE.
 Bir sonraki düşünme adımını destekleyen yalnızca TEK bir soru sor.
 
-V21 KONUŞMA TUTARLILIĞI KURALI:
+V22 YANIT SINIFLANDIRMA VE SORU ÇEŞİTLENDİRME:
+Öğrencinin son mesajını şu türlerden biri olarak değerlendir: (a) doğrudan yanıt, (b) yeni veri/nicelik belirtme, (c) grafikte/soruda zaten bulunduğunu söyleme, (d) eksik/yetersiz bilgi fark etme, (e) işlem önerme, (f) anlamadığını belirtme. Sonraki soruyu bu türe göre seç; aynı türden yanıtı tekrar tekrar isteme.
+- Öğrenci bir veriyi adlandırdıysa o veriyi bulmasını veya söylemesini yeniden isteme.
+- Öğrenci “grafikte yazıyor zaten” gibi bir yanıt verdiyse bunu itiraz/geri bildirim olarak kabul et; grafiği yeniden tarif ettirme. Önceki öğrenci mesajında adı geçen veriye dön ve onun problemde aranan şeyle bağlantısını sorgula.
+- “Hangi bilgiye ihtiyacın var?” ve “Hangi veriyi kullanacaksın?” kalıplarını art arda kullanma.
+- Soruların odağı sırayla değişsin: isteneni belirleme, verilen bilgiyi tanıma, bilginin işlevini açıklama, bilgi zincirinde eksik halkayı fark etme. Aynı odağa, öğrenci yeni bir şey söylemeden geri dönme.
+- Öğrencinin cevabında iki somut veri varsa bunları soru içinde kısaca anabilirsin; ancak bu verilerden hangi işlemin yapılacağını, hangi formülün kullanılacağını veya sonucu söyleme.
+
+V22 KONUŞMA TUTARLILIĞI KURALI:
 - Mevcut diyalogdaki en son rehber sorusunu ve öğrencinin ona verdiği cevabı birlikte oku.
 - Öğrencinin söylediği bilgiyi tekrar sorma; aynı düşünceyi farklı kelimelerle yeniden sordurma.
 - "Evet/hayır" cevabını yeni bir bilgi gibi ele alma; önceki sorunun cevabı olarak kabul et.
@@ -1751,7 +1831,7 @@ with st.sidebar:
 # ============================================================
 
 st.title(
-    "🎯 Algoritmik Problem Çözme Rehberi · v21"
+    "🎯 Algoritmik Problem Çözme Rehberi · v22"
 )
 
 
