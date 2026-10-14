@@ -196,6 +196,52 @@ Yasak:
 - Eksik adımı öğrencinin yerine tamamlamak.
 
 """
+,
+
+    "5. Metabilişsel Yansıtma": """
+
+Amaç:
+Öğrencinin tamamladığı algoritmik problem çözme sürecini
+metabilişsel açıdan fark etmesini, izlemesini ve değerlendirmesini sağlamak.
+
+Bu basamak üç boyut üzerinden ilerler:
+
+1. PLANLAMA:
+- Problemi çözmeye başlamadan önce neyi amaçladığını,
+- hangi bilgileri kullanacağını,
+- nasıl bir yol izleyeceğini ve neden o yolu seçtiğini
+  fark etmesini sağla.
+
+2. İZLEME:
+- Çözüm sırasında ne yaptığını,
+- kullandığı bilgilerin amacına hizmet edip etmediğini,
+- düşünme ve işlem adımlarını nasıl kontrol ettiğini,
+- gerektiğinde düşüncesini nasıl değiştirdiğini
+  fark etmesini sağla.
+
+3. DEĞERLENDİRME:
+- Oluşturduğu çözümün ve kullandığı yolun problem koşullarıyla
+  ne ölçüde uyumlu olduğunu,
+- hangi kararlarının işe yaradığını,
+- neyi farklı yapabileceğini,
+- benzer bir problemde neyi yeniden kullanabileceğini
+  değerlendirmesini sağla.
+
+İlerleme sırası:
+PLANLAMA → İZLEME → DEĞERLENDİRME
+
+Yasak:
+- Öğrencinin yerine kendi sürecini yorumlamak.
+- "Şurada iyi plan yaptın." gibi değerlendirme yapmak.
+- Öğrencinin neden belirli bir adımı seçtiğini onun yerine açıklamak.
+- Çözümü yeniden yapmak.
+- Yeni bir çözüm yolu öğretmek.
+- "Doğru/yanlış" gibi doğrudan değerlendirme ifadeleri kullanmak.
+
+Bu basamakta amaç yeni bir matematiksel çözüm üretmek değil,
+öğrencinin kendi düşünme sürecini fark etmesi ve değerlendirmesidir.
+
+"""
 }
 
 
@@ -231,6 +277,11 @@ ALT_BECERILER = {
         ("HA5", "Düzeltme yapma"),
         ("HA6", "Yeniden test etme"),
     ],
+    "5. Metabilişsel Yansıtma": [
+        ("MY1", "Planlama sürecini fark etme"),
+        ("MY2", "Çözüm sürecini izleme"),
+        ("MY3", "Çözüm sürecini değerlendirme"),
+    ],
 }
 
 
@@ -250,7 +301,10 @@ METABILISSEL_SORULAR = {
         "Çözüm adımlarını planlarken nasıl bir yol izledin ve bu sırayı neden seçtin?",
 
     "4. Hata Ayıklama":
-        "Kurduğun ilişkinin ve bulduğun sonucun problem koşullarıyla uyumlu olduğundan nasıl emin oldun?"
+        "Kurduğun ilişkinin ve bulduğun sonucun problem koşullarıyla uyumlu olduğundan nasıl emin oldun?",
+
+    "5. Metabilişsel Yansıtma":
+        "Bu problemde düşünme sürecini planlama, izleme ve değerlendirme açısından nasıl değerlendiriyorsun?"
 }
 
 
@@ -807,12 +861,33 @@ Ayrıştırma ve Soyutlama aşamalarındaki öğrenci düşüncelerini kullan.
 İlk adımı, sonraki adımı veya işlemi öğrencinin yerine söyleme.
 Akış şeması görselini de incele ve soruyu mevcut çizime bağla.
 """
-    else:
+    elif current_step == "4. Hata Ayıklama":
         progression = """
 HATA AYIKLAMA İÇİN ÖZEL İLERLEME:
 Öğrencinin oluşturduğu akış şemasını ve önceki aşamalardaki düşüncelerini incele.
 Önce çözümü test ettir. Bir tutarsızlık seziliyorsa öğrencinin kendisinin ilgili noktayı bulmasını sağla; ardından düzeltmesini ve yeniden test etmesini iste.
 Sorun görünmüyorsa ve yaş düzeyine uygun başka bir yol gerçekten mümkünse alternatif yolu düşündür; alternatif yöntem zorunlu değildir.
+"""
+    else:
+        progression = """
+METABİLİŞSEL YANSITMA İÇİN ÖZEL İLERLEME:
+
+Bu basamak yalnızca öğrencinin kendi düşünme sürecine dönük yansıtma içindir.
+Yeni bir matematiksel çözüm öğretme veya çözümü yeniden yaptırma.
+
+Sıra:
+PLANLAMA → İZLEME → DEĞERLENDİRME
+
+Önce PLANLAMA: öğrencinin çözüm öncesinde amacını, kullanmayı düşündüğü
+bilgileri ve izleyeceği yolu nasıl belirlediğini fark ettir.
+Sonra İZLEME: öğrencinin çözüm sırasında kendi düşünmesini, kullandığı
+bilgileri ve adımlarını nasıl kontrol ettiğini fark ettir.
+Son olarak DEĞERLENDİRME: öğrencinin kullandığı yolun ve sonucunun süreç
+açısından ne kadar işe yaradığını, neyi farklı yapabileceğini ve benzer
+bir problemde neyi yeniden kullanabileceğini değerlendirmesini sağla.
+
+Bir seferde yalnızca tek boyuta odaklan. Öğrenci bir boyutu açıklamadan
+diğerine geçme. Öğrencinin yerine onun düşünme sürecini yorumlama.
 """
 
     prompt = f"""
@@ -831,6 +906,8 @@ ALT BECERİLER:
 
 AŞAMA ÖNCELİĞİ:
 Mevcut basamak 1. Ayrıştırma ise, öğrencinin henüz çözüm yapmasına izin verme. İlk soru yalnızca istenen veya istenene ulaşmak için gerekli bilgi zincirini başlatmalıdır; grafik üzerindeki çözüm yolunu, matematiksel ilişkiyi veya hesaplamayı hedefleme.
+
+Mevcut basamak 5. Metabilişsel Yansıtma ise, yeni matematiksel içerik öğretme. Öğrencinin tamamladığı süreci PLANLAMA → İZLEME → DEĞERLENDİRME sırasıyla kendi ifadeleri üzerinden fark etmesini ve değerlendirmesini sağla.
 
 PROBLEM ANALİZİ:
 {problem_analysis}
@@ -856,7 +933,7 @@ Soru alanında yalnızca tek kısa yönlendirici soru bulunsun.
         temperature=0.2,
         max_tokens=150,
         include_problem_image=True,
-        include_flowchart_image=(current_step in ["3. Algoritma Tasarımı", "4. Hata Ayıklama"])
+        include_flowchart_image=(current_step in ["3. Algoritma Tasarımı", "4. Hata Ayıklama", "5. Metabilişsel Yansıtma"])
     )
 
     return parse_guidance_response(raw, current_step)
@@ -960,7 +1037,7 @@ Ayrıştırma ve Soyutlama konuşmalarını doğrudan kullan.
 Eksik olduğunu düşündüğün kısmı söyleme; öğrencinin kendi çizimine bakarak bir sonraki adımı düşünmesini sağlayan tek soru sor.
 Akış şeması gerçekten tamamlandığında basamak_tamamlandi=true olabilir.
 """
-    else:
+    elif current_step == "4. Hata Ayıklama":
         progression = """
 ÖZEL KURAL — HATA AYIKLAMA:
 Öğrencinin akış şemasını ve önceki aşamaları kullan.
@@ -969,6 +1046,36 @@ Bir tutarsızlık varsa bunu söylemeden, öğrencinin hangi adımı yeniden inc
 Düzeltmeden sonra yeniden test ettir.
 Sorun yoksa ve yaş düzeyine uygun başka bir yol varsa alternatif düşünmesini sağlayabilirsin.
 Hata yokken hata varmış gibi davranma.
+"""
+    else:
+        progression = """
+ÖZEL KURAL — METABİLİŞSEL YANSITMA:
+
+Bu aşamada matematiksel çözümü yeniden öğretme; öğrencinin kendi düşünme
+sürecini incelemesini sağla.
+
+Sıra kesinlikle:
+1. PLANLAMA
+2. İZLEME
+3. DEĞERLENDİRME
+
+PLANLAMA: öğrencinin çözüm öncesinde neyi amaçladığını, hangi bilgileri
+kullanmayı düşündüğünü ve nasıl bir yol tasarladığını fark ettir.
+
+İZLEME: öğrencinin çözüm sırasında düşünmesini ve yaptığı adımları nasıl
+kontrol ettiğini, gerektiğinde düşüncesini nasıl değiştirdiğini fark ettir.
+
+DEĞERLENDİRME: öğrencinin kullandığı yolun kendisi için ne kadar işe
+yaradığını, çözümünü nasıl değerlendirdiğini ve benzer bir problemde
+ne yapabileceğini düşündür.
+
+Önceki aşamalardaki gerçek öğrenci cevaplarını kullan. Öğrencinin söylemediği
+bir düşünceyi onun adına çıkarma. Bir boyut yeterince ele alınmadan diğer
+boyuta geçme. Tek soru sor.
+
+BASAMAK TAMAMLAMA:
+Planlama, izleme ve değerlendirme boyutlarının üçü de öğrencinin kendi
+ifadeleriyle ele alınmışsa basamak_tamamlandi=true olabilir.
 """
 
     prompt = f"""
@@ -1049,7 +1156,7 @@ Soru alanında yalnızca öğrencinin göreceği 1-2 kısa cümle ve TEK soru ol
         temperature=0.2,
         max_tokens=180,
         include_problem_image=True,
-        include_flowchart_image=(current_step in ["3. Algoritma Tasarımı", "4. Hata Ayıklama"])
+        include_flowchart_image=(current_step in ["3. Algoritma Tasarımı", "4. Hata Ayıklama", "5. Metabilişsel Yansıtma"])
     )
 
     return parse_guidance_response(raw, current_step)
@@ -1545,6 +1652,12 @@ st.write(
     f"### Mevcut Basamak: "
     f"{st.session_state.current_step}"
 )
+
+if st.session_state.current_step == "5. Metabilişsel Yansıtma":
+    st.info(
+        "🧠 Bu aşama üç boyutta ilerler: **Planlama → İzleme → Değerlendirme**. "
+        "Amaç çözümü yeniden yapmak değil, kendi düşünme sürecini fark etmek ve değerlendirmektir."
+    )
 
 
 # ============================================================
@@ -2239,7 +2352,10 @@ with col2:
     # --------------------------------------------------------
 
     if current_stage in st.session_state.completed_stages:
-        st.success("Bu basamak tamamlandı. Bir sonraki basamağa geçildi.")
+        if current_stage == "5. Metabilişsel Yansıtma":
+            st.success("🎯 Beş aşamalı süreç tamamlandı. Artık genel süreç değerlendirmesine geçebilirsin.")
+        else:
+            st.success("Bu basamak tamamlandı. Bir sonraki basamağa geçildi.")
 
     chat_container = st.container(
         height=550
