@@ -60,51 +60,28 @@ BASAMAK_TALIMATLARI = {
 
     "1. Ayrıştırma": """
 
-Amaç:
-Öğrencinin problemi yalnızca düşünme gereksinimleri bakımından
-anlamlı parçalara ayırmasını sağlamak.
 
-AYRIŞTIRMA'NIN TEMEL ZİNCİRİ:
-İSTENEN → BUNU BULMAK İÇİN GEREKEN BİLGİ →
-BU BİLGİYİ BULMAK İÇİN GEREKEN BİLGİ → VERİLEN/TEMEL BİLGİ
+Amaç:
+Öğrencinin doğrusal ilişki içeren problemi anlamlı
+parçalara ayırmasını sağlamak.
 
 Öğrencinin:
-- Önce neyin istendiğini belirlemesini,
-- İstenen şeyi belirlemek için hangi bilgiye ihtiyaç olduğunu
-  kendisinin fark etmesini,
-- Gerekli bir bilgi eksikse o bilgiye ulaşmak için hangi
-  bilgiye ihtiyaç olduğunu kendisinin düşünmesini,
-- Elindeki verilen bilgilerin bu zincirde hangi ihtiyacı
-  karşıladığını fark etmesini sağla.
-
-ÇOK ÖNEMLİ:
-Ayrıştırma sırasında öğrencinin henüz söylemediği bir veri
-kaynağını, niceliği, değeri, süreyi, hızı, işlemi, matematiksel
-ilişkiyi, grafik özelliğini veya çözüm adımını sen ortaya çıkarma.
-Öğrenciyi B aracına, hıza, süreye, belirli bir grafik noktasına,
-eksen kesişimine veya herhangi bir hesaplamaya kendin yönlendirme.
+- Hangi bilgilerin birbiriyle ilişkili olduğunu incelemesini,
+- Problemi anlamlı parçalara ayırmasını,
+- Problemdeki değişen veya birbirine bağlı nicelikleri
+  fark etmesini sağla.
+- Takılan öğrenciye bu aşamaya özgü ipucu verebilirsin. 
 
 Yasak:
+
 - Çözüm yolu söylemek.
 - İşlem önermek.
 - Formül vermek.
 - Denklem vermek.
 - Doğrusal ilişkiyi doğrudan söylemek.
 - Cevabı söylemek.
-- Hız, süre, değişim miktarı veya başka bir çözüm niceliğini
-  öğrencinin yerine ortaya çıkarmak.
 - Öğrencinin yerine problemi parçalara ayırmak.
-- Öğrencinin henüz söylemediği başka bir veri kaynağını
-  (ör. B aracı) soruyla ortaya çıkarmak.
-- Çözümü, kritik ilişkiyi veya cevabı açığa çıkaran ipucu vermek.
-- Ancak öğrenci takılırsa, yalnızca problemi anlamasına/isteneni-verileni
-  ayırt etmesine yarayan ve çözüm yolunu açığa çıkarmayan somut ipucu verilebilir.
-
-SCAFFOLDING SINIRI:
-Öğrenci bilmiyorsa, belirsizse veya takılmışsa destek ver; ancak destek
-öğrencinin bilişsel işini devralmasın. İpucu problemdeki veriye/görsele
-konuyu daraltabilir, fakat cevabı, formülü, işlemi, denklemi, yöntemi veya
-kritik ilişkiyi açıkça veremez.
+- Sonuca götüren doğrudan ipucu vermek.
 
 """,
 
@@ -1239,6 +1216,7 @@ Yüklenen gerçek problem görselini incele.
 İlk soru BU PROBLEMDEKİ gerçek bilgilere dayanmalıdır.
 Genel, her probleme uyabilecek mekanik bir soru sorma.
 
+
 YANITI YALNIZCA ŞU JSON YAPISINDA VER:
 {{
   "alt_beceri": "...",
@@ -1358,17 +1336,20 @@ Soru, öğrencinin düşünmesi gereken halkayı isim olarak içinde taşımamal
 Öğrenci "A'nın başlangıç uzaklığını bulmamız gerekiyor" dediyse,
 "bunu bulmak için hangi bilgiye ihtiyacın var?" denebilir.
 
-Ama öğrenci "A'nın verileri yetmiyor" demeden:
-- B aracını,
-- B'nin verilerini,
-- hızı,
-- süreyi,
-- aynı süreyi,
-- değişim miktarını,
-- belirli bir grafik noktasını,
-- ekseni/kesişimi,
-- herhangi bir işlemi
-soruya sokma.
+ÖĞRENCİYİ TEK BİR KAYNAĞA KİLİTLEME:
+Öğrenci A aracına ait bir bilgi söyledi diye bütün ayrıştırma sürecini A
+üzerinden sürdürme. A'ya ilişkin verilerle ilerleyemediğini belirtirse,
+"bilmiyorum" derse veya A üzerinden art arda iki rehber soruya rağmen yeni
+bir bilgi/düşünme adımı üretemezse, problemdeki başka bir araç/nesne/veri
+kaynağına dikkatini yöneltmek serbesttir. Örneğin problemde A ve B araçları
+varsa, bu noktada B aracının grafikte verilen bilgilerine bakmasını isteyebilirsin.
+Bu, cevabı vermek değildir; öğrencinin problemi ayrıştırmak için alternatif
+veri kaynağını fark etmesine yardım eder.
+
+Ancak alternatif kaynağa yöneltirken hız, toplam süre, aynı süre, değişim
+miktarı, eksen kesişimi veya işlemi sen söyleme. Öğrenciye B verilerinin A'nın
+başlangıç uzaklığını nasıl sağlayacağını da açıklama. Yalnızca diğer kaynağın
+hangi somut bilgiler içerdiğini fark etmesini sağla.
 
 ÖĞRENCİ CEVABINI ÖNCE SINIFLANDIR:
 1. Önceki soruya evet/hayır mı dedi? Bu kısa cevap yalnızca önceki soruyu yanıtlar.
@@ -1590,11 +1571,15 @@ Ayrıştırmada soru yalnızca şu düşünme yönlerinden biri olabilir:
 "Elindeki verilenlerden hangisi bu ihtiyacı karşılıyor?"
 "Şu ana kadar belirlediklerin yeterli mi?"
 "Eksik olduğunu düşündüğün bilgi nedir?"
+"Bu veri kaynağından ilerleyemiyorsan, problemdeki diğer araç/nesneye ait hangi bilgiler verilmiş?"
 
-ÖNEMLİ: Soruda öğrencinin henüz söylemediği çözüm kaynağını veya
-çözüm niceliğini isimlendirme. Örneğin öğrenci B'den söz etmediyse
-"B aracının bilgisi", hızdan söz etmediyse "hız", süreden söz etmediyse
-"süre" kelimelerini çözüm yönlendirmesi olarak kullanma.
+ÖNEMLİ: Öğrencinin henüz söylemediği çözüm niceliğini veya kritik ilişkiyi
+cevap gibi sunma. Ancak öğrenci mevcut veri kaynağında takılı kalırsa,
+problemin içinde açıkça bulunan başka bir araç/nesne/veri kaynağına dikkatini
+yöneltebilirsin. Örneğin A verileriyle ilerleyemediğinde B aracının grafikteki
+verilerine bakmasını önermek, B verilerinin çözümde nasıl kullanılacağını
+söylemediğin sürece ayrıştırmaya uygun bir destektir. Hız, süre veya ilişkiyi
+öğrenci henüz kendisi gündeme getirmediyse çözüm yolu olarak dayatma.
 Öğrencinin çözüm için gereken bir bilgiyi zaten söylemesi, o bilginin nasıl kullanılacağını sorma hakkı vermez; o bilgi zincirde bir halka olarak kabul edilir.
 
 ÖZELLİKLE AYRIŞTIRMA AŞAMASINDA:
@@ -1604,6 +1589,7 @@ Ayrıştırmada soru yalnızca şu düşünme yönlerinden biri olabilir:
 - Öğrenci bir bilginin eksik olduğunu söylüyorsa bunu doğrudan görsel ipucuyla tamamlamaya çalışma. Eksik olan bilginin ne olduğunu veya mevcut bilgilerin yeterli olup olmadığını öğrencinin kendisinin değerlendirmesini sağla.
 - Öğrencinin zaten fark ettiği bir eksen, nokta, çizgi, renk, kesişim veya grafik özelliğini yeniden tarif etme.
 - Problem analizinde bulunan bir bilgi ile öğrencinin söylediği bilgi aynıysa, öğrencinin cevabını yeni bir bilgi arama gerekçesi olarak kullanma; bir sonraki düşünme halkasına geç.
+- Öğrenci aynı araç/veri kaynağında takılı kalıyorsa, onu tekrar tekrar aynı grafiğe baktırma. Problemde başka bir araç, nesne, tablo satırı veya veri kaynağı varsa, ayrıştırma hedefini koruyarak bu alternatif kaynağa yönlendir.
 
 Öğrencinin söylemediği sonucu onun adına çıkarma.
 Çözüm, formül, denklem, işlem, cevap veya doğrudan ipucu verme.
@@ -1686,8 +1672,10 @@ ipucu kademesini sürdürme; yeni düşünme adımına geç.
 HER BASAMAKTA İPUCUNUN SINIRI:
 1. AYRIŞTIRMA — Yalnızca problemi anlamaya, isteneni ve verileni ayırt etmeye,
    öğrencinin kurduğu bilgi zincirindeki mevcut halkayı açıklığa kavuşturmaya yardım et.
-   Öğrenci söylemediyse çözüm için gereken yeni niceliği/veri kaynağını adlandırma;
-   hız, süre, aynı süre, değişim, eğim, denklem, işlem veya çözüm yöntemini gündeme getirme.
+   Öğrenci takılırsa problemde gerçekten bulunan alternatif veri kaynağını/nesneyi
+   gösterebilirsin; ancak bu kaynağın hangi niceliği bulduracağını veya diğer verilerle
+   nasıl ilişkilendiğini söyleme. Hız, süre, aynı süre, değişim, eğim, denklem, işlem
+   veya çözüm yöntemini cevaba götüren bir ipucu olarak gündeme getirme.
    Takıldığında ipucu örneği: “Soruda senden bulman istenen şey ile grafikte doğrudan
    verilenleri ayrı ayrı düşünelim; hangisini şu ana kadar belirledin?” Bu, çözümü değil,
    yalnızca problem metnini ayrıştırmayı destekler.
@@ -1728,6 +1716,44 @@ SCAFFOLDING ÖRNEKLERİ — BUNLARI KALIP OLARAK TEKRARLAMA; MANTIĞINI UYGULA:
 - Metabilişsel yansıtmada: öğrenci planlama, izleme veya değerlendirme hakkında cevap verdiyse aynı boyutu yeniden sorma; henüz ele alınmamış boyuta geç veya verdiği cevabı somut bir deneyimiyle ilişkilendirmesini iste.
 
 
+
+V28 — AYRIŞTIRMADA KAYNAK DEĞİŞTİRME VE İPUCU KARARI (ÇOK ÖNEMLİ)
+
+Ayrıştırma basamağında öğrenciye gereksiz ipucu verme; fakat öğrenci takıldığında
+soyut ve tekrar eden sorularla da baş başa bırakma. Şu karar sırasını uygula:
+
+1. Öğrenci sorulan bilgiye uygun cevap verdiyse cevabı kabul et ve o bilgiyi
+   yeniden sorma.
+2. Öğrenci aynı araçtan bir bilgiyi zaten çıkardıysa, aynı araçtan yeni bir
+   değer aramaya devam etmeden önce öğrencinin o kaynaktan ilerleyip ilerleyemediğini
+   değerlendir.
+3. Öğrenci "bilmiyorum" diyorsa veya aynı kaynak üzerinden iki kez ilerleyemiyorsa,
+   problemde gerçekten bulunan alternatif veri kaynağına/nesneye/kişiye/araçlara
+   geçiş yap. Bu geçiş, öğrencinin çözüm yolunu keşfetmesi için öğretmen desteğidir;
+   cevabı vermek değildir.
+4. Alternatif kaynağa geçerken yalnızca oradaki somut verilenleri fark ettir.
+   Kaynağın hangi niceliği bulduracağını, diğer kaynakla nasıl ilişkilendiğini,
+   hangi işlemin yapılacağını veya sonucun ne olacağını söyleme.
+5. Öğrenci daha sonra iki kaynağın ilişkisini kendisi fark ederse bu fikri kabul
+   et; onu yeniden aynı ilişkiyi açıklamaya zorlamadan mevcut basamağın kalan
+   hedefine ilerle.
+
+ÖRNEK DURUM — PROBLEMDE A VE B ARAÇLARI VARSA:
+Öğrenci A aracının 3 saat sonra C'ye 252 km uzaklıkta olduğunu biliyor; fakat
+başlangıç uzaklığına ulaşmak için nasıl ilerleyeceğini bilmiyor veya "bilmiyorum"
+diyorsa A aracının aynı verisini farklı cümlelerle tekrar tekrar sorma. Öğrenciyi
+B aracının grafikteki başlangıç ve sonraki zamanına ait verilere yönlendirebilirsin:
+"A aracının bu bilgisiyle ilerlemekte zorlandık; grafikte B aracına ait verilenlere
+de bakalım. B için hangi zaman ve uzaklık değerleri gösterilmiş?"
+Bu örnek yalnızca alternatif veriyi fark ettirme düzeyindedir. B'nin hızını,
+toplam süreyi, iki aracın aynı sürede hareket ettiğini veya A'nın başlangıç
+uzaklığını söyleme. Bu ilişkileri öğrenci keşfetmelidir.
+
+BU KURALIN SINIRI:
+Alternatif veri kaynağına yönlendirmek, kritik matematiksel ilişkiyi açıklamakla
+aynı şey değildir. Ayrıştırmada öğrencinin problemi anlamasına ve verilenleri
+belirlemesine yardım et; Soyutlama'nın ilişkileri kurma işini onun yerine yapma.
+
 YANITI YALNIZCA ŞU JSON YAPISINDA VER:
 {{
   "alt_beceri": "...",
@@ -1750,12 +1776,12 @@ Soru alanında yalnızca öğrencinin göreceği 1-2 kısa cümle ve TEK soru ol
 
     result = parse_guidance_response(raw, current_step)
 
-    # V26: Model aynı düşünme hareketini yeniden sorarsa bir kez daha üret.
+    # V28: Model aynı düşünme hareketini yeniden sorarsa bir kez daha üret.
     # Bu kontrol, yalnızca metin benzerliğine değil, son mesajlardaki döngü sinyaline de dayanır.
     if _question_too_similar(result.get("soru", ""), chat_history):
         retry_prompt = prompt + """
 
-V26 OTOMATİK TEKRAR DENETİMİ:
+V28 OTOMATİK TEKRAR DENETİMİ:
 İlk ürettiğin soru önceki rehber sorularından biriyle aynı/çok benzer bulundu.
 Bu kez önceki sorunun istediği düşünme hareketini TEKRARLAMA. Öğrencinin son cevabını kabul et ve farklı bir bilişsel hareket seç. Öğrencinin zaten söylediği hiçbir veriyi yeniden isteme. Eğer öğrenci takıldığını belirttiyse, soruyu yeniden ifade etmek yerine problem bağlamından daha somut bir destek seç. Basamak hedefinin dışına çıkma. Yalnızca geçerli JSON döndür.
 """
@@ -1785,7 +1811,7 @@ Bu kez önceki sorunun istediği düşünme hareketini TEKRARLAMA. Öğrencinin 
             ))
             if current_step == "1. Ayrıştırma":
                 if stuck_now or loop_now:
-                    fallback_question = "Sorudaki istenen ile doğrudan verilen bilgileri ayrı ayrı düşünelim; hangisini şu ana kadar belirledin?"
+                    fallback_question = "Bu bilgiyle ilerlemekte zorlanıyorsak problemdeki diğer araç ya da nesneye ait verilere de bakalım; onunla ilgili hangi somut bilgiler verilmiş?"
                 else:
                     fallback_question = "Şu ana kadar belirlediğin istenen ve verilenleri düşündüğünde, bilgi zincirinde henüz açıklığa kavuşmayan bir halka var mı?"
             elif current_step == "2. Soyutlama":
