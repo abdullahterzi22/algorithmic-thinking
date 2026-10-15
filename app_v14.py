@@ -5,6 +5,7 @@ import os
 import base64
 import io
 import json
+import re
 from datetime import datetime
 from PIL import Image
 from streamlit_drawable_canvas import st_canvas
@@ -37,6 +38,7 @@ except Exception:
 
 
 MODEL_NAME = "gemini-3.5-flash-lite"
+APP_VERSION = "v24"
 
 GEMINI_URL = (
     "https://generativelanguage.googleapis.com/"
@@ -57,24 +59,41 @@ BASAMAK_TALIMATLARI = {
     "1. Ayrıştırma": """
 
 Amaç:
-Öğrencinin doğrusal ilişki içeren problemi anlamlı
-parçalara ayırmasını sağlamak.
+Öğrencinin problemi yalnızca düşünme gereksinimleri bakımından
+anlamlı parçalara ayırmasını sağlamak.
+
+AYRIŞTIRMA'NIN TEMEL ZİNCİRİ:
+İSTENEN → BUNU BULMAK İÇİN GEREKEN BİLGİ →
+BU BİLGİYİ BULMAK İÇİN GEREKEN BİLGİ → VERİLEN/TEMEL BİLGİ
 
 Öğrencinin:
-- Hangi bilgilerin birbiriyle ilişkili olduğunu incelemesini,
-- Problemi anlamlı parçalara ayırmasını,
-- Problemdeki değişen veya birbirine bağlı nicelikleri
-  fark etmesini sağla.
+- Önce neyin istendiğini belirlemesini,
+- İstenen şeyi belirlemek için hangi bilgiye ihtiyaç olduğunu
+  kendisinin fark etmesini,
+- Gerekli bir bilgi eksikse o bilgiye ulaşmak için hangi
+  bilgiye ihtiyaç olduğunu kendisinin düşünmesini,
+- Elindeki verilen bilgilerin bu zincirde hangi ihtiyacı
+  karşıladığını fark etmesini sağla.
+
+ÇOK ÖNEMLİ:
+Ayrıştırma sırasında öğrencinin henüz söylemediği bir veri
+kaynağını, niceliği, değeri, süreyi, hızı, işlemi, matematiksel
+ilişkiyi, grafik özelliğini veya çözüm adımını sen ortaya çıkarma.
+Öğrenciyi B aracına, hıza, süreye, belirli bir grafik noktasına,
+eksen kesişimine veya herhangi bir hesaplamaya kendin yönlendirme.
 
 Yasak:
-
 - Çözüm yolu söylemek.
 - İşlem önermek.
 - Formül vermek.
 - Denklem vermek.
 - Doğrusal ilişkiyi doğrudan söylemek.
 - Cevabı söylemek.
+- Hız, süre, değişim miktarı veya başka bir çözüm niceliğini
+  öğrencinin yerine ortaya çıkarmak.
 - Öğrencinin yerine problemi parçalara ayırmak.
+- Öğrencinin henüz söylemediği başka bir veri kaynağını
+  (ör. B aracı) soruyla ortaya çıkarmak.
 - Sonuca götüren doğrudan ipucu vermek.
 
 """,
@@ -83,36 +102,61 @@ Yasak:
     "2. Soyutlama": """
 
 Amaç:
-Öğrencinin problemin altında yatan matematiksel ilişkiyi
-fark etmesini sağlamak.
+Öğrencinin problemdeki temel bilgileri ayırt etmesini ve bu probleme
+özgü, çözümü mümkün kılan kritik matematiksel ilişkiyi kendisinin
+keşfetmesini sağlamak.
 
-Öğrencinin:
+İKİ TEMEL HEDEF:
 
-- Gerekli bilgileri ayırt etmesini,
-- Gereksiz bilgileri fark etmesini,
-- Değişen nicelikleri fark etmesini,
-- Bir nicelik değiştiğinde diğer nicelikte ne olduğunu
-  incelemesini,
-- Nicelikler arasındaki ilişkiyi fark etmesini,
-- Değişim miktarlarını karşılaştırmasını,
-- Önceki matematiksel bilgilerini problemle ilişkilendirmesini,
-- Tablo, grafik, sözel ifade veya şekil gibi farklı
-  temsiller arasındaki ilişkiyi fark etmesini,
-- Uygunsa örüntü veya genel yapı oluşturmasını,
-- Özel bir durumdan daha genel bir ilişkiye ulaşmasını
-  sağlamaya çalış.
+1. BİLGİLERİ AYIRT ETME:
+- Hangi bilgilerin problem için temel olduğunu, hangilerinin ikincil
+  veya doğrudan gerekli olmayabileceğini öğrencinin değerlendirmesini sağla.
+- Bir bilgi doğrudan işlemde kullanılmıyor diye otomatik olarak gereksiz
+  kabul etme; bağlamı anlamak veya ilişkiyi keşfetmek için önemli olabilir.
+- Öğrencinin bu değerlendirmeyi gerekçelendirmesine yardımcı ol.
 
-Yasak:
+2. KRİTİK MATEMATİKSEL İLİŞKİYİ KEŞFETME:
+- Her problem için kritik ilişkiyi gerçek problem görseli, verileri ve
+  öğrencinin önceki cevaplarından belirle.
+- İlişkiyi öğrencinin yerine söyleme.
+- Öğrenci takılırsa aynı soruyu tekrar etmek yerine kademeli scaffolding
+  yap; önce öğrencinin söylediği bilgiye, sonra problemdeki ilgili somut
+  niceliklere/görsel özelliklere dikkatini yönelt.
+- Öğrencinin bu somut bilgiler arasındaki ilişkiyi kendisinin ifade
+  etmesini bekle.
 
-- "Bu doğrusal ilişkidir." demek.
-- Doğrusal ilişkiyi öğrencinin yerine belirlemek.
-- Denklem vermek.
-- Formül vermek.
-- Eğim kavramını doğrudan söylemek.
-- Sabit değişimi doğrudan söylemek.
-- Kullanılacak yöntemi söylemek.
-- Çözüm vermek.
-- Öğrencinin yerine örüntü oluşturmak.
+PROBLEM ODAKLI İLERLEME:
+- Öğrencinin önceki Ayrıştırma yanıtlarını ve yüklenen problem görselini
+  birlikte kullan.
+- Öğrencinin zaten fark ettiği bilgi veya ilişkiyi yeniden sordurma.
+- Öğrenci yalnızca sayısal değerleri okuyorsa, bu değerlerin problemde
+  neyi temsil ettiğini veya birbirleriyle nasıl ilişkili olabileceğini
+  düşündür; ilişkiyi söyleme.
+- Öğrenci ikincil bir bilgiye odaklanıyorsa onu doğrudan gereksiz ilan
+  etme; bağlantısını değerlendirmesini sağla.
+- Örüntü/genelleme yalnızca problem yapısı uygunsa ele alınsın.
+
+SCAFFOLDING SINIRI:
+Öğrenci bilmiyorsa, belirsizse veya takılmışsa destek ver; ancak destek
+öğrencinin bilişsel işini devralmasın. İpucu problemdeki veriye/görsele
+konuyu daraltabilir, fakat cevabı, formülü, işlemi, denklemi, yöntemi veya
+kritik ilişkiyi açıkça veremez.
+
+YASAK:
+- “Bu doğrusal ilişkidir.” demek.
+- Kritik ilişkiyi öğrencinin yerine kurmak.
+- Denklem veya formül vermek.
+- Eğim/sabit değişim gibi çözümün püf noktasını öğrencinin yerine söylemek.
+- Kullanılacak işlemi veya yöntemi söylemek.
+- Öğrencinin yerine örüntü/genelleme oluşturmak.
+- Aynı soruyu farklı kelimelerle tekrar tekrar sormak.
+- Öğrencinin zaten söylediği bilgiyi yeniden aratmak.
+- Öğrenciyi cevap/sonuç yönünde adım adım sürüklemek.
+
+TAMAMLAMA:
+Öğrenci önemli bilgileri yeterince ayırt etmiş ve kritik ilişkiyi kendi
+ifadeleriyle ortaya koymuşsa aynı düşünmeyi uzatma. Basamak geçişinde
+uygulamanın mevcut tamamlanma kurallarını koru.
 
 """,
 
@@ -179,6 +223,52 @@ Yasak:
 - Eksik adımı öğrencinin yerine tamamlamak.
 
 """
+,
+
+    "5. Metabilişsel Yansıtma": """
+
+Amaç:
+Öğrencinin tamamladığı algoritmik problem çözme sürecini
+metabilişsel açıdan fark etmesini, izlemesini ve değerlendirmesini sağlamak.
+
+Bu basamak üç boyut üzerinden ilerler:
+
+1. PLANLAMA:
+- Problemi çözmeye başlamadan önce neyi amaçladığını,
+- hangi bilgileri kullanacağını,
+- nasıl bir yol izleyeceğini ve neden o yolu seçtiğini
+  fark etmesini sağla.
+
+2. İZLEME:
+- Çözüm sırasında ne yaptığını,
+- kullandığı bilgilerin amacına hizmet edip etmediğini,
+- düşünme ve işlem adımlarını nasıl kontrol ettiğini,
+- gerektiğinde düşüncesini nasıl değiştirdiğini
+  fark etmesini sağla.
+
+3. DEĞERLENDİRME:
+- Oluşturduğu çözümün ve kullandığı yolun problem koşullarıyla
+  ne ölçüde uyumlu olduğunu,
+- hangi kararlarının işe yaradığını,
+- neyi farklı yapabileceğini,
+- benzer bir problemde neyi yeniden kullanabileceğini
+  değerlendirmesini sağla.
+
+İlerleme sırası:
+PLANLAMA → İZLEME → DEĞERLENDİRME
+
+Yasak:
+- Öğrencinin yerine kendi sürecini yorumlamak.
+- "Şurada iyi plan yaptın." gibi değerlendirme yapmak.
+- Öğrencinin neden belirli bir adımı seçtiğini onun yerine açıklamak.
+- Çözümü yeniden yapmak.
+- Yeni bir çözüm yolu öğretmek.
+- "Doğru/yanlış" gibi doğrudan değerlendirme ifadeleri kullanmak.
+
+Bu basamakta amaç yeni bir matematiksel çözüm üretmek değil,
+öğrencinin kendi düşünme sürecini fark etmesi ve değerlendirmesidir.
+
+"""
 }
 
 
@@ -214,6 +304,11 @@ ALT_BECERILER = {
         ("HA5", "Düzeltme yapma"),
         ("HA6", "Yeniden test etme"),
     ],
+    "5. Metabilişsel Yansıtma": [
+        ("MY1", "Planlama sürecini fark etme"),
+        ("MY2", "Çözüm sürecini izleme"),
+        ("MY3", "Çözüm sürecini değerlendirme"),
+    ],
 }
 
 
@@ -233,7 +328,10 @@ METABILISSEL_SORULAR = {
         "Çözüm adımlarını planlarken nasıl bir yol izledin ve bu sırayı neden seçtin?",
 
     "4. Hata Ayıklama":
-        "Kurduğun ilişkinin ve bulduğun sonucun problem koşullarıyla uyumlu olduğundan nasıl emin oldun?"
+        "Kurduğun ilişkinin ve bulduğun sonucun problem koşullarıyla uyumlu olduğundan nasıl emin oldun?",
+
+    "5. Metabilişsel Yansıtma":
+        "Bu problemde düşünme sürecini planlama, izleme ve değerlendirme açısından nasıl değerlendiriyorsun?"
 }
 
 
@@ -245,6 +343,8 @@ SYSTEM_PROMPT = """
 
 Sen ortaokul matematik öğrencisine rehberlik eden
 bir matematik öğretmenisin.
+
+SÜRÜM: v22 — öğrenci yanıtını sınıflandır; bağlama özgü takip sorusu üret ve bilgi tekrarını engelle.
 
 KONU:
 DOĞRUSAL İLİŞKİLER
@@ -325,6 +425,59 @@ YANIT BİÇİMİ
 - Gereksiz açıklama yapma.
 
 ============================================================
+SCAFFOLDING — TAKILAN ÖĞRENCİYLE ÇALIŞMA
+============================================================
+
+ÖĞRENCİ TAKILDIĞINDA ONU BOŞ BIRAKMA.
+
+Öğrenci “bilmiyorum”, “anlamadım”, “bulamadım”, “emin değilim” gibi
+ifadeler kullanırsa aynı soruyu başka kelimelerle tekrar etme. Bunun
+yerine, MEVCUT BASAMAĞIN HEDEFİNİ KORUYAN kademeli bir destek ver.
+
+SCAFFOLDING KADEMESİ:
+1. Önce öğrencinin daha önce söylediği hedefe veya bilgiye dön.
+2. Sonra yüklenen gerçek problemdeki ilgili somut bilgiye dikkat
+   yönelt.
+3. Gerekirse öğrencinin bakması gereken ilişkiyi biraz daha
+   daralt; fakat çözümün kendisini söyleme.
+
+Örnek ilerleme:
+- Genel yönlendirme: “Bu noktada neyi belirlemeye çalıştığını
+  yeniden düşünür müsün?”
+- Problem bağlamına dayalı destek: “Bunun için problemde bu
+  nicelikle ilgili hangi bilgilerin verildiğine bakabilir misin?”
+- Daha somut destek: “Sorudaki bu niceliğin farklı zamanlardaki
+  verilerini birlikte incelemeyi dener misin?”
+
+SON SINIR:
+Scaffolding, öğrencinin dikkatini hedefe yöneltebilir; ancak
+öğrenci adına matematiksel ilişkiyi kuramaz, hangi işlemi yapacağını
+söyleyemez, formül/denklem veremez ve sonucu açığa çıkaramaz.
+
+AYNI SORUYU TEKRAR ETME YASAĞI:
+Öğrenci bir soruya cevap veremediğinde yalnızca aynı soruyu yeniden
+sorma. Bir önceki sorudan daha SOMUT ama hâlâ öğrencinin düşünmesini
+gerektiren yeni bir destek üret.
+
+SCAFFOLDING BASAMAĞININ HEDEFİNİ DEĞİŞTİRMEMELİ:
+- Ayrıştırmada destek, problemi parçalara ayırma zincirine döndürür.
+- Soyutlamada destek, önemli bilgiyi ve kritik ilişkiyi fark etmeye
+  döndürür.
+- Algoritma Tasarımında destek, öğrencinin kendi adımlarını
+  yapılandırmasına döndürür.
+- Hata Ayıklamada destek, öğrencinin kendi çözümünü test etmesine
+  döndürür.
+- Metabilişsel Yansıtmada destek, öğrencinin kendi düşünme sürecini
+  açıklamasına döndürür.
+
+ÖZEL OLARAK SOYUTLAMA:
+Öğrenci kritik matematiksel ilişkiyi henüz kuramadığında ilişkiyi
+söyleme. Ancak öğrenci takılıyorsa yalnızca “hangi ilişkiyi
+görüyorsun?” diye tekrarlamak yerine problemdeki ilgili iki veya daha
+fazla somut niceliğe dikkatini yönelt. Öğrencinin bu nicelikler
+arasındaki ilişkiyi kendisinin ifade etmesini bekle.
+
+============================================================
 DOĞRUSAL İLİŞKİLER İÇİN UYGUN SORU TÜRLERİ
 ============================================================
 
@@ -355,6 +508,27 @@ DOĞRUSAL İLİŞKİLER İÇİN UYGUN SORU TÜRLERİ
 "Bir sonraki adımına geçmek için hangi bilgiye ihtiyacın var?"
 
 "Kuruduğun ilişkiyi problemdeki başka bir değerle nasıl sınayabilirsin?"
+
+============================================================
+AYRIŞTIRMA İÇİN SORU BANKASI SINIRI
+============================================================
+
+Aşağıdaki genel soru türleri yalnızca ilgili basamaklarda kullanılabilir.
+MEVCUT BASAMAK "1. Ayrıştırma" ise bu genel soru bankasını kullanma.
+Özellikle ilişki, değişim, hız, süre, işlem, hesaplama, grafik
+özelliği veya çözüm adımı çağrıştıran sorular üretme.
+
+Ayrıştırmada soru yönü yalnızca geriye doğru olabilir:
+- Ne isteniyor?
+- Bunu belirlemek için hangi bilgi gerekiyor?
+- Bu bilgiye ulaşmak için hangi bilgi gerekiyor?
+- Elindeki verilenlerden hangisi bu ihtiyacı karşılıyor?
+- Şu ana kadarki bilgiler yeterli mi?
+- Eksik olduğunu düşündüğün bilgi nedir?
+
+Öğrenci bir bilgi söylediğinde o bilgi zincirde bir HALKA olarak kabul edilir.
+AI o bilgiyi yeniden aratamaz ve öğrencinin söylemediği bir sonraki halkayı
+sorunun içine yerleştiremez.
 
 ============================================================
 ASLA KULLANMA
@@ -611,6 +785,160 @@ def parse_guidance_response(raw_text, current_step):
         }
 
 
+def _normalize_text(text):
+    """Tekrar kontrolü için Türkçe metni sadeleştirir."""
+    text = str(text or "").casefold()
+    text = text.translate(str.maketrans({"ı": "i", "ğ": "g", "ü": "u", "ş": "s", "ö": "o", "ç": "c"}))
+    text = re.sub(r"[^a-z0-9\s]", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _last_assistant_question(chat_history):
+    for message in reversed(chat_history or []):
+        if message.get("role") == "assistant":
+            return str(message.get("content", "")).strip()
+    return ""
+
+
+def _affirmative_reply(text):
+    normalized = _normalize_text(text)
+    return normalized in {
+        "evet", "evet yeterli", "yeterli", "sanirim evet", "bence yeterli",
+        "hayir", "hayır", "hayir yeterli degil", "yeterli degil", "değil"
+    }
+
+
+def _previous_student_message(chat_history):
+    """Mevcut yanıttan önceki en son öğrenci mesajını döndürür."""
+    for message in reversed(chat_history or []):
+        if message.get("role") == "user":
+            return str(message.get("content", "")).strip()
+    return ""
+
+
+def _question_seen_before(chat_history, question):
+    """Aynı veya çok benzer bir sorunun daha önce sorulup sorulmadığını denetler."""
+    q = _normalize_text(question)
+    if not q:
+        return False
+    q_words = set(q.split())
+    for message in (chat_history or []):
+        if message.get("role") != "assistant":
+            continue
+        old = _normalize_text(message.get("content", ""))
+        if old == q:
+            return True
+        old_words = set(old.split())
+        if len(q_words | old_words) and len(q_words & old_words) / len(q_words | old_words) > 0.78:
+            return True
+    return False
+
+
+def _ayristirma_guard(result, chat_history, student_message):
+    """Ayrıştırmada yanıt türünü dikkate alır; bilgi tekrarını ve çözüm adımına kaymayı engeller."""
+    question = str(result.get("soru", "")).strip()
+    previous_question = _last_assistant_question(chat_history)
+    previous_student = _previous_student_message(chat_history)
+    q_norm = _normalize_text(question)
+    prev_norm = _normalize_text(previous_question)
+    student_norm = _normalize_text(student_message)
+    previous_student_norm = _normalize_text(previous_student)
+
+    # 1) Öğrenci grafikteki bilgiyi zaten gösterdiğini söylüyorsa veriyi yeniden aratma.
+    graph_already_seen = any(phrase in student_norm for phrase in (
+        "grafikte yaziyor zaten", "grafikte var zaten", "grafikte yaziyor",
+        "grafikte var", "grafikte gorunuyor", "grafikte goruluyor",
+        "soruda yaziyor zaten", "verilenlerde yaziyor"
+    ))
+    if graph_already_seen:
+        # Önceki öğrenci mesajında somut olarak adlandırılmış verileri takip sorusuna taşı.
+        if ("2 saat" in previous_student_norm or "iki saat" in previous_student_norm) and (
+            "uzak" in previous_student_norm or "mesafe" in previous_student_norm
+        ):
+            tailored = (
+                "Başlangıçtaki ve 2 saat sonraki uzaklıkları seçtin. "
+                "Bu iki bilgiyi kullanarak hangi bilgiyi belirlemeyi amaçlıyorsun?"
+            )
+        elif "baslangic" in previous_student_norm and ("uzak" in previous_student_norm or "mesafe" in previous_student_norm):
+            tailored = (
+                "Başlangıç uzaklığını belirttin. Bu bilgi, problemde aradığın uzaklıkla "
+                "nasıl bir bağlantı kuruyor?"
+            )
+        elif previous_student:
+            tailored = (
+                f"Az önce belirttiğin ‘{previous_student[:110]}’ bilgisini düşün. "
+                "Bu bilgi, belirlemek istediğin şeyle nasıl bağlantılı?"
+            )
+        else:
+            tailored = "Grafikte gördüğün bilgiyi tekrar aramana gerek yok. Bu bilgi, problemde aradığın şeyle nasıl bağlantılı?"
+        result["soru"] = tailored
+        result["basamak_tamamlandi"] = False
+        return result
+
+    # 2) Kısa evet/hayır yanıtını yalnızca hemen önceki soruya verilmiş cevap olarak yorumla.
+    if _affirmative_reply(student_message) and any(
+        phrase in prev_norm for phrase in ("yeterli mi", "yeterli degil", "eksik mi")
+    ):
+        if student_norm.startswith("evet") or student_norm == "yeterli":
+            result["soru"] = "Belirlediğin bilgilerden hangisinin, aradığın şeyi açıklamada en önemli olduğunu düşünüyorsun?"
+        else:
+            result["soru"] = "Mevcut bilgilerle ilgili hangi noktanın eksik kaldığını düşünüyorsun?"
+        result["basamak_tamamlandi"] = False
+        return result
+
+    # 3) Öğrenci işlem önerdiyse hesaplamaya geçme; işlemle hangi bilgiyi aradığını netleştir.
+    solution_markers = (
+        "farkini al", "toplarim", "cikaririm", "bolerim", "carparim",
+        "hesaplarim", "islem yap", "formul", "denklem", "hizini bul",
+        "egim", "bolme yap", "carpma yap", "oranini bul"
+    )
+    if any(marker in student_norm for marker in solution_markers):
+        result["soru"] = (
+            "Bu işlemle hangi bilgiyi belirlemeye çalıştığını kendi sözlerinle açıklayabilir misin?"
+        )
+        result["basamak_tamamlandi"] = False
+        return result
+
+    # 4) Öğrenci somut veri veya nicelik söylediyse onu yeniden isteme; sonraki düşünme halkasını sor.
+    has_concrete_data = any(token in student_norm for token in (
+        "saat", "dakika", "km", "kilometre", "uzaklik", "mesafe", "grafik",
+        "baslangic", "sonraki", "arac", "araci", "veri", "nokta", "deger"
+    ))
+    if has_concrete_data and any(phrase in prev_norm for phrase in (
+        "hangi veri", "hangi bilgiyi", "hangi bilgiye", "hangi deger", "hangi değeri"
+    )):
+        result["soru"] = (
+            "Belirttiğin bu bilgiyi, problemde istenen şeye ulaşmak için nasıl bir ihtiyaçla ilişkilendiriyorsun?"
+        )
+        result["basamak_tamamlandi"] = False
+        return result
+
+    # 5) Ayrıştırma basamağında çözüm/işlem çağrıştıran soruları engelle.
+    forbidden_question_markers = (
+        "hangi adimi atman", "hangi islemi", "nasil hesap", "hangi formul",
+        "egim", "hizini", "sureyi bul", "degisim miktari", "denklemi yaz",
+        "islem yap", "sonucu bul", "hesaplayabilir misin"
+    )
+    if any(marker in q_norm for marker in forbidden_question_markers):
+        result["soru"] = "Belirlediğin bilgilerden hangisinin, aradığın şeyi açıklamada önemli olduğunu düşünüyorsun?"
+        result["basamak_tamamlandi"] = False
+        return result
+
+    # 6) Aynı veya benzer soru tekrar ediyorsa önceki yanıt türüne göre farklı bir takip sorusu seç.
+    if _question_seen_before(chat_history, question):
+        if any(token in student_norm for token in ("b ile", "b araci", "b aracı", "b'nin", "b nin")):
+            result["soru"] = "B ile ilgili belirttiğin bilgilerin, aradığın uzaklığı açıklamak açısından neyi netleştirdiğini düşünüyorsun?"
+        elif any(token in student_norm for token in ("yeterli", "eksik", "bilmiyorum", "emin degilim")):
+            result["soru"] = "Şu ana kadar belirlediklerinden hangisi hâlâ açıklanmaya ihtiyaç duyuyor?"
+        elif has_concrete_data:
+            result["soru"] = "Belirttiğin bilgiyi, problemde istenenle ilişkilendirdiğinde hangi bağlantıyı kuruyorsun?"
+        else:
+            result["soru"] = "Şu ana kadar söylediklerinden hangisi, neyi bulmamız gerektiğini anlamana yardımcı oluyor?"
+        result["basamak_tamamlandi"] = False
+
+    return result
+
+
 # ============================================================
 # PROBLEM GÖRSELİNİ ANALİZ ET
 # ============================================================
@@ -739,14 +1067,64 @@ def ilk_soruyu_olustur(current_step, problem_analysis):
 
     if current_step == "1. Ayrıştırma":
         progression = """
-AYRIŞTIRMA İÇİN ÖZEL İLERLEME:
-Öğrenciyi GERİYE DOĞRU ÇALIŞTIR.
-1. Önce problemde NE İSTENDİĞİNİ fark ettir.
-2. Ardından, isteneni bulabilmek için hangi bilgiye ihtiyaç olduğunu öğrencinin kendisinin söylemesini sağla.
-3. Sonra o bilgiyi bulabilmek için hangi bilgiye ihtiyaç olduğunu sordur.
-4. Bu zinciri temel/verilen bilgilere ulaşıncaya kadar sürdür.
-Öğrenciye zincirin bir sonraki halkasını söyleme.
-"Bunu bulmak için neye ihtiyacın var?" türündeki soru, öğrencinin verdiği son bilgiye göre gerçek probleme bağlanmalıdır.
+ÖZEL KURAL — AYRIŞTIRMA / GERİYE DOĞRU ZİNCİR:
+
+BU AŞAMADA ÇÖZÜM YAPILMAZ.
+Amaç yalnızca öğrencinin problemi şu zincirde kendi başına
+parçalamasıdır:
+
+İSTENEN
+→ BUNU BULMAK İÇİN GEREKEN BİLGİ
+→ BU BİLGİYİ BULMAK İÇİN GEREKEN BİLGİ
+→ VERİLEN/TEMEL BİLGİ
+
+ÖĞRENCİ TAKILIRSA SCAFFOLDING YAP:
+Öğrenci “bilmiyorum”, “anlamadım” veya benzeri bir ifade kullanırsa
+aynen aynı soruyu tekrar etme. Önce öğrencinin son söylediği hedefe
+dön; ardından gerçek problemde o hedefle ilgili somut bilgilere
+dikkatini yönelt. Gerekirse ipucunu bir kademe daha somutlaştır.
+Ancak öğrencinin henüz söylemediği çözüm kaynağını, niceliği,
+matematiksel ilişkiyi veya işlemi sen söyleme.
+
+ÖRNEK SCAFFOLDING SINIRI:
+Öğrenci “Bilmiyorum.” derse “Bunu belirlemek için hangi bilgiye
+ihtiyacın var?” sorusunu aynen tekrar etmek yerine “Soruda bu
+nicelikle ilgili hangi bilgilerin verildiğine bakabilir misin?” gibi
+problem bağlamına dayalı bir destek kullanılabilir. Daha fazla
+desteğe ihtiyaç varsa, problemdeki ilgili zaman/değer gibi somut
+verilere bakmasını iste; fakat bu veriler arasındaki işlemi veya
+ilişkiyi söyleme.
+
+KATI KURAL:
+Öğrencinin henüz söylemediği bir sonraki halkayı SEN ortaya çıkaramazsın.
+Soru, öğrencinin düşünmesi gereken halkayı isim olarak içinde taşımamalıdır.
+
+ÖNCEKİ SORU-CEVAP BAĞI ZORUNLUDUR:
+Öğrencinin kısa cevabını mutlaka hemen önceki rehber sorusuyla birlikte yorumla.
+“Evet/hayır” gibi kısa cevapları yeni bilgi gibi yorumlama. Öğrenci bir
+bilgiyi zaten söylediyse onu yeniden aratma.
+
+BİLGİ TEKRARI YASAĞI:
+Öğrencinin verdiği veri, nicelik veya grafik bilgisi mevcut zincirde
+bir halka olarak kabul edilir; aynı şeyi farklı kelimelerle tekrar
+sorma. Sonraki soru, henüz ele alınmamış bir sonraki düşünme halkasına
+yönelsin.
+
+AYRIŞTIRMADA KESİNLİKLE ÇÖZÜM YÖNLENDİRMESİ YAPMA:
+- Nasıl hesaplanır?
+- Hangi işlem yapılır?
+- Hangi formül kullanılır?
+- Hangi ilişkiyi kullanırsın?
+- Hızını/süreyi/değişimi nasıl bulursun?
+- Hangi grafik noktasını kullanırsın?
+- Denklem nasıl bulunur?
+
+Öğrenci bir işlem veya çözüm önerisi söylerse bunu geliştirme ya da
+sonraki işlemi sordurma. Ayrıştırmanın hedefinde kalarak öğrencinin
+o işlemle hangi bilgiyi belirlemeye çalıştığını düşündür.
+
+Öğrenci yeterli ayrıştırmayı kendi ifadeleriyle tamamladıysa sırf
+daha fazla soru üretmek için aynı düşünmeyi uzatma.
 """
     elif current_step == "2. Soyutlama":
         progression = """
@@ -764,12 +1142,33 @@ Ayrıştırma ve Soyutlama aşamalarındaki öğrenci düşüncelerini kullan.
 İlk adımı, sonraki adımı veya işlemi öğrencinin yerine söyleme.
 Akış şeması görselini de incele ve soruyu mevcut çizime bağla.
 """
-    else:
+    elif current_step == "4. Hata Ayıklama":
         progression = """
 HATA AYIKLAMA İÇİN ÖZEL İLERLEME:
 Öğrencinin oluşturduğu akış şemasını ve önceki aşamalardaki düşüncelerini incele.
 Önce çözümü test ettir. Bir tutarsızlık seziliyorsa öğrencinin kendisinin ilgili noktayı bulmasını sağla; ardından düzeltmesini ve yeniden test etmesini iste.
 Sorun görünmüyorsa ve yaş düzeyine uygun başka bir yol gerçekten mümkünse alternatif yolu düşündür; alternatif yöntem zorunlu değildir.
+"""
+    else:
+        progression = """
+METABİLİŞSEL YANSITMA İÇİN ÖZEL İLERLEME:
+
+Bu basamak yalnızca öğrencinin kendi düşünme sürecine dönük yansıtma içindir.
+Yeni bir matematiksel çözüm öğretme veya çözümü yeniden yaptırma.
+
+Sıra:
+PLANLAMA → İZLEME → DEĞERLENDİRME
+
+Önce PLANLAMA: öğrencinin çözüm öncesinde amacını, kullanmayı düşündüğü
+bilgileri ve izleyeceği yolu nasıl belirlediğini fark ettir.
+Sonra İZLEME: öğrencinin çözüm sırasında kendi düşünmesini, kullandığı
+bilgileri ve adımlarını nasıl kontrol ettiğini fark ettir.
+Son olarak DEĞERLENDİRME: öğrencinin kullandığı yolun ve sonucunun süreç
+açısından ne kadar işe yaradığını, neyi farklı yapabileceğini ve benzer
+bir problemde neyi yeniden kullanabileceğini değerlendirmesini sağla.
+
+Bir seferde yalnızca tek boyuta odaklan. Öğrenci bir boyutu açıklamadan
+diğerine geçme. Öğrencinin yerine onun düşünme sürecini yorumlama.
 """
 
     prompt = f"""
@@ -788,6 +1187,8 @@ ALT BECERİLER:
 
 AŞAMA ÖNCELİĞİ:
 Mevcut basamak 1. Ayrıştırma ise, öğrencinin henüz çözüm yapmasına izin verme. İlk soru yalnızca istenen veya istenene ulaşmak için gerekli bilgi zincirini başlatmalıdır; grafik üzerindeki çözüm yolunu, matematiksel ilişkiyi veya hesaplamayı hedefleme.
+
+Mevcut basamak 5. Metabilişsel Yansıtma ise, yeni matematiksel içerik öğretme. Öğrencinin tamamladığı süreci PLANLAMA → İZLEME → DEĞERLENDİRME sırasıyla kendi ifadeleri üzerinden fark etmesini ve değerlendirmesini sağla.
 
 PROBLEM ANALİZİ:
 {problem_analysis}
@@ -813,7 +1214,7 @@ Soru alanında yalnızca tek kısa yönlendirici soru bulunsun.
         temperature=0.2,
         max_tokens=150,
         include_problem_image=True,
-        include_flowchart_image=(current_step in ["3. Algoritma Tasarımı", "4. Hata Ayıklama"])
+        include_flowchart_image=(current_step in ["3. Algoritma Tasarımı", "4. Hata Ayıklama", "5. Metabilişsel Yansıtma"])
     )
 
     return parse_guidance_response(raw, current_step)
@@ -826,47 +1227,143 @@ def ogrenciye_cevap_ver(current_step, problem_analysis, chat_history, student_me
 
     if current_step == "1. Ayrıştırma":
         progression = """
-ÖZEL KURAL — GERİYE DOĞRU AYRIŞTIRMA:
-BU AŞAMADA AMAÇ ÇÖZÜME ULAŞMAK DEĞİLDİR. Amaç yalnızca problemin istenenini, bu istenene ulaşmak için gerekli bilgileri ve bu bilgilerin birbirine bağlılığını öğrencinin kendisinin parçalara ayırmasıdır.
+ÖZEL KURAL — AYRIŞTIRMA / GERİYE DOĞRU ZİNCİR:
 
-Ayrıştırmada şu zinciri takip et:
-İSTENEN → BUNU BULMAK İÇİN GEREKEN BİLGİ → BU BİLGİYİ BULMAK İÇİN GEREKEN BİLGİ → VERİLEN/TEMEL BİLGİ.
+BU AŞAMADA ÇÖZÜM YAPILMAZ.
+Amaç yalnızca öğrencinin problemi şu zincirde kendi başına
+parçalamasıdır:
 
-Öğrenci henüz bu zincirdeki bir halkayı açıkça söylemediyse, o halkayı sen söyleme veya grafik üzerinde gösterme.
-Öğrenci bir halkayı söylediyse onu tamamlanmış kabul et ve yalnızca bir sonraki GERİYE DOĞRU halkayı düşündür.
+İSTENEN
+→ BUNU BULMAK İÇİN GEREKEN BİLGİ
+→ BU BİLGİYİ BULMAK İÇİN GEREKEN BİLGİ
+→ VERİLEN/TEMEL BİLGİ
 
-AYRIŞTIRMA AŞAMASINDA ŞUNLARI SORMA:
+KATI KURAL:
+Öğrencinin henüz söylemediği bir sonraki halkayı SEN ortaya çıkaramazsın.
+Soru, öğrencinin düşünmesi gereken halkayı isim olarak içinde taşımamalıdır.
+
+ÖRNEĞİN:
+Öğrenci "A'nın başlangıç uzaklığını bulmamız gerekiyor" dediyse,
+"bunu bulmak için hangi bilgiye ihtiyacın var?" denebilir.
+
+Ama öğrenci "A'nın verileri yetmiyor" demeden:
+- B aracını,
+- B'nin verilerini,
+- hızı,
+- süreyi,
+- aynı süreyi,
+- değişim miktarını,
+- belirli bir grafik noktasını,
+- ekseni/kesişimi,
+- herhangi bir işlemi
+soruya sokma.
+
+ÖĞRENCİ CEVABINI ÖNCE SINIFLANDIR:
+1. Önceki soruya evet/hayır mı dedi? Bu kısa cevap yalnızca önceki soruyu yanıtlar.
+2. Yeni bir bilgi veya nicelik mi belirtti?
+3. Bir bilginin eksik olduğunu mu söyledi?
+4. Önceki düşüncesini düzeltti mi?
+5. İşlem/çözüm önerisine mi geçti?
+6. Soruyu anlamadığını mı söyledi?
+
+ÖNCEKİ SORU-CEVAP BAĞI ZORUNLUDUR:
+Öğrencinin kısa cevabını mutlaka hemen önceki rehber sorusuyla birlikte yorumla.
+Örneğin rehber "Elindeki veriler yeterli mi?" diye sorduysa, "evet" cevabı
+bu soruya verilmiş bir yanıttır; yeni bir işlem isteme veya "hangi adımı
+atman gerekiyor?" diye çözüm planına geçme gerekçesi değildir.
+
+Sonra yalnızca öğrencinin gerçekten söylediği içerikten hareket et.
+
+BİLGİ TEKRARI YASAĞI:
+- Öğrenci "3 saatte 252 km" dediyse bunu tekrar sorma.
+- Öğrenci "B'nin 2 saatte 340'tan 204'e düştüğünü" söylediyse
+  bunu tekrar aratma.
+- Öğrenci "başka A bilgisi yok" dediyse, bunu "A bilgisini bulamadı"
+  şeklinde yorumlama.
+- Öğrencinin söylediği bir veri zaten mevcutsa "başka hangi veri...",
+  "hangi saat...", "grafikte ne görüyorsun?" gibi yeni veri avına çıkma.
+
+AYRIŞTIRMADA KESİNLİKLE SORMA:
 - Nasıl hesaplanır?
-- Hangi formül kullanılır?
 - Hangi işlem yapılır?
-- Hangi ilişki vardır?
+- Hangi formül kullanılır?
+- Hangi ilişkiyi kullanırsın?
+- Hızını nasıl bulursun?
+- Süreyi nasıl bulursun?
+- Hangi saat bilgisini kullanırsın?
+- B aracından nasıl yararlanırsın?
+- Grafikte hangi noktaya bakarsın?
 - Değişim miktarı nedir?
 - Eğim nedir?
 - Denklem nasıl bulunur?
 - Grafikten sonucu nasıl bulursun?
-Bu tür sorular Soyutlama veya Algoritma Tasarımı aşamalarına aittir ve Ayrıştırma sırasında çözüm yoluna yaklaşır.
 
-ÖNCE ÖĞRENCİNİN MESAJINI ANLA:
-Öğrencinin son mesajını önce anlamlandır. Öğrenci bir bilgi verdi, bir bilgiyi reddetti, bir bilginin eksik olduğunu söyledi, önceki cevabını düzeltti veya soruyu anlamadığını belirtti mi ayırt et. Öğrencinin söylediğini farklı bir anlama çekme.
+Bunların tamamı çözüm/soyutlama/algoritma yönlendirmesidir.
 
-ÇOK ÖNEMLİ — ÖĞRENCİNİN VERDİĞİ BİLGİYİ TEKRAR SORMA:
-- Öğrenci bir nicelik, değer, zaman-uzaklık bilgisi, grafik bilgisi veya ilişkiyi açıkça söylediyse bunu ZATEN BELİRLENMİŞ bilgi kabul et.
-- Öğrencinin söylediği bilgi problemdeki gerekli bilgilerden biriyle eşleşiyorsa, aynı bilgiyi başka cümleyle tekrar isteme ve "başka hangi bilgi..." diye yeniden aratma.
-- Örneğin öğrenci "3 saatte 252 km" dediyse tekrar "hangi zaman ve uzaklık bilgisini görüyorsun?" diye sorma. Bunun yerine bu bilginin istenene ulaşmak için yeterli olup olmadığını veya zincirde hangi role sahip olduğunu düşündür.
-- Öğrenci "başka bilgi yok" veya "başlangıç uzaklığı belli değil" diyorsa bunu öğrencinin bilgiyi fark etmediği şeklinde yorumlama. Önce öğrencinin hangi bilgiyi bildiğini ve hangi bilginin eksik olduğunu temel al.
-- Öğrenci bir bilgiyi zaten kendisi ifade etmişse, o bilgiyi grafikte yeniden buldurmaya veya belirli bir eksen, nokta, çizgi, renk ya da kesişime doğrudan yönlendirmeye çalışma.
-- Gerekli bir bilgi zaten öğrencinin cevabında varsa, bir sonraki soru o bilginin rolünü, yeterliliğini veya eksik olan bir sonraki halkayı düşündürsün.
+Öğrenci bir sonraki halkayı kendisi söylediğinde onu tamamlanmış kabul et.
+Sonraki soru yalnızca henüz söylenmemiş bir sonraki GERİYE DOĞRU halkayı
+düşündürsün.
 
-Öğrenci bir halkayı açıkça belirlediyse onu tekrar sorma.
-Öğrenci temel/verilen bilgiye ulaştığında ve problem anlamlı biçimde ayrıştırılmış olduğunda basamak_tamamlandi=true olabilir.
+Öğrenci yeterli ayrıştırmayı kendi ifadeleriyle tamamladıysa
+basamak_tamamlandi=true olabilir; sırf çözüm yoluna ulaşıldığı için
+Ayrıştırma tamamlanmış sayma.
 """
     elif current_step == "2. Soyutlama":
         progression = """
-ÖZEL KURAL — SOYUTLAMA:
-Önceki Ayrıştırma konuşmasını kullan.
-Öğrencinin belirlediği bilgileri gerekli/gereksiz, önemli/ikincil, değişen/sabit ve ilişkili/ilişkisiz yönlerden yeniden düşünmesini sağla.
-Uygunsa örüntü veya genel yapı arat; uygun değilse zorunlu olarak örüntü isteme.
-İlişkiyi öğrencinin yerine adlandırma.
+ÖZEL KURAL — SOYUTLAMA / KRİTİK İLİŞKİYİ KEŞFETME:
+
+Bu basamakta iki hedef birlikte korunur:
+1. Öğrencinin temel bilgiler ile ikincil/gereksiz olabilecek bilgileri
+   ayırt etmesi ve bunu gerekçelendirmesi.
+2. Bu probleme özgü çözümü mümkün kılan kritik matematiksel ilişkiyi
+   öğrencinin kendisinin keşfetmesi.
+
+KRİTİK İLİŞKİYİ SEN SÖYLEME:
+İlişkiyi problem görseli, problem analizi ve öğrencinin önceki
+cevaplarından sen çıkarabilirsin; fakat öğrencinin cevabına doğrudan
+yerleştiremezsin. “Aynı sürede”, “sabit değişim”, “eğim”, “iki nicelik
+arasındaki şu ilişki” gibi çözümün püf noktasını taşıyan ifadeleri,
+öğrenci henüz kendisi kurmadıysa sorunun içine cevap olarak koyma.
+
+ÖĞRENCİ TAKILIRSA SCAFFOLDING YAP:
+Öğrenci “bilmiyorum”, “göremiyorum” veya benzeri bir ifade kullanırsa
+“hangi ilişkiyi görüyorsun?” sorusunu farklı kelimelerle tekrar tekrar
+sorma. Bunun yerine desteği kademeli olarak somutlaştır:
+
+1. Önce öğrencinin belirlediği önemli bilgiye dön.
+2. Sonra problemdeki ilgili somut nicelikleri veya görsel parçaları
+   birlikte incelemeye yönelt.
+3. Gerekirse bu niceliklerin nasıl değiştiğine bakmasını iste.
+4. Son aşamada bile ilişkiyi öğrencinin kendisinin ifade etmesini bekle.
+
+Örneğin öğrenci bir grafikte iki aracın verilerini fark etmiş ancak
+ilişkiyi kuramıyorsa, “Bu iki aracın grafik üzerindeki hangi özelliklerini
+karşılaştırdığında aralarındaki bağlantıyı daha iyi görebilirsin?” gibi
+bir destek verilebilir. Ancak karşılaştırılacak özellikleri ve sonucu
+AI söylememelidir.
+
+BİLGİ AYIRT ETME:
+Bir bilgi doğrudan işlemde kullanılmıyor diye otomatik olarak gereksiz
+sayma. Öğrenciden o bilginin problemi anlamaya veya kritik ilişkiyi
+kurmaya katkısını değerlendirmesini iste. Temel/ikincil ayrımını AI
+öğrencinin yerine yapmaz.
+
+TEKRAR YASAĞI:
+Öğrenci önemli bir bilgiyi veya ilişkiyi zaten söylediyse yeniden
+sorma. Aynı düşünceyi farklı kelimelerle tekrar ettirmek yerine
+öğrencinin söylediği noktadan bir sonraki düşünme adımına geç.
+Öğrenci kritik ilişkiyi kendi sözleriyle açıkça kurduysa, aynı ilişkiyi
+tekrar doğrulatma; gerekirse yalnızca neden önemli olduğunu düşündür.
+
+ÖRÜNTÜ/GENELLEME:
+Sadece problem yapısı gerçekten uygunsa örüntü veya genelleme arat.
+Her problemde örüntü isteme.
+
+SINIR:
+Bu basamakta scaffolding yapılabilir; fakat öğrenciye çözüm, formül,
+denklem, işlem sırası, hesaplama, sonuç veya doğrudan matematiksel ilişki
+verilemez. Amaç öğrenciyi cevaba götürmek değil, SOYUTLAMA HEDEFİNE
+GERİ DÖNDÜRMEKTİR.
 """
     elif current_step == "3. Algoritma Tasarımı":
         progression = """
@@ -876,7 +1373,7 @@ Ayrıştırma ve Soyutlama konuşmalarını doğrudan kullan.
 Eksik olduğunu düşündüğün kısmı söyleme; öğrencinin kendi çizimine bakarak bir sonraki adımı düşünmesini sağlayan tek soru sor.
 Akış şeması gerçekten tamamlandığında basamak_tamamlandi=true olabilir.
 """
-    else:
+    elif current_step == "4. Hata Ayıklama":
         progression = """
 ÖZEL KURAL — HATA AYIKLAMA:
 Öğrencinin akış şemasını ve önceki aşamaları kullan.
@@ -885,6 +1382,36 @@ Bir tutarsızlık varsa bunu söylemeden, öğrencinin hangi adımı yeniden inc
 Düzeltmeden sonra yeniden test ettir.
 Sorun yoksa ve yaş düzeyine uygun başka bir yol varsa alternatif düşünmesini sağlayabilirsin.
 Hata yokken hata varmış gibi davranma.
+"""
+    else:
+        progression = """
+ÖZEL KURAL — METABİLİŞSEL YANSITMA:
+
+Bu aşamada matematiksel çözümü yeniden öğretme; öğrencinin kendi düşünme
+sürecini incelemesini sağla.
+
+Sıra kesinlikle:
+1. PLANLAMA
+2. İZLEME
+3. DEĞERLENDİRME
+
+PLANLAMA: öğrencinin çözüm öncesinde neyi amaçladığını, hangi bilgileri
+kullanmayı düşündüğünü ve nasıl bir yol tasarladığını fark ettir.
+
+İZLEME: öğrencinin çözüm sırasında düşünmesini ve yaptığı adımları nasıl
+kontrol ettiğini, gerektiğinde düşüncesini nasıl değiştirdiğini fark ettir.
+
+DEĞERLENDİRME: öğrencinin kullandığı yolun kendisi için ne kadar işe
+yaradığını, çözümünü nasıl değerlendirdiğini ve benzer bir problemde
+ne yapabileceğini düşündür.
+
+Önceki aşamalardaki gerçek öğrenci cevaplarını kullan. Öğrencinin söylemediği
+bir düşünceyi onun adına çıkarma. Bir boyut yeterince ele alınmadan diğer
+boyuta geçme. Tek soru sor.
+
+BASAMAK TAMAMLAMA:
+Planlama, izleme ve değerlendirme boyutlarının üçü de öğrencinin kendi
+ifadeleriyle ele alınmışsa basamak_tamamlandi=true olabilir.
 """
 
     prompt = f"""
@@ -919,9 +1446,40 @@ Yüklenen gerçek problem görselini incele.
 Mevcut basamağın amacını, diğer bütün genel kurallardan ÖNCELE.
 Bir sonraki düşünme adımını destekleyen yalnızca TEK bir soru sor.
 
+V23 — PROBLEMİ GERÇEKTEN TAKİP ETME:
+- Yalnızca “genel bir rehber” gibi konuşma. Öğrencinin yüklediği problem görselini bu yanıt sırasında incele; problem analizi metnini tek kaynak kabul etme. Görseldeki araç adları, noktalar, zamanlar, uzaklıklar, tablo/grafik etiketleri ve istenen niceliği birbirinden ayırt et.
+- Sorunu oluşturan somut bağlamı ve öğrencinin son iki-üç mesajında söylediği belirli bilgileri kullan. Bir sonraki soruda mümkünse öğrencinin adlandırdığı niceliği/nesneyi açıkça an; “bu bilgi”, “hangi bilgi”, “neye ihtiyacın var” gibi belirsiz ifadeleri tek başına kullanma.
+- Önce öğrencinin son cevabının, hemen önceki soruya gerçekten cevap verip vermediğini belirle. Cevap verdiyse kabul et ve bir sonraki düşünme halkasına geç; aynı soruyu farklı kelimelerle tekrarlama.
+- Öğrenci “grafikte yazıyor zaten” derse bunu, veriyi yeniden istememek gerektiğine dair açık geri bildirim olarak yorumla. Grafikteki veriyi yeniden aratma veya genel bir bağlantı sorusuna kaçma. Görseldeki ve öğrencinin söylediği somut bilgiyi temel alarak, ayrıştırma zincirinde henüz ele alınmamış halkayı düşündüren bir soru sor.
+- “Hangi bilgiye ihtiyacın var?”, “Hangi veriyi kullanacaksın?”, “Bu bilgi nasıl bağlantılı?” kalıplarını art arda veya bağlamdan kopuk kullanma. Bu ifadeler ancak problemdeki somut nicelikle birlikte anlamlıysa kullanılabilir.
+- Öğrencinin verdiği bir veriyi, kendisinin daha önce söylememiş gibi yeniden sorma. Öğrencinin sözünü ettiği iki veri varsa bunları doğru biçimde yansıt; ancak aralarındaki işlemi, formülü, sonucu veya çözüm yolunu söyleme.
+- Görseldeki ayrıntıyı güvenilir biçimde okuyamıyorsan ayrıntı uydurma; öğrenciden yalnızca okunamayan kısmı netleştirmesini iste.
+
+V23 KONUŞMA TUTARLILIĞI KURALI:
+- Mevcut diyalogdaki en son rehber sorusunu ve öğrencinin ona verdiği cevabı birlikte oku.
+- Öğrencinin söylediği bilgiyi tekrar sorma; aynı düşünceyi farklı kelimelerle yeniden sordurma.
+- "Evet/hayır" cevabını yeni bir bilgi gibi ele alma; önceki sorunun cevabı olarak kabul et.
+- "Elindeki veriler yeterli mi?" sorusuna "evet" cevabı geldiyse "hangi adımı atman gerekiyor?" veya benzeri işlem/çözüm sorusu sorma.
+- Öğrenci işlem önerirse bunu onaylama, genişletme veya hesaplatma. Ayrıştırma sınırında kalarak yalnızca o işlemle hangi bilgiyi belirlemeye çalıştığını sor.
+- Öğrenci bir sonraki düşünme halkasını zaten söylediyse o halkayı kabul et ve tekrar sorma.
+- Öğrencinin söylediği şeyden sonra bir sonraki sorunun yönü değişmeli; aynı bilgi arama kalıbını döngü halinde sürdürme.
+
 KRİTİK AŞAMA SINIRI:
-Eğer MEVCUT BASAMAK "1. Ayrıştırma" ise öğrenciyi cevaba, yönteme, işleme, matematiksel ilişkiye veya çözüm planına götüren soru sorma.
-Ayrıştırmada yalnızca "Ne isteniyor?", "Bunu bulmak için hangi bilgi gerekiyor?", "Bu bilgiye ulaşmak için hangi bilgi gerekiyor?", "Elindeki verilenlerden hangisi bu ihtiyacı karşılıyor?" türündeki GERİYE DOĞRU düşünme sorularını kullan.
+Eğer MEVCUT BASAMAK "1. Ayrıştırma" ise öğrenciyi cevaba, yönteme,
+işleme, matematiksel ilişkiye veya çözüm planına götüren soru sorma.
+
+Ayrıştırmada soru yalnızca şu düşünme yönlerinden biri olabilir:
+"Ne isteniyor?"
+"Bunu belirlemek için hangi bilgi gerekiyor?"
+"Bu bilgiye ulaşmak için hangi bilgi gerekiyor?"
+"Elindeki verilenlerden hangisi bu ihtiyacı karşılıyor?"
+"Şu ana kadar belirlediklerin yeterli mi?"
+"Eksik olduğunu düşündüğün bilgi nedir?"
+
+ÖNEMLİ: Soruda öğrencinin henüz söylemediği çözüm kaynağını veya
+çözüm niceliğini isimlendirme. Örneğin öğrenci B'den söz etmediyse
+"B aracının bilgisi", hızdan söz etmediyse "hız", süreden söz etmediyse
+"süre" kelimelerini çözüm yönlendirmesi olarak kullanma.
 Öğrencinin çözüm için gereken bir bilgiyi zaten söylemesi, o bilginin nasıl kullanılacağını sorma hakkı vermez; o bilgi zincirde bir halka olarak kabul edilir.
 
 ÖZELLİKLE AYRIŞTIRMA AŞAMASINDA:
@@ -934,6 +1492,18 @@ Ayrıştırmada yalnızca "Ne isteniyor?", "Bunu bulmak için hangi bilgi gereki
 
 Öğrencinin söylemediği sonucu onun adına çıkarma.
 Çözüm, formül, denklem, işlem, cevap veya doğrudan ipucu verme.
+
+V24 — TAKILMA DURUMUNDA KARAR KURALI:
+Öğrenci cevap veremiyorsa aynı soruyu tekrar etme. Önce öğrencinin
+son söylediği noktayı kullan; ardından mevcut basamağın hedefini
+koruyan daha somut bir problem/görsel ipucu ver. İpucunu bir kademe
+daha somutlaştırabilirsin; ancak her kademede öğrencinin kendisinin
+kurması gereken matematiksel düşünceyi açık bırak.
+
+Özellikle Soyutlama'da: öğrenci kritik ilişkiyi kuramıyorsa, ilişkiyi
+söylemek yerine ilgili nicelikleri veya görsel parçaları incelemesini
+sağla. Öğrenci ilişkiyi kurduğunda artık aynı ilişkiyi başka sözcüklerle
+tekrar sorma.
 
 YANITI YALNIZCA ŞU JSON YAPISINDA VER:
 {{
@@ -952,10 +1522,14 @@ Soru alanında yalnızca öğrencinin göreceği 1-2 kısa cümle ve TEK soru ol
         temperature=0.2,
         max_tokens=180,
         include_problem_image=True,
-        include_flowchart_image=(current_step in ["3. Algoritma Tasarımı", "4. Hata Ayıklama"])
+        include_flowchart_image=(current_step in ["3. Algoritma Tasarımı", "4. Hata Ayıklama", "5. Metabilişsel Yansıtma"])
     )
 
-    return parse_guidance_response(raw, current_step)
+    result = parse_guidance_response(raw, current_step)
+
+    # v23: Ayrıştırma yanıtını genel, sabit kalıplarla sonradan değiştirme.
+    # Öğrencinin problem görseline ve tüm konuşmaya dayalı özgün yanıtı korunur.
+    return result
 
 
 # ============================================================
@@ -1055,12 +1629,84 @@ SÜREÇ:
 
 
 # ============================================================
+# DAYANIKLI SOHBET KONTROL NOKTASI
+# ============================================================
+
+CHAT_BACKUP_FILE = "tez_sohbet_yedekleri.json"
+
+def _load_chat_backups():
+    try:
+        if not os.path.isfile(CHAT_BACKUP_FILE):
+            return {}
+        with open(CHAT_BACKUP_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+def _save_chat_backup(student_id):
+    if not student_id:
+        return
+    try:
+        backups = _load_chat_backups()
+        backups[str(student_id)] = {
+            "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "current_step": st.session_state.get("current_step", "1. Ayrıştırma"),
+            "chat_storage": st.session_state.get("chat_storage", {}),
+            "completed_stages": st.session_state.get("completed_stages", []),
+            "last_alt_beceri": st.session_state.get("last_alt_beceri", {}),
+            "problem_analysis": st.session_state.get("problem_analysis"),
+            "problem_session_id": st.session_state.get("problem_session_id"),
+        }
+        with open(CHAT_BACKUP_FILE, "w", encoding="utf-8") as f:
+            json.dump(backups, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+def _restore_chat_backup(student_id):
+    if not student_id:
+        return False
+    try:
+        backups = _load_chat_backups()
+        backup = backups.get(str(student_id))
+        if not isinstance(backup, dict):
+            return False
+        saved_chat = backup.get("chat_storage")
+        if not isinstance(saved_chat, dict):
+            return False
+        normalized_chat = {stage: saved_chat.get(stage, []) for stage in BASAMAK_TALIMATLARI}
+        if not any(normalized_chat.values()):
+            return False
+        st.session_state.chat_storage = normalized_chat
+        saved_step = backup.get("current_step", "1. Ayrıştırma")
+        st.session_state.current_step = saved_step if saved_step in BASAMAK_TALIMATLARI else "1. Ayrıştırma"
+        st.session_state.completed_stages = [s for s in backup.get("completed_stages", []) if s in BASAMAK_TALIMATLARI]
+        st.session_state.last_alt_beceri = backup.get("last_alt_beceri", {}) if isinstance(backup.get("last_alt_beceri", {}), dict) else {}
+        if backup.get("problem_analysis"):
+            st.session_state.problem_analysis = backup["problem_analysis"]
+        st.session_state.problem_session_id = backup.get("problem_session_id")
+        return True
+    except Exception:
+        return False
+
+
+# ============================================================
 # SESSION STATE
 # ============================================================
 
 if "uploaded_file_data" not in st.session_state:
 
     st.session_state.uploaded_file_data = None
+
+
+if "problem_session_id" not in st.session_state:
+
+    st.session_state.problem_session_id = None
+
+
+if "backup_restored_for_student" not in st.session_state:
+
+    st.session_state.backup_restored_for_student = None
 
 
 if "problem_analysis" not in st.session_state:
@@ -1259,6 +1905,11 @@ with st.sidebar:
         st.stop()
 
 
+    if st.session_state.backup_restored_for_student != student_id:
+        _restore_chat_backup(student_id)
+        st.session_state.backup_restored_for_student = student_id
+
+
     st.divider()
 
 
@@ -1362,7 +2013,7 @@ with st.sidebar:
 # ============================================================
 
 st.title(
-    "🎯 Algoritmik Problem Çözme Rehberi"
+    "🎯 Algoritmik Problem Çözme Rehberi · v22"
 )
 
 
@@ -1371,6 +2022,12 @@ st.write(
     f"### Mevcut Basamak: "
     f"{st.session_state.current_step}"
 )
+
+if st.session_state.current_step == "5. Metabilişsel Yansıtma":
+    st.info(
+        "🧠 Bu aşama üç boyutta ilerler: **Planlama → İzleme → Değerlendirme**. "
+        "Amaç çözümü yeniden yapmak değil, kendi düşünme sürecini fark etmek ve değerlendirmektir."
+    )
 
 
 # ============================================================
@@ -1474,6 +2131,7 @@ if (
                 st.session_state.problem_analysis = ""
 
 
+        st.session_state.problem_session_id = datetime.now().strftime("%Y%m%d%H%M%S%f")
         st.session_state.chat_storage = {
             stage: []
             for stage in BASAMAK_TALIMATLARI
@@ -1495,6 +2153,9 @@ if (
 # ============================================================
 
 else:
+
+    if st.session_state.problem_session_id is None:
+        st.session_state.problem_session_id = datetime.now().strftime("%Y%m%d%H%M%S%f")
 
     st.image(
 
@@ -1612,6 +2273,16 @@ else:
         st.session_state.problem_analysis = (
             None
         )
+
+        st.session_state.problem_session_id = None
+
+        try:
+            backups = _load_chat_backups()
+            backups.pop(str(student_id), None)
+            with open(CHAT_BACKUP_FILE, "w", encoding="utf-8") as f:
+                json.dump(backups, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
 
 
         st.session_state.chat_storage = {
@@ -2023,6 +2694,7 @@ with col2:
                 log_kaydet({
                     "tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "id": student_id,
+                    "problem_session_id": st.session_state.get("problem_session_id"),
                     "basamak": current_stage,
                     "alt_beceri": first_skill,
                     "basamak_tamamlandi": False,
@@ -2030,6 +2702,7 @@ with col2:
                     "icerik": first_question
                 })
 
+                _save_chat_backup(student_id)
                 st.rerun()
 
 
@@ -2049,7 +2722,10 @@ with col2:
     # --------------------------------------------------------
 
     if current_stage in st.session_state.completed_stages:
-        st.success("Bu basamak tamamlandı. Bir sonraki basamağa geçildi.")
+        if current_stage == "5. Metabilişsel Yansıtma":
+            st.success("🎯 Beş aşamalı süreç tamamlandı. Artık genel süreç değerlendirmesine geçebilirsin.")
+        else:
+            st.success("Bu basamak tamamlandı. Bir sonraki basamağa geçildi.")
 
     chat_container = st.container(
         height=550
@@ -2116,6 +2792,9 @@ with col2:
             "id":
                 student_id,
 
+            "problem_session_id":
+                st.session_state.get("problem_session_id"),
+
             "basamak":
                 current_stage,
 
@@ -2131,6 +2810,10 @@ with col2:
             "icerik":
                 student_message
         })
+
+        # Gemini çağrısından ÖNCE öğrenci mesajını kalıcı kontrol
+        # noktasına yaz.
+        _save_chat_backup(student_id)
 
 
         # ----------------------------------------------------
@@ -2166,6 +2849,7 @@ with col2:
                 log_kaydet({
                     "tarih": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "id": student_id,
+                    "problem_session_id": st.session_state.get("problem_session_id"),
                     "basamak": current_stage,
                     "alt_beceri": alt_beceri,
                     "basamak_tamamlandi": stage_completed,
@@ -2180,6 +2864,8 @@ with col2:
 
                 stages = list(BASAMAK_TALIMATLARI.keys())
                 stage_index = stages.index(current_stage)
+
+                _save_chat_backup(student_id)
 
                 if stage_completed and student_turns >= 2:
                     if current_stage not in st.session_state.completed_stages:
