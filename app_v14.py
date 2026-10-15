@@ -104,7 +104,7 @@ Yasak:
 Amaç:
 Öğrencinin problemdeki temel bilgileri ayırt etmesini ve bu probleme
 özgü, çözümü mümkün kılan kritik matematiksel ilişkiyi kendisinin
-keşfetmesini sağlamak.
+keşfetmesini sağlamak. 
 
 İKİ TEMEL HEDEF:
 
