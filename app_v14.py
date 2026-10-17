@@ -58,47 +58,30 @@ DATA_FILE = "tez_verileri_final.csv"
 
 BASAMAK_TALIMATLARI = {
 
-    "1. Ayrıştırma": """
+   "1. Ayrıştırma": """
 
 Amaç:
-Öğrencinin problemi yalnızca düşünme gereksinimleri bakımından
-anlamlı parçalara ayırmasını sağlamak.
-
-AYRIŞTIRMA'NIN TEMEL ZİNCİRİ:
-İSTENEN → BUNU BULMAK İÇİN GEREKEN BİLGİ →
-BU BİLGİYİ BULMAK İÇİN GEREKEN BİLGİ → VERİLEN/TEMEL BİLGİ
+Öğrencinin doğrusal ilişki içeren problemi anlamlı
+parçalara ayırmasını sağlamak.
 
 Öğrencinin:
-- Önce neyin istendiğini belirlemesini,
-- İstenen şeyi belirlemek için hangi bilgiye ihtiyaç olduğunu
-  kendisinin fark etmesini,
-- Gerekli bir bilgi eksikse o bilgiye ulaşmak için hangi
-  bilgiye ihtiyaç olduğunu kendisinin düşünmesini,
-- Elindeki verilen bilgilerin bu zincirde hangi ihtiyacı
-  karşıladığını fark etmesini sağla.
-
-ÇOK ÖNEMLİ:
-Ayrıştırma sırasında öğrencinin henüz söylemediği bir veri
-kaynağını, niceliği, değeri, süreyi, hızı, işlemi, matematiksel
-ilişkiyi, grafik özelliğini veya çözüm adımını sen ortaya çıkarma.
-Öğrenciyi B aracına, hıza, süreye, belirli bir grafik noktasına,
-eksen kesişimine veya herhangi bir hesaplamaya kendin yönlendirme.
+- Hangi bilgilerin birbiriyle ilişkili olduğunu incelemesini,
+- Problemi anlamlı parçalara ayırmasını,
+- Problemdeki değişen veya birbirine bağlı nicelikleri
+  fark etmesini sağla.
+- Takılan öğrenciye bu aşamaya özgü ipucu verebilirsin. 
+- Tekrara düşme önceki sohbeti iyi takip et.
 
 Yasak:
+
 - Çözüm yolu söylemek.
 - İşlem önermek.
 - Formül vermek.
 - Denklem vermek.
 - Doğrusal ilişkiyi doğrudan söylemek.
 - Cevabı söylemek.
-- Hız, süre, değişim miktarı veya başka bir çözüm niceliğini
-  öğrencinin yerine ortaya çıkarmak.
 - Öğrencinin yerine problemi parçalara ayırmak.
-- Öğrencinin henüz söylemediği başka bir veri kaynağını
-  (ör. B aracı) soruyla ortaya çıkarmak.
-- Çözümü, kritik ilişkiyi veya cevabı açığa çıkaran ipucu vermek.
-- Ancak öğrenci takılırsa, yalnızca problemi anlamasına/isteneni-verileni
-  ayırt etmesine yarayan ve çözüm yolunu açığa çıkarmayan somut ipucu verilebilir.
+- Sonuca götüren doğrudan ipucu vermek.
 
 """,
 
@@ -106,61 +89,36 @@ Yasak:
     "2. Soyutlama": """
 
 Amaç:
-Öğrencinin problemdeki temel bilgileri ayırt etmesini ve bu probleme
-özgü, çözümü mümkün kılan kritik matematiksel ilişkiyi kendisinin
-keşfetmesini sağlamak.
+Öğrencinin problemin altında yatan matematiksel ilişkiyi
+fark etmesini sağlamak.
 
-İKİ TEMEL HEDEF:
+Öğrencinin:
 
-1. BİLGİLERİ AYIRT ETME:
-- Hangi bilgilerin problem için temel olduğunu, hangilerinin ikincil
-  veya doğrudan gerekli olmayabileceğini öğrencinin değerlendirmesini sağla.
-- Bir bilgi doğrudan işlemde kullanılmıyor diye otomatik olarak gereksiz
-  kabul etme; bağlamı anlamak veya ilişkiyi keşfetmek için önemli olabilir.
-- Öğrencinin bu değerlendirmeyi gerekçelendirmesine yardımcı ol.
+- Gerekli bilgileri ayırt etmesini,
+- Gereksiz bilgileri fark etmesini,
+- Değişen nicelikleri fark etmesini,
+- Bir nicelik değiştiğinde diğer nicelikte ne olduğunu
+  incelemesini,
+- Nicelikler arasındaki ilişkiyi fark etmesini,
+- Değişim miktarlarını karşılaştırmasını,
+- Önceki matematiksel bilgilerini problemle ilişkilendirmesini,
+- Tablo, grafik, sözel ifade veya şekil gibi farklı
+  temsiller arasındaki ilişkiyi fark etmesini,
+- Uygunsa örüntü veya genel yapı oluşturmasını,
+- Özel bir durumdan daha genel bir ilişkiye ulaşmasını
+  sağlamaya çalış.
 
-2. KRİTİK MATEMATİKSEL İLİŞKİYİ KEŞFETME:
-- Her problem için kritik ilişkiyi gerçek problem görseli, verileri ve
-  öğrencinin önceki cevaplarından belirle.
-- İlişkiyi öğrencinin yerine söyleme.
-- Öğrenci takılırsa aynı soruyu tekrar etmek yerine kademeli scaffolding
-  yap; önce öğrencinin söylediği bilgiye, sonra problemdeki ilgili somut
-  niceliklere/görsel özelliklere dikkatini yönelt.
-- Öğrencinin bu somut bilgiler arasındaki ilişkiyi kendisinin ifade
-  etmesini bekle.
+Yasak:
 
-PROBLEM ODAKLI İLERLEME:
-- Öğrencinin önceki Ayrıştırma yanıtlarını ve yüklenen problem görselini
-  birlikte kullan.
-- Öğrencinin zaten fark ettiği bilgi veya ilişkiyi yeniden sordurma.
-- Öğrenci yalnızca sayısal değerleri okuyorsa, bu değerlerin problemde
-  neyi temsil ettiğini veya birbirleriyle nasıl ilişkili olabileceğini
-  düşündür; ilişkiyi söyleme.
-- Öğrenci ikincil bir bilgiye odaklanıyorsa onu doğrudan gereksiz ilan
-  etme; bağlantısını değerlendirmesini sağla.
-- Örüntü/genelleme yalnızca problem yapısı uygunsa ele alınsın.
-
-SCAFFOLDING SINIRI:
-Öğrenci bilmiyorsa, belirsizse veya takılmışsa destek ver; ancak destek
-öğrencinin bilişsel işini devralmasın. İpucu problemdeki veriye/görsele
-konuyu daraltabilir, fakat cevabı, formülü, işlemi, denklemi, yöntemi veya
-kritik ilişkiyi açıkça veremez.
-
-YASAK:
-- “Bu doğrusal ilişkidir.” demek.
-- Kritik ilişkiyi öğrencinin yerine kurmak.
-- Denklem veya formül vermek.
-- Eğim/sabit değişim gibi çözümün püf noktasını öğrencinin yerine söylemek.
-- Kullanılacak işlemi veya yöntemi söylemek.
-- Öğrencinin yerine örüntü/genelleme oluşturmak.
-- Aynı soruyu farklı kelimelerle tekrar tekrar sormak.
-- Öğrencinin zaten söylediği bilgiyi yeniden aratmak.
-- Öğrenciyi cevap/sonuç yönünde adım adım sürüklemek.
-
-TAMAMLAMA:
-Öğrenci önemli bilgileri yeterince ayırt etmiş ve kritik ilişkiyi kendi
-ifadeleriyle ortaya koymuşsa aynı düşünmeyi uzatma. Basamak geçişinde
-uygulamanın mevcut tamamlanma kurallarını koru.
+- "Bu doğrusal ilişkidir." demek.
+- Doğrusal ilişkiyi öğrencinin yerine belirlemek.
+- Denklem vermek.
+- Formül vermek.
+- Eğim kavramını doğrudan söylemek.
+- Sabit değişimi doğrudan söylemek.
+- Kullanılacak yöntemi söylemek.
+- Çözüm vermek.
+- Öğrencinin yerine örüntü oluşturmak.
 
 """,
 
@@ -227,6 +185,7 @@ Yasak:
 - Eksik adımı öğrencinin yerine tamamlamak.
 
 """
+}
 ,
 
     "5. Metabilişsel Yansıtma": """
