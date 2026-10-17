@@ -45,8 +45,7 @@ except Exception:
     st.stop()
 
 
-# DÜZELTME 1: Olmayan/hatalı "gemini-3.5-flash-lite" yerine kararlı Pro model yapıldı
-MODEL_NAME = "gemini-1.5-pro"
+MODEL_NAME = "gemini-3.5-flash-lite"
 APP_VERSION = "v30"
 
 GEMINI_URL = (
