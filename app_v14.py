@@ -1337,18 +1337,60 @@ def _question_too_similar(question, chat_history, threshold=0.76):
 
 
 def _response_guard(result, current_step, chat_history, student_message):
+    """Yanıtı güvenli tutar; genel/yinelenen kalıplar yerine bağlama özgü destek verir."""
     message = str(result.get("mesaj", result.get("soru", ""))).strip() or "Düşünceni bir sonraki adım için biraz daha açabilirsin."
     result["basamak_tamamlandi"] = False
+    student_norm = _norm_text(student_message)
+    conversation_norm = _norm_text(conversation_text(chat_history))
+
+    # Öğrenci önceki mesajı anlamadığını söylüyorsa onu başka sözlerle tekrarlama;
+    # önceki ifadenin ne anlama geldiğini somut biçimde açıkla.
+    clarification_markers = ("ne demek", "anlamadim", "ne kastettin", "ne demek o", "aciklar misin")
+    if any(marker in student_norm for marker in clarification_markers):
+        if current_step == "1. Ayrıştırma" and ("a arac" in conversation_norm or "c nokt" in conversation_norm):
+            message = "Şunu kastediyorum: Grafikte A aracının başlangıç konumunu ve C noktasını gösteren yerleri bul. Şimdilik uzaklığı hesaplama; yalnızca bu iki yeri belirle."
+        elif current_step == "1. Ayrıştırma":
+            message = "Şunu kastediyorum: Henüz çözüm yapma; soruda adı geçen şeyleri ve onlarla ilgili verilen bilgileri metin ya da grafik üzerinde bul."
+        else:
+            message = {
+                "2. Soyutlama": "Şunu kastediyorum: Henüz ilişkiyi adlandırmaya çalışma; belirlediğin iki somut bilgiyi yan yana incele.",
+                "3. Algoritma Tasarımı": "Şunu kastediyorum: Çözüm adımlarını senin kurmanı istiyorum; çizimindeki mevcut adımlara bakıp hangisinin üzerinde çalıştığını belirle.",
+                "4. Hata Ayıklama": "Şunu kastediyorum: Bir şeyin hatalı olduğunu varsaymadan, seçtiğin adımın problemde verilenlerle uyuşup uyuşmadığını kontrol et.",
+                "5. Metabilişsel Yansıtma": "Şunu kastediyorum: Sonuca değil, bu sonuca ulaşırken verdiğin kararlardan birine odaklan."
+            }.get(current_step, "Şunu kastediyorum: Birlikte küçük bir sonraki adımı netleştirelim.")
+        result["müdahale_tipi"] = "yonlendirme"
+    elif current_step == "1. Ayrıştırma" and any(x in student_norm for x in ("grafigi incelemem lazim", "grafige bakmam lazim", "grafigi incelemem", "grafige bakmam")):
+        if "a arac" in conversation_norm or "c nokt" in conversation_norm:
+            message = "Evet, grafiğe bak. Önce A aracının başlangıç konumunu ve C noktasını gösteren yerleri bul; henüz uzaklığı hesaplama."
+            result["müdahale_tipi"] = "ipucu"
+
     forbidden = ("y =", "y=", "eğimini bul", "egimi bul", "eğimi hesapla", "egimi hesapla", "önce eğim", "once egim", "formülü kullan", "formulu kullan", "denklemi yaz", "denklem kur", "şu işlemi yap", "su islemi yap", "doğru cevap", "dogru cevap", "hızını bul", "hizini bul", "sabit değişimi bul", "sabit degisimi bul")
     if any(_norm_text(x) in _norm_text(message) for x in forbidden):
-        message = {"1. Ayrıştırma": "Belirlediğin bilgileri yerinde tutalım; şu anda yalnızca problemin hangi kısmının açıklığa kavuştuğuna bakalım.", "2. Soyutlama": "Belirlediğin somut bilgileri karşılaştırmaya dönelim; aralarındaki özelliği sen ifade et.", "3. Algoritma Tasarımı": "Çizdiğin adımlara dönelim; mevcut adımlar arasındaki bağlantıyı kendi düşüncenle netleştir.", "4. Hata Ayıklama": "Çözümündeki tek bir adımı seçip problem koşuluyla karşılaştırmaya dön.", "5. Metabilişsel Yansıtma": "Kendi süreç kararlarından birine dönüp bunu nasıl verdiğini açıklamaya devam et."}[current_step]
+        # Önceki sürümde burada öğrencinin ne yapacağını açıklamayan,
+        # tekrara yol açan genel bir cümle kullanılıyordu.
+        message = {
+            "1. Ayrıştırma": "Soruda istenen uzaklığı şimdilik hesaplama. Grafikte A aracının başlangıç yerini ve C noktasını bulup bu iki konumu belirle.",
+            "2. Soyutlama": "Belirlediğin somut değerleri yan yana getir; şimdilik aralarındaki ilişkiye bir isim vermeden neyi karşılaştırdığını açıkla.",
+            "3. Algoritma Tasarımı": "Çizimindeki mevcut adımlara bak ve şu anda hangi adım üzerinde çalıştığını kendi sözlerinle belirt.",
+            "4. Hata Ayıklama": "Çözümündeki bir adımı seç ve o adımda kullandığın bilgiyi problemde verilenlerle karşılaştır.",
+            "5. Metabilişsel Yansıtma": "Çözüm sürecinde verdiğin bir kararı hatırla ve bu kararı verirken ne düşündüğünü açıkla."
+        }.get(current_step, "Şu anki düşünceni bir sonraki küçük adımla ilişkilendir.")
         result["müdahale_tipi"] = "yonlendirme"
+
     if _question_too_similar(message, chat_history):
         result["müdahale_tipi"] = "scaffolding"
-        message = {"1. Ayrıştırma": "Aynı noktaya dönmeyelim; şimdi belirlediğin bilgilerin hangisinin hâlâ açıklığa kavuşmadığını düşünelim.", "2. Soyutlama": "Önceki karşılaştırmayı tekrarlama; belirlediğin iki somut bilgiden bir özelliği seçip onu incele.", "3. Algoritma Tasarımı": "Aynı adımı yeniden kurma; çizimindeki mevcut kutulardan birinin girdisi ile çıktısı arasındaki bağı incele.", "4. Hata Ayıklama": "Aynı kontrolü tekrarlama; çözümündeki başka bir adımı tek bir örnek üzerinden sınamayı dene.", "5. Metabilişsel Yansıtma": "Aynı yansıtma boyutuna dönme; önceki kararlarından farklı bir anını hatırla."}[current_step]
+        message = {
+            "1. Ayrıştırma": "Soruda istenen uzaklığı şimdilik hesaplama. Grafikte A aracının başlangıç yerini ve C noktasını gösteren işaretleri ayrı ayrı bul.",
+            "2. Soyutlama": "Önceki soruyu tekrarlamayalım; belirlediğin iki somut değerden hangisini karşılaştırmak daha kolay geliyorsa onunla başla.",
+            "3. Algoritma Tasarımı": "Aynı soruya dönmeyelim; akış şemanda şu anda tamamladığın kutuyu ve üzerinde çalıştığın kutuyu ayırt et.",
+            "4. Hata Ayıklama": "Aynı kontrolü tekrarlamayalım; çözümündeki farklı bir adımı seçip problemdeki bilgiyle karşılaştır.",
+            "5. Metabilişsel Yansıtma": "Bu kez farklı bir ana odaklan: çözüm sırasında fikrini değiştirdiğin bir an oldu mu?"
+        }.get(current_step, "Şimdi önceki ifadeyi tekrarlamak yerine somut bir noktadan devam edelim.")
     intervention = result.get("müdahale_tipi")
-    if intervention not in {"soru", "ipucu", "yonlendirme", "scaffolding"}: intervention = "soru" if "?" in message else "yonlendirme"
-    if intervention == "soru" and "?" not in message: intervention = "yonlendirme"
+    if intervention not in {"soru", "ipucu", "yonlendirme", "scaffolding"}:
+        intervention = "soru" if "?" in message else "yonlendirme"
+    if intervention == "soru" and "?" not in message:
+        intervention = "yonlendirme"
     result["müdahale_tipi"] = intervention
     result["mesaj"] = message
     result["soru"] = message
@@ -1399,6 +1441,9 @@ V30 KARAR PROTOKOLÜ:
 10. Mevcut alt becerinin yapıldığını öğrenci açıkça belirtiyorsa aynı alt beceride kalma; bir sonraki alt beceriye geçiş yapan kısa bir yönlendirme üret. Özellikle Ayrıştırma'da zincirin sırasını koru.
 11. Öğrenci bir alt beceriyi tamamladığını söylediğinde, onun zaten söylediği bilgiyi tekrar sordurma veya yeniden doğrulatma.
 12. 1-2 kısa, doğal Türkçe cümle kullan. Yapay övgü yok.
+13. Öğrenci “ne demek?”, “anlamadım” veya benzeri bir ifade yazarsa önceki mesajını AYNEN TEKRARLAMA. Ne kastettiğini daha sade, somut ve problem bağlamına bağlı biçimde açıkla.
+14. Öğrenci “grafiğe bakmam lazım” gibi bir sonraki adımı kendisi fark ettiğinde bunu kabul et ve grafikte hangi somut öğeye bakabileceğini belirt; genel ve belirsiz cümle kurma.
+15. “Belirlediğin bilgileri yerinde tutalım”, “açıklığa kavuştuğuna bakalım” gibi öğrencinin ne yapacağını söylemeyen soyut yönlendirmeler kullanma.
 
 YANITI YALNIZCA BU JSON YAPISINDA VER:
 {{
