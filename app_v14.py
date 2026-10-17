@@ -232,7 +232,7 @@ Bu basamakta amaç yeni bir matematiksel çözüm üretmek değil,
 öğrencinin kendi düşünme sürecini fark etmesi ve değerlendirmesidir.
 
 """
-}
+}, 
 
 
 # ============================================================
