@@ -326,7 +326,7 @@ KESİN KURALLAR
 
 15. Aynı anda birden fazla soru sorma.
 
-16. Her mesajda YALNIZCA BİR yönlendirici soru sor.
+16. Her mesajda YALNIZCA BİR yönlendirici soru sor veya yönlendirici cümle kur.
 
 17. Öğrencinin cevabını bekle.
 
@@ -345,6 +345,27 @@ KESİN KURALLAR
     "Mükemmel!" gibi kalıpları kullanma.
 
 24. Öğrencinin seviyesine uygun kısa ve doğal Türkçe kullan.
+
+25. ÖĞRENCİ TAKILDIĞINDA DESTEK VER:
+    Öğrenci "bilmiyorum", "yapamadım", "takıldım", "anlamadım", "nasıl yapacağım?",
+    "nereden başlayacağımı bilmiyorum" gibi ifadeler kullanırsa yalnızca soru sorup
+    öğrenciyi aynı noktada bırakma. Mevcut basamağın amacına uygun, çok küçük bir
+    SCAFFOLDING/İPUCU ver ve ardından öğrencinin düşünmesini sürdürecek yalnızca BİR
+    soru sor. İpucu cevabı, işlem sonucu, formül, denklem, yöntem veya doğrudan çözüm
+    adımı içermemelidir. İpucu öğrencinin zaten söylediği bilgiyi tekrar etmek yerine
+    bir sonraki düşünme adımına yaklaşmasını sağlamalıdır.
+
+26. İPUCU BASAMAKTAN SAPMAMALI:
+    - Ayrıştırma: yalnızca istenen ve istenene ulaşmak için gerekli bilgi zincirini
+      fark ettirmeye yardımcı ol.
+    - Soyutlama: gerekli/gereksiz bilgileri, nicelikleri, değişimi, ilişkiyi veya
+      örüntüyü fark etmeye yardımcı ol; ilişkiyi adlandırma.
+    - Algoritma Tasarımı: öğrencinin kendi adımlarını ve sırasını düşünmesine
+      yardımcı ol; adımı onun yerine verme.
+    - Hata Ayıklama: çözümünü bir koşul, değer veya farklı durumla kontrol etmesini
+      hatırlat; sorunlu adımı söyleme.
+    - Metabilişsel Yansıtma: planlama, izleme veya değerlendirme boyutunu kendi
+      deneyimi üzerinden hatırlamasına yardımcı ol; yeni matematik öğretme.
 
 ============================================================
 YANIT BİÇİMİ
@@ -937,6 +958,28 @@ Planlama → İzleme → Değerlendirme sırasını izle. Öğrenci bir boyutu y
 Öğrencinin yanıtına bağlı kısa bir yansıtma sorusu veya açıklamasıyla destek ol.
 """
 
+    stuck_phrases = [
+        "takıldım", "bilmiyorum", "yapamadım", "anlamadım",
+        "nasıl yapacağım", "nereden başlayacağımı bilmiyorum",
+        "yardım et", "yardım lazım", "çözemiyorum", "olmuyor",
+        "ne yapacağımı bilmiyorum"
+    ]
+    student_lower = student_message.lower()
+    student_is_stuck = any(phrase in student_lower for phrase in stuck_phrases)
+
+    if student_is_stuck:
+        stuck_instruction = """
+ÖĞRENCİ TAKILDIĞINI BELİRTTİ. Bu durumda yalnızca yeni bir soru sorup geçme.
+Önce mevcut basamağın hedefinden sapmadan 1 kısa ve somut SCAFFOLDING İPUCU ver.
+İpucu gerçek problem bağlamına dayanabilir ancak cevabı, işlemi, formülü, denklemi,
+çözüm yöntemini veya bir sonraki adımı öğrencinin yerine söylememelidir. Ardından
+öğrencinin düşünmeye devam etmesini sağlayan yalnızca BİR soru sor.
+"""
+    else:
+        stuck_instruction = """
+ÖĞRENCİ TAKILDIĞINI BELİRTMİYOR. Normal rehberlik akışını sürdür. Gereksiz ipucu verme.
+"""
+
     prompt = f"""
 {SYSTEM_PROMPT}
 
@@ -950,6 +993,8 @@ ALT BECERİLER:
 {ALT_BECERILER[current_step]}
 
 {progression}
+
+{stuck_instruction}
 
 PROBLEM ANALİZİ:
 {problem_analysis}
@@ -1605,7 +1650,7 @@ with col1:
             height=annotation_height,
             width=annotation_width,
             drawing_mode=annotation_tool_map[annotation_tool],
-            update_streamlit=True,
+            update_streamlit=False,
             initial_drawing=st.session_state.annotation_json,
             key="problem_annotation_" + str(st.session_state.annotation_reset)
         )
