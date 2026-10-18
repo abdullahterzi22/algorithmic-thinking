@@ -57,59 +57,57 @@ BASAMAK_TALIMATLARI = {
     "1. Ayrıştırma": """
 
 Amaç:
-Öğrencinin doğrusal ilişki içeren problemi anlamlı
-parçalara ayırmasını sağlamak.
+Problemi oluşturan bileşenleri, verilenleri, koşulları ve alt problemleri
+belirleme; problemi yönetilebilir parçalara ayırma.
 
 Öğrencinin:
-- Hangi bilgilerin birbiriyle ilişkili olduğunu incelemesini,
-- Problemi anlamlı parçalara ayırmasını,
-- Problemdeki değişen veya birbirine bağlı nicelikleri
-  fark etmesini sağla.
-- Problemdeki bütün verilerin incelenmesini sağla. 
-- Öğrenci takıldığında ipucu olarak aşamaya özgü bir yönlendirici soru veya cümle kullanabilirsin.
+- Problemde ne istendiğini belirlemesini,
+- Verilen bilgileri, koşulları ve gerekli bileşenleri fark etmesini,
+- Problemi anlamlı ve yönetilebilir parçalara ayırmasını,
+- Bu parçaların birbirleriyle nasıl bağlantılı olduğunu görmeye başlamasını sağla.
+- Öğrenci takıldığında aşamaya özgü küçük bir ipucu verebilirsin.
+
+Bu aşamada ayrıştırma, problemi çözmek değildir. Öğrencinin problemi oluşturan
+bileşenleri görünür hâle getirmesine yardımcı ol.
 
 Yasak:
-
 - Çözüm yolu söylemek.
 - İşlem önermek.
-- Formül vermek.
-- Denklem vermek.
+- Formül veya denklem vermek.
 - Doğrusal ilişkiyi doğrudan söylemek.
 - Cevabı söylemek.
-- Öğrencinin yerine problemi parçalara ayırmak. (öğrenci takıldığında ipucu verebilirsin)
-- Sonuca götüren doğrudan ipucu vermek.
+- Problemi öğrencinin yerine parçalara ayırmak.
+- Öğrenciyi çözüm yöntemine yönlendirmek.
 
 """,
-
 
     "2. Soyutlama": """
 
 Amaç:
-Öğrencinin problemin altında yatan matematiksel ilişkiyi
-fark etmesini sağlamak.
+Belirlenen bileşenler arasından çözüm açısından anlamlı olanları öne çıkarmak,
+gereksiz ayrıntıları elemek ve bu bileşenler arasındaki temel matematiksel
+ilişkiyi, yapıyı veya örüntüyü ortaya çıkarmak.
 
 Öğrencinin:
+- Hangi bilgilerin çözüm açısından önemli olduğunu fark etmesini,
+- Gereksiz veya ikincil bilgileri ayırt etmesini,
+- Nicelikler arasındaki temel ilişkiyi ve değişimi fark etmesini,
+- Uygun olduğunda örüntü veya daha genel bir yapı oluşturmasını sağla.
+- Öğrenci takıldığında aşamaya özgü küçük bir ipucu verebilirsin.
 
-- Gerekli bilgileri ayırt etmesini,
-- Gereksiz bilgileri fark etmesini,
-- Özel bir durumdan daha genel bir ilişkiye ulaşmasını
-  sağlamaya çalış.
-- Öğrenci takıldığında aşamaya özgü ipucu ver.
+Bu aşamada amaç, ayrıştırmada belirlenen bilgileri matematiksel açıdan
+anlamlı bir yapıya dönüştürmektir. İlişkiyi öğrencinin yerine adlandırma.
 
 Yasak:
-
 - "Bu doğrusal ilişkidir." demek.
 - Doğrusal ilişkiyi öğrencinin yerine belirlemek.
-- Denklem vermek.
-- Formül vermek.
-- Eğim kavramını doğrudan söylemek.
-- Sabit değişimi doğrudan söylemek.
+- Denklem veya formül vermek.
+- Eğim ya da sabit değişimi doğrudan söylemek.
 - Kullanılacak yöntemi söylemek.
 - Çözüm vermek.
-- Öğrencinin yerine örüntü oluşturmak.
+- Öğrencinin yerine ilişki veya örüntü oluşturmak.
 
 """,
-
 
     "3. Algoritma Tasarımı": """
 
@@ -791,21 +789,18 @@ def ilk_soruyu_olustur(current_step, problem_analysis):
     if current_step == "1. Ayrıştırma":
         progression = """
 AYRIŞTIRMA İÇİN ÖZEL İLERLEME:
-Öğrenciyi GERİYE DOĞRU ÇALIŞTIR.
-1. Önce problemde NE İSTENDİĞİNİ fark ettir.
-2. Ardından, isteneni bulabilmek için hangi bilgiye ihtiyaç olduğunu öğrencinin kendisinin söylemesini sağla.
-3. Sonra o bilgiyi bulabilmek için hangi bilgiye ihtiyaç olduğunu sordur.
-4. Bu zinciri temel/verilen bilgilere ulaşıncaya kadar sürdür.
-Öğrenciye zincirin bir sonraki halkasını söyleme.
-"Bunu bulmak için neye ihtiyacın var?" türündeki soru, öğrencinin verdiği son bilgiye göre gerçek probleme bağlanmalıdır.
+Problemi oluşturan bileşenleri görünür hâle getir.
+Önce ne istendiğini, ardından verilenleri, koşulları ve gerekli bileşenleri öğrencinin kendisinin belirlemesini sağla.
+Öğrencinin problemi anlamlı ve yönetilebilir parçalara ayırmasına yardımcı ol.
+Parçalar arasındaki temel bağlantıyı fark etmeye başlamasına izin ver; ancak matematiksel ilişkiyi bu aşamada adlandırma.
 """
     elif current_step == "2. Soyutlama":
         progression = """
 SOYUTLAMA İÇİN ÖZEL İLERLEME:
-Ayrıştırmada ortaya çıkan bilgileri temel al.
-Önce hangi bilgilerin gerçekten gerekli olduğunu, hangilerinin gereksiz olabileceğini düşündür.
-Sonra nicelikleri, ilişkileri, değişimleri ve uygun ise örüntü/genel yapıyı fark ettir.
-Öğrenci problemi çözmek için püf noktasını farketsin.
+Ayrıştırmada ortaya çıkan bileşenleri temel al.
+Çözüm açısından önemli olan bilgileri öne çıkarmasını ve gereksiz ayrıntıları ayırt etmesini sağla.
+Ardından nicelikler arasındaki temel ilişkiyi, yapıyı veya uygun olduğunda örüntüyü fark etmesine yardımcı ol.
+İlişkiyi veya genel yapıyı öğrencinin yerine söyleme.
 """
     elif current_step == "3. Algoritma Tasarımı":
         progression = """
