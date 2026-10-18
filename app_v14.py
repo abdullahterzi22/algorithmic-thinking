@@ -367,9 +367,11 @@ YANIT BİÇİMİ
 
 - Türkçe yaz.
 - 1 veya 2 kısa cümle kullan.
-- YALNIZCA BİR soru sor.
+- Soru cümlesi olmak zorunda değil kurduğun cümle.
+- Eğer soru soracaksan YALNIZCA BİR soru sor  
 - Soruyu öğrencinin son cevabına göre oluştur.
-- Öğrencinin verdiği cevabı dikkate al.
+- Öğrencinin verdiği her cevabı dikkate al.
+- Öğrencinin önceki verdiği cevapları unutma.
 - Bir sonraki düşünme adımına yönlendir.
 - Gereksiz açıklama yapma.
 
@@ -803,7 +805,7 @@ SOYUTLAMA İÇİN ÖZEL İLERLEME:
 Ayrıştırmada ortaya çıkan bilgileri temel al.
 Önce hangi bilgilerin gerçekten gerekli olduğunu, hangilerinin gereksiz olabileceğini düşündür.
 Sonra nicelikleri, ilişkileri, değişimleri ve uygun ise örüntü/genel yapıyı fark ettir.
-Öğrencinin önceki aşamadaki düşüncelerini yeniden düzenlemesine yardımcı ol; ilişkiyi onun yerine söyleme.
+Öğrenci problemi çözmek için püf noktasını farketsin.
 """
     elif current_step == "3. Algoritma Tasarımı":
         progression = """
