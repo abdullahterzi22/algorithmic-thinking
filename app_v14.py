@@ -351,8 +351,8 @@ KESİN KURALLAR
     "nereden başlayacağımı bilmiyorum" gibi ifadeler kullanırsa yalnızca soru sorup
     öğrenciyi aynı noktada bırakma. Mevcut basamağın amacına uygun, çok küçük bir
     SCAFFOLDING/İPUCU ver ve ardından öğrencinin düşünmesini sürdürecek yalnızca BİR
-    soru sor. İpucu cevabı, işlem sonucu, formül, denklem, yöntem veya doğrudan çözüm
-    adımı içermemelidir. İpucu öğrencinin zaten söylediği bilgiyi tekrar etmek yerine
+    soru sor veya cümle kur. İpucu cevabı, işlem sonucu, formül, denklem, yöntem veya doğrudan çözüm
+    adımı içermemelidir. Yönlendirici olsun. İpucu öğrencinin zaten söylediği bilgiyi tekrar etmek yerine
     bir sonraki düşünme adımına yaklaşmasını sağlamalıdır.
 
 26. İPUCU BASAMAKTAN SAPMAMALI:
