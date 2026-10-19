@@ -54,8 +54,8 @@ DATA_FILE = "tez_verileri_final.csv"
 
 BASAMAK_TALIMATLARI = {
 
-    "1. Ayrıştırma": """
-
+    "1. Ayrıştırma": {
+        "protokol": """
 Amaç:
 Problemi oluşturan bileşenleri, verilenleri, koşulları ve alt problemleri
 belirleme; problemi yönetilebilir parçalara ayırma.
@@ -78,11 +78,20 @@ Yasak:
 - Cevabı söylemek.
 - Problemi öğrencinin yerine parçalara ayırmak.
 - Öğrenciyi çözüm yöntemine yönlendirmek.
-
 """,
+        "ilerleme": """
+AYRIŞTIRMA İÇİN İLERLEME:
+Problemi oluşturan bileşenleri görünür hâle getir. Önce ne istendiğini, ardından
+verilenleri, koşulları ve gerekli bileşenleri öğrencinin kendisinin belirlemesini sağla.
+Öğrencinin problemi anlamlı ve yönetilebilir parçalara ayırmasına yardımcı ol.
+Parçalar arasındaki bağlantıyı fark etmeye başlamasına izin ver; ancak matematiksel
+ilişkiyi bu aşamada adlandırma. Öğrencinin açıkça söylediği bir bilgiyi tekrar isteme;
+bir sonraki düşünme halkasına geç.
+"""
+    },
 
-    "2. Soyutlama": """
-
+    "2. Soyutlama": {
+        "protokol": """
 Amaç:
 Belirlenen bileşenler arasından çözüm açısından anlamlı olanları öne çıkarmak,
 gereksiz ayrıntıları elemek ve bu bileşenler arasındaki temel matematiksel
@@ -106,26 +115,31 @@ Yasak:
 - Kullanılacak yöntemi söylemek.
 - Çözüm vermek.
 - Öğrencinin yerine ilişki veya örüntü oluşturmak.
-
 """,
+        "ilerleme": """
+SOYUTLAMA İÇİN İLERLEME:
+Ayrıştırmada ortaya çıkan bileşenleri temel al. Çözüm açısından önemli olan bilgileri
+öne çıkarmasını ve gereksiz ayrıntıları ayırt etmesini sağla. Ardından nicelikler
+arasındaki temel ilişkiyi, yapıyı veya uygun olduğunda örüntüyü fark etmesine yardımcı ol.
+İlişkiyi veya genel yapıyı öğrencinin yerine söyleme. Öğrencinin açıkça belirlediği
+bilgiyi tekrar sordurma; onun üzerinden daha anlamlı bir yapı kurmasına yardımcı ol.
+"""
+    },
 
-    "3. Algoritma Tasarımı": """
-
+    "3. Algoritma Tasarımı": {
+        "protokol": """
 Amaç:
-Öğrencinin doğrusal ilişki içeren problemi çözmek için
-kendi düşünme ve işlem planını adım adım oluşturmasını sağlamak. Böylece akış şeması oluşturmak.
+Öğrencinin doğrusal ilişki içeren problemi çözmek için kendi düşünme ve işlem
+planını adım adım oluşturmasını sağlamak. Böylece akış şeması oluşturmak.
 
 Öğrencinin:
-
 - İlk olarak hangi bilgiyi kullanacağını belirlemesini,
 - Yapacağı işlemleri kendisinin belirlemesini,
 - İşlem ve düşünme adımlarını uygun sıraya koymasını,
-- Bir adımdan elde edilen bilginin sonraki adıma
-  nasıl katkı sağlayacağını düşünmesini,
+- Bir adımdan elde edilen bilginin sonraki adıma nasıl katkı sağlayacağını düşünmesini,
 - Gerekirse alternatif bir yol oluşturmasını sağla.
 
 Yasak:
-
 - Algoritmayı öğrencinin yerine oluşturmak.
 - İşlem sırasını söylemek.
 - Denklem vermek.
@@ -134,34 +148,34 @@ Yasak:
 - "Önce şunu bul." şeklinde çözüm adımı vermek.
 - Çözümü öğrencinin yerine yapmak.
 - Sonucu söylemek.
-
 """,
+        "ilerleme": """
+ALGORİTMA TASARIMI İÇİN İLERLEME:
+Ayrıştırma ve Soyutlama aşamalarındaki öğrenci düşüncelerini kullan. Öğrencinin
+çözüm düşüncesini adım adım akış şemasına dönüştürmesine rehberlik et. İlk adımı,
+sonraki adımı veya işlemi öğrencinin yerine söyleme. Akış şeması görselini de incele
+ve yönlendirmeyi mevcut çizime bağla.
+"""
+    },
 
-
-    "4. Hata Ayıklama": """
-
+    "4. Hata Ayıklama": {
+        "protokol": """
 Amaç:
-Öğrencinin oluşturduğu çözümün ve matematiksel ilişkinin
-problem koşullarıyla uyumlu olup olmadığını kendisinin
-kontrol etmesini sağlamak.
+Öğrencinin oluşturduğu çözümün ve matematiksel ilişkinin problem koşullarıyla
+uyumlu olup olmadığını kendisinin kontrol etmesini sağlamak.
 
 Öğrencinin:
-
 - Kullandığı bilgileri yeniden kontrol etmesini,
 - İşlem adımlarını incelemesini,
-- Nicelikler arasındaki ilişkinin tutarlı olup olmadığını
-  farklı değerlerle kontrol etmesini,
+- Nicelikler arasındaki ilişkinin tutarlı olup olmadığını farklı değerlerle kontrol etmesini,
 - Tablo, grafik veya işlem sonuçlarını karşılaştırmasını,
-- Değişimin problemde verilen durumla uyumlu olup olmadığını
-  incelemesini,
-- Sonucun problem koşullarını sağlayıp sağlamadığını
-  değerlendirmesini,
+- Değişimin problemde verilen durumla uyumlu olup olmadığını incelemesini,
+- Sonucun problem koşullarını sağlayıp sağlamadığını değerlendirmesini,
 - Şüphe duyduğu bir adımı yeniden incelemesini,
 - Gerekirse kendi çözümünde düzeltme yapmasını,
 - Yaptığı düzeltmeyi yeniden test etmesini sağla.
 
 Yasak:
-
 - "Doğru" demek.
 - "Yanlış" demek.
 - "Hata yaptın" demek.
@@ -169,34 +183,43 @@ Yasak:
 - Doğru denklemi söylemek.
 - Doğru ilişkiyi öğrencinin yerine kurmak.
 - Eksik adımı öğrencinin yerine tamamlamak.
-
 """,
+        "ilerleme": """
+HATA AYIKLAMA İÇİN İLERLEME:
+Öğrencinin oluşturduğu akış şemasını ve önceki aşamalardaki düşüncelerini kullan.
+Önce çözümü test ettir. Bir tutarsızlık seziliyorsa bunu doğrudan söylemeden öğrencinin
+kendisinin ilgili noktayı bulmasını sağla; ardından düzeltmesini ve yeniden test etmesini iste.
+Sorun görünmüyorsa ve yaş düzeyine uygun başka bir yol gerçekten mümkünse alternatif yolu
+düşündür; alternatif yöntem zorunlu değildir. Hata yokken hata varmış gibi davranma.
+"""
+    },
 
-
-    "5. Metabilişsel Yansıtma": """
-
+    "5. Metabilişsel Yansıtma": {
+        "protokol": """
 Amaç:
-Öğrencinin tamamladığı problem çözme sürecinde kendi düşünmesini
-planlama, izleme ve değerlendirme açısından fark etmesini sağlamak.
+Öğrencinin tamamladığı problem çözme sürecinde kendi düşünmesini planlama, izleme
+ve değerlendirme açısından fark etmesini sağlamak.
 
 İlerleme sırası:
-1. PLANLAMA: Çözmeye başlamadan önce ne yapmayı planladığını ve nedenini
-   kendi sözleriyle hatırlamasını sağla.
-2. İZLEME: Çözüm sırasında planını nasıl takip ettiğini, ne zaman
-   kontrol ettiğini veya düşüncesini değiştirip değiştirmediğini fark ettir.
-3. DEĞERLENDİRME: Kullandığı yolun işe yarayıp yaramadığını, ne öğrendiğini
-   ve benzer bir problemde neyi farklı yapabileceğini değerlendirt.
+1. PLANLAMA: Çözmeye başlamadan önce ne yapmayı planladığını ve nedenini kendi sözleriyle hatırlamasını sağla.
+2. İZLEME: Çözüm sırasında planını nasıl takip ettiğini, ne zaman kontrol ettiğini veya düşüncesini değiştirip değiştirmediğini fark ettir.
+3. DEĞERLENDİRME: Kullandığı yolun işe yarayıp yaramadığını, ne öğrendiğini ve benzer bir problemde neyi farklı yapabileceğini değerlendirt.
 
 Kurallar:
 - Önceki dört basamaktaki konuşmaları dikkate al.
-- Planlama → İzleme → Değerlendirme sırasını koru; öğrencinin zaten
-  yanıtladığı boyuta geri dönüp aynı soruyu tekrarlama.
+- Planlama → İzleme → Değerlendirme sırasını koru; öğrencinin zaten yanıtladığı boyuta geri dönüp aynı soruyu tekrarlama.
 - Yeni bir matematiksel çözüm üretmesini isteme; çözümü yeniden yaptırma.
 - Öğrencinin sürecini onun yerine yorumlama veya değerlendirme.
 - Cevap, yöntem veya doğru/yanlış yargısı verme.
 - Öğrencinin düşünmesini destekleyen kısa, açık ve tek bir yönlendirme yap.
-
+""",
+        "ilerleme": """
+METABİLİŞSEL YANSITMA İÇİN İLERLEME:
+Önceki dört basamağın gerçek öğrenci yanıtlarını kullan. Planlama → İzleme →
+Değerlendirme sırasıyla ilerle. Öğrencinin yanıtladığı boyutu yeniden sorma;
+sıradaki boyuta geç. Öğrencinin yerine yorum veya değerlendirme yapma.
 """
+    }
 }
 
 
@@ -786,45 +809,7 @@ def previous_stages_text(current_step):
 
 def ilk_soruyu_olustur(current_step, problem_analysis):
 
-    if current_step == "1. Ayrıştırma":
-        progression = """
-AYRIŞTIRMA İÇİN ÖZEL İLERLEME:
-Problemi oluşturan bileşenleri görünür hâle getir.
-Önce ne istendiğini, ardından verilenleri, koşulları ve gerekli bileşenleri öğrencinin kendisinin belirlemesini sağla.
-Öğrencinin problemi anlamlı ve yönetilebilir parçalara ayırmasına yardımcı ol.
-Parçalar arasındaki temel bağlantıyı fark etmeye başlamasına izin ver; ancak matematiksel ilişkiyi bu aşamada adlandırma.
-"""
-    elif current_step == "2. Soyutlama":
-        progression = """
-SOYUTLAMA İÇİN ÖZEL İLERLEME:
-Ayrıştırmada ortaya çıkan bileşenleri temel al.
-Çözüm açısından önemli olan bilgileri öne çıkarmasını ve gereksiz ayrıntıları ayırt etmesini sağla.
-Ardından nicelikler arasındaki temel ilişkiyi, yapıyı veya uygun olduğunda örüntüyü fark etmesine yardımcı ol.
-İlişkiyi veya genel yapıyı öğrencinin yerine söyleme.
-"""
-    elif current_step == "3. Algoritma Tasarımı":
-        progression = """
-ALGORİTMA TASARIMI İÇİN ÖZEL İLERLEME:
-Ayrıştırma ve Soyutlama aşamalarındaki öğrenci düşüncelerini kullan.
-Öğrencinin çözüm düşüncesini adım adım akış şemasına dönüştürmesine rehberlik et.
-İlk adımı, sonraki adımı veya işlemi öğrencinin yerine söyleme.
-Akış şeması görselini de incele ve soruyu mevcut çizime bağla.
-"""
-    elif current_step == "4. Hata Ayıklama":
-        progression = """
-HATA AYIKLAMA İÇİN ÖZEL İLERLEME:
-Öğrencinin oluşturduğu akış şemasını ve önceki aşamalardaki düşüncelerini incele.
-Önce çözümü test ettir. Bir tutarsızlık seziliyorsa öğrencinin kendisinin ilgili noktayı bulmasını sağla; ardından düzeltmesini ve yeniden test etmesini iste.
-Sorun görünmüyorsa ve yaş düzeyine uygun başka bir yol gerçekten mümkünse alternatif yolu düşündür; alternatif yöntem zorunlu değildir.
-"""
-    else:
-        progression = """
-METABİLİŞSEL YANSITMA İÇİN ÖZEL İLERLEME:
-Önceki dört basamağın konuşmalarını incele ve öğrencinin gerçek sürecine dayan.
-Planlama → İzleme → Değerlendirme sırasıyla ilerle. İlk olarak çözmeye başlamadan önceki planını hatırlamasını iste.
-Sonraki mesajlarda öğrencinin verdiği yanıtları dikkate alarak sıradaki boyuta geç; cevapladığı boyutu yeniden sorma.
-Öğrencinin yerine yorum yapma veya başarı değerlendirmesi yapma; matematiksel çözümü yeniden yaptırma.
-"""
+    progression = BASAMAK_TALIMATLARI[current_step]["ilerleme"]
 
     prompt = f"""
 {SYSTEM_PROMPT}
@@ -833,7 +818,7 @@ MEVCUT BASAMAK:
 {current_step}
 
 BASAMAĞIN AKADEMİK AMACI:
-{BASAMAK_TALIMATLARI[current_step]}
+{BASAMAK_TALIMATLARI[current_step]["protokol"]}
 
 ALT BECERİLER:
 {ALT_BECERILER[current_step]}
@@ -878,76 +863,7 @@ def ogrenciye_cevap_ver(current_step, problem_analysis, chat_history, student_me
     conversation = conversation_text(chat_history)
     previous = previous_stages_text(current_step)
 
-    if current_step == "1. Ayrıştırma":
-        progression = """
-ÖZEL KURAL — GERİYE DOĞRU AYRIŞTIRMA:
-BU AŞAMADA AMAÇ ÇÖZÜME ULAŞMAK DEĞİLDİR. Amaç yalnızca problemin istenenini, bu istenene ulaşmak için gerekli bilgileri ve bu bilgilerin birbirine bağlılığını öğrencinin kendisinin parçalara ayırmasıdır.
-
-Ayrıştırmada şu zinciri takip et:
-İSTENEN → BUNU BULMAK İÇİN GEREKEN BİLGİ → BU BİLGİYİ BULMAK İÇİN GEREKEN BİLGİ → VERİLEN/TEMEL BİLGİ.
-
-Öğrenci henüz bu zincirdeki bir halkayı açıkça söylemediyse, o halkayı sen söyleme veya grafik üzerinde gösterme.
-Öğrenci bir halkayı söylediyse onu tamamlanmış kabul et ve yalnızca bir sonraki GERİYE DOĞRU halkayı düşündür.
-
-AYRIŞTIRMA AŞAMASINDA ŞUNLARI SORMA:
-- Nasıl hesaplanır?
-- Hangi formül kullanılır?
-- Hangi işlem yapılır?
-- Hangi ilişki vardır?
-- Değişim miktarı nedir?
-- Eğim nedir?
-- Denklem nasıl bulunur?
-- Grafikten sonucu nasıl bulursun?
-Bu tür sorular Soyutlama veya Algoritma Tasarımı aşamalarına aittir ve Ayrıştırma sırasında çözüm yoluna yaklaşır.
-
-ÖNCE ÖĞRENCİNİN MESAJINI ANLA:
-Öğrencinin son mesajını önce anlamlandır. Öğrenci bir bilgi verdi, bir bilgiyi reddetti, bir bilginin eksik olduğunu söyledi, önceki cevabını düzeltti veya soruyu anlamadığını belirtti mi ayırt et. Öğrencinin söylediğini farklı bir anlama çekme.
-
-ÇOK ÖNEMLİ — ÖĞRENCİNİN VERDİĞİ BİLGİYİ TEKRAR SORMA:
-- Öğrenci bir nicelik, değer, zaman-uzaklık bilgisi, grafik bilgisi veya ilişkiyi açıkça söylediyse bunu ZATEN BELİRLENMİŞ bilgi kabul et.
-- Öğrencinin söylediği bilgi problemdeki gerekli bilgilerden biriyle eşleşiyorsa, aynı bilgiyi başka cümleyle tekrar isteme ve "başka hangi bilgi..." diye yeniden aratma.
-- Örneğin öğrenci "3 saatte 252 km" dediyse tekrar "hangi zaman ve uzaklık bilgisini görüyorsun?" diye sorma. Bunun yerine bu bilginin istenene ulaşmak için yeterli olup olmadığını veya zincirde hangi role sahip olduğunu düşündür.
-- Öğrenci "başka bilgi yok" veya "başlangıç uzaklığı belli değil" diyorsa bunu öğrencinin bilgiyi fark etmediği şeklinde yorumlama. Önce öğrencinin hangi bilgiyi bildiğini ve hangi bilginin eksik olduğunu temel al.
-- Öğrenci bir bilgiyi zaten kendisi ifade etmişse, o bilgiyi grafikte yeniden buldurmaya veya belirli bir eksen, nokta, çizgi, renk ya da kesişime doğrudan yönlendirmeye çalışma.
-- Gerekli bir bilgi zaten öğrencinin cevabında varsa, bir sonraki soru o bilginin rolünü, yeterliliğini veya eksik olan bir sonraki halkayı düşündürsün.
-
-Öğrenci bir halkayı açıkça belirlediyse onu tekrar sorma.
-Öğrenci temel/verilen bilgiye ulaştığında ve problem anlamlı biçimde ayrıştırılmış olduğunda basamak_tamamlandi=true olabilir.
-"""
-    elif current_step == "2. Soyutlama":
-        progression = """
-ÖZEL KURAL — SOYUTLAMA:
-Önceki Ayrıştırma konuşmasını kullan.
-Öğrencinin belirlediği bilgileri gerekli/gereksiz, önemli/ikincil, değişen/sabit ve ilişkili/ilişkisiz yönlerden yeniden düşünmesini sağla.
-Uygunsa örüntü veya genel yapı arat; uygun değilse zorunlu olarak örüntü isteme.
-İlişkiyi öğrencinin yerine adlandırma.
-"""
-    elif current_step == "3. Algoritma Tasarımı":
-        progression = """
-ÖZEL KURAL — ALGORİTMA TASARIMI:
-Ayrıştırma ve Soyutlama konuşmalarını doğrudan kullan.
-Öğrencinin akış şemasındaki mevcut adımları incele.
-Eksik olduğunu düşündüğün kısmı söyleme; öğrencinin kendi çizimine bakarak bir sonraki adımı düşünmesini sağlayan tek soru sor.
-Akış şeması gerçekten tamamlandığında basamak_tamamlandi=true olabilir.
-"""
-    elif current_step == "4. Hata Ayıklama":
-        progression = """
-ÖZEL KURAL — HATA AYIKLAMA:
-Öğrencinin akış şemasını ve önceki aşamaları kullan.
-Önce test ettir.
-Bir tutarsızlık varsa bunu söylemeden, öğrencinin hangi adımı yeniden incelemesi gerektiğini kendisinin bulmasını sağla.
-Düzeltmeden sonra yeniden test ettir.
-Sorun yoksa ve yaş düzeyine uygun başka bir yol varsa alternatif düşünmesini sağlayabilirsin.
-Hata yokken hata varmış gibi davranma.
-"""
-    else:
-        progression = """
-ÖZEL KURAL — METABİLİŞSEL YANSITMA:
-Önceki dört basamaktaki gerçek öğrenci yanıtlarını temel al.
-Planlama → İzleme → Değerlendirme sırasını izle. Öğrenci bir boyutu yanıtladıysa aynı soruyu yeniden sorma; sıradaki boyuta geç.
-Öğrencinin düşünme sürecini onun yerine açıklama veya değerlendirme. Yeni çözüm, yöntem ya da işlem öğretme.
-Öğrencinin yanıtına bağlı kısa bir yansıtma sorusu veya açıklamasıyla destek ol.
-"""
+    progression = BASAMAK_TALIMATLARI[current_step]["ilerleme"]
 
     stuck_phrases = [
         "takıldım", "bilmiyorum", "yapamadım", "anlamadım",
@@ -978,7 +894,7 @@ MEVCUT BASAMAK:
 {current_step}
 
 BASAMAK PROTOKOLÜ:
-{BASAMAK_TALIMATLARI[current_step]}
+{BASAMAK_TALIMATLARI[current_step]["protokol"]}
 
 ALT BECERİLER:
 {ALT_BECERILER[current_step]}
@@ -1003,7 +919,7 @@ GÖREV:
 Yüklenen gerçek problem görselini incele.
 Öğrencinin son mesajını önce anlamını koruyarak değerlendir; öğrencinin söylediği bilgiyi kendi varsayımınla değiştirme.
 Mevcut basamağın amacını, diğer bütün genel kurallardan ÖNCELE.
-Bir sonraki düşünme adımını destekleyen yalnızca TEK bir soru sor.
+Bir sonraki düşünme adımını destekleyen yalnızca TEK bir soru sor veya cümle kur.
 
 KRİTİK AŞAMA SINIRI:
 Eğer MEVCUT BASAMAK "1. Ayrıştırma" ise öğrenciyi cevaba, yönteme, işleme, matematiksel ilişkiye veya çözüm planına götüren soru sorma.
