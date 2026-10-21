@@ -49,13 +49,13 @@ DATA_FILE = "tez_verileri_final.csv"
 
 
 # ============================================================
-# DOĞRUSAL İLİŞKİLER İÇİN BASAMAK TALİMATLARI
+# TEK KAYNAK: DOĞRUSAL İLİŞKİLER İÇİN BASAMAK TALİMATLARI
 # ============================================================
 
 BASAMAK_TALIMATLARI = {
 
-    "1. Ayrıştırma": {
-        "protokol": """
+    "1. Ayrıştırma": """
+
 Amaç:
 Problemi oluşturan bileşenleri, verilenleri, koşulları ve alt problemleri
 belirleme; problemi yönetilebilir parçalara ayırma.
@@ -70,6 +70,14 @@ belirleme; problemi yönetilebilir parçalara ayırma.
 Bu aşamada ayrıştırma, problemi çözmek değildir. Öğrencinin problemi oluşturan
 bileşenleri görünür hâle getirmesine yardımcı ol.
 
+İLERLEME PROTOKOLÜ:
+- İstenen → istenene ulaşmak için gereken bilgi → bu bilgiyi bulmak için gereken bilgi → verilen/temel bilgi zincirini geriye doğru izle.
+- Öğrencinin açıkça belirttiği bilgi veya niceliği belirlenmiş kabul et; aynı bilgiyi farklı sözlerle yeniden sorma.
+- Öğrenci bir bilginin eksik olduğunu söylüyorsa bunu fark etmemiş gibi davranma ve görselden onun yerine tamamlamaya çalışma.
+- Öğrenci gerekli bir bilgiyi zaten belirttiyse bir sonraki adımda o bilginin rolünü/yeterliliğini ya da zincirde geriye doğru hangi bilgiye ihtiyaç olduğunu düşündür; çözüm yöntemine geçme.
+- Öğrencinin fark ettiği eksen, nokta, çizgi, renk, kesişim veya grafik özelliğini tekrar tarif etme.
+- İlk mesajda da bu aşamanın sınırını koru; çözüm, hesaplama veya matematiksel ilişki aramaya geçme.
+
 Yasak:
 - Çözüm yolu söylemek.
 - İşlem önermek.
@@ -78,20 +86,11 @@ Yasak:
 - Cevabı söylemek.
 - Problemi öğrencinin yerine parçalara ayırmak.
 - Öğrenciyi çözüm yöntemine yönlendirmek.
-""",
-        "ilerleme": """
-AYRIŞTIRMA İÇİN İLERLEME:
-Problemi oluşturan bileşenleri görünür hâle getir. Önce ne istendiğini, ardından
-verilenleri, koşulları ve gerekli bileşenleri öğrencinin kendisinin belirlemesini sağla.
-Öğrencinin problemi anlamlı ve yönetilebilir parçalara ayırmasına yardımcı ol.
-Parçalar arasındaki bağlantıyı fark etmeye başlamasına izin ver; ancak matematiksel
-ilişkiyi bu aşamada adlandırma. Öğrencinin açıkça söylediği bir bilgiyi tekrar isteme;
-bir sonraki düşünme halkasına geç.
-"""
-    },
 
-    "2. Soyutlama": {
-        "protokol": """
+""",
+
+    "2. Soyutlama": """
+
 Amaç:
 Belirlenen bileşenler arasından çözüm açısından anlamlı olanları öne çıkarmak,
 gereksiz ayrıntıları elemek ve bu bileşenler arasındaki temel matematiksel
@@ -115,31 +114,26 @@ Yasak:
 - Kullanılacak yöntemi söylemek.
 - Çözüm vermek.
 - Öğrencinin yerine ilişki veya örüntü oluşturmak.
-""",
-        "ilerleme": """
-SOYUTLAMA İÇİN İLERLEME:
-Ayrıştırmada ortaya çıkan bileşenleri temel al. Çözüm açısından önemli olan bilgileri
-öne çıkarmasını ve gereksiz ayrıntıları ayırt etmesini sağla. Ardından nicelikler
-arasındaki temel ilişkiyi, yapıyı veya uygun olduğunda örüntüyü fark etmesine yardımcı ol.
-İlişkiyi veya genel yapıyı öğrencinin yerine söyleme. Öğrencinin açıkça belirlediği
-bilgiyi tekrar sordurma; onun üzerinden daha anlamlı bir yapı kurmasına yardımcı ol.
-"""
-    },
 
-    "3. Algoritma Tasarımı": {
-        "protokol": """
+""",
+
+    "3. Algoritma Tasarımı": """
+
 Amaç:
-Öğrencinin doğrusal ilişki içeren problemi çözmek için kendi düşünme ve işlem
-planını adım adım oluşturmasını sağlamak. Böylece akış şeması oluşturmak.
+Öğrencinin doğrusal ilişki içeren problemi çözmek için
+kendi düşünme ve işlem planını adım adım oluşturmasını sağlamak. Böylece akış şeması oluşturmak.
 
 Öğrencinin:
+
 - İlk olarak hangi bilgiyi kullanacağını belirlemesini,
 - Yapacağı işlemleri kendisinin belirlemesini,
 - İşlem ve düşünme adımlarını uygun sıraya koymasını,
-- Bir adımdan elde edilen bilginin sonraki adıma nasıl katkı sağlayacağını düşünmesini,
+- Bir adımdan elde edilen bilginin sonraki adıma
+  nasıl katkı sağlayacağını düşünmesini,
 - Gerekirse alternatif bir yol oluşturmasını sağla.
 
 Yasak:
+
 - Algoritmayı öğrencinin yerine oluşturmak.
 - İşlem sırasını söylemek.
 - Denklem vermek.
@@ -148,34 +142,34 @@ Yasak:
 - "Önce şunu bul." şeklinde çözüm adımı vermek.
 - Çözümü öğrencinin yerine yapmak.
 - Sonucu söylemek.
-""",
-        "ilerleme": """
-ALGORİTMA TASARIMI İÇİN İLERLEME:
-Ayrıştırma ve Soyutlama aşamalarındaki öğrenci düşüncelerini kullan. Öğrencinin
-çözüm düşüncesini adım adım akış şemasına dönüştürmesine rehberlik et. İlk adımı,
-sonraki adımı veya işlemi öğrencinin yerine söyleme. Akış şeması görselini de incele
-ve yönlendirmeyi mevcut çizime bağla.
-"""
-    },
 
-    "4. Hata Ayıklama": {
-        "protokol": """
+""",
+
+
+    "4. Hata Ayıklama": """
+
 Amaç:
-Öğrencinin oluşturduğu çözümün ve matematiksel ilişkinin problem koşullarıyla
-uyumlu olup olmadığını kendisinin kontrol etmesini sağlamak.
+Öğrencinin oluşturduğu çözümün ve matematiksel ilişkinin
+problem koşullarıyla uyumlu olup olmadığını kendisinin
+kontrol etmesini sağlamak.
 
 Öğrencinin:
+
 - Kullandığı bilgileri yeniden kontrol etmesini,
 - İşlem adımlarını incelemesini,
-- Nicelikler arasındaki ilişkinin tutarlı olup olmadığını farklı değerlerle kontrol etmesini,
+- Nicelikler arasındaki ilişkinin tutarlı olup olmadığını
+  farklı değerlerle kontrol etmesini,
 - Tablo, grafik veya işlem sonuçlarını karşılaştırmasını,
-- Değişimin problemde verilen durumla uyumlu olup olmadığını incelemesini,
-- Sonucun problem koşullarını sağlayıp sağlamadığını değerlendirmesini,
+- Değişimin problemde verilen durumla uyumlu olup olmadığını
+  incelemesini,
+- Sonucun problem koşullarını sağlayıp sağlamadığını
+  değerlendirmesini,
 - Şüphe duyduğu bir adımı yeniden incelemesini,
 - Gerekirse kendi çözümünde düzeltme yapmasını,
 - Yaptığı düzeltmeyi yeniden test etmesini sağla.
 
 Yasak:
+
 - "Doğru" demek.
 - "Yanlış" demek.
 - "Hata yaptın" demek.
@@ -183,43 +177,10 @@ Yasak:
 - Doğru denklemi söylemek.
 - Doğru ilişkiyi öğrencinin yerine kurmak.
 - Eksik adımı öğrencinin yerine tamamlamak.
+
 """,
-        "ilerleme": """
-HATA AYIKLAMA İÇİN İLERLEME:
-Öğrencinin oluşturduğu akış şemasını ve önceki aşamalardaki düşüncelerini kullan.
-Önce çözümü test ettir. Bir tutarsızlık seziliyorsa bunu doğrudan söylemeden öğrencinin
-kendisinin ilgili noktayı bulmasını sağla; ardından düzeltmesini ve yeniden test etmesini iste.
-Sorun görünmüyorsa ve yaş düzeyine uygun başka bir yol gerçekten mümkünse alternatif yolu
-düşündür; alternatif yöntem zorunlu değildir. Hata yokken hata varmış gibi davranma.
-"""
-    },
 
-    "5. Metabilişsel Yansıtma": {
-        "protokol": """
-Amaç:
-Öğrencinin tamamladığı problem çözme sürecinde kendi düşünmesini planlama, izleme
-ve değerlendirme açısından fark etmesini sağlamak.
 
-İlerleme sırası:
-1. PLANLAMA: Çözmeye başlamadan önce ne yapmayı planladığını ve nedenini kendi sözleriyle hatırlamasını sağla.
-2. İZLEME: Çözüm sırasında planını nasıl takip ettiğini, ne zaman kontrol ettiğini veya düşüncesini değiştirip değiştirmediğini fark ettir.
-3. DEĞERLENDİRME: Kullandığı yolun işe yarayıp yaramadığını, ne öğrendiğini ve benzer bir problemde neyi farklı yapabileceğini değerlendirt.
-
-Kurallar:
-- Önceki dört basamaktaki konuşmaları dikkate al.
-- Planlama → İzleme → Değerlendirme sırasını koru; öğrencinin zaten yanıtladığı boyuta geri dönüp aynı soruyu tekrarlama.
-- Yeni bir matematiksel çözüm üretmesini isteme; çözümü yeniden yaptırma.
-- Öğrencinin sürecini onun yerine yorumlama veya değerlendirme.
-- Cevap, yöntem veya doğru/yanlış yargısı verme.
-- Öğrencinin düşünmesini destekleyen kısa, açık ve tek bir yönlendirme yap.
-""",
-        "ilerleme": """
-METABİLİŞSEL YANSITMA İÇİN İLERLEME:
-Önceki dört basamağın gerçek öğrenci yanıtlarını kullan. Planlama → İzleme →
-Değerlendirme sırasıyla ilerle. Öğrencinin yanıtladığı boyutu yeniden sorma;
-sıradaki boyuta geç. Öğrencinin yerine yorum veya değerlendirme yapma.
-"""
-    }
 }
 
 
@@ -255,34 +216,6 @@ ALT_BECERILER = {
         ("HA5", "Düzeltme yapma"),
         ("HA6", "Yeniden test etme"),
     ],
-    "5. Metabilişsel Yansıtma": [
-        ("MY1", "Planlama sürecini fark etme"),
-        ("MY2", "Çözüm sürecini izleme"),
-        ("MY3", "Çözüm sürecini değerlendirme"),
-    ],
-}
-
-
-# ============================================================
-# METABİLİŞSEL SORULAR
-# ============================================================
-
-METABILISSEL_SORULAR = {
-
-    "1. Ayrıştırma":
-        "Bu problemi parçalara ayırırken hangi bilgiler ve nicelikler dikkatini çekti?",
-
-    "2. Soyutlama":
-        "Bu problemde nicelikler arasındaki ilişkiyi fark ederken hangi bilgiler sana yardımcı oldu?",
-
-    "3. Algoritma Tasarımı":
-        "Çözüm adımlarını planlarken nasıl bir yol izledin ve bu sırayı neden seçtin?",
-
-    "4. Hata Ayıklama":
-        "Kurduğun ilişkinin ve bulduğun sonucun problem koşullarıyla uyumlu olduğundan nasıl emin oldun?",
-
-    "5. Metabilişsel Yansıtma":
-        "Bu problemi çözerken düşünme sürecini nasıl planladığını, izlediğini ve değerlendirdiğini anlatabilir misin?"
 }
 
 
@@ -341,7 +274,7 @@ KESİN KURALLAR
 
 15. Aynı anda birden fazla soru sorma.
 
-16. Her mesajda YALNIZCA BİR yönlendirici soru sor veya yönlendirici cümle kur.
+16. Her yanıtta en fazla bir yönlendirici soru kullan. Soru sormak zorunda değilsin; gerektiğinde tek bir kısa yönlendirici cümle kur.
 
 17. Öğrencinin cevabını bekle.
 
@@ -362,25 +295,15 @@ KESİN KURALLAR
 24. Öğrencinin seviyesine uygun kısa ve doğal Türkçe kullan.
 
 25. ÖĞRENCİ TAKILDIĞINDA DESTEK VER:
-    Öğrenci "bilmiyorum", "yapamadım", "takıldım", "anlamadım", "nasıl yapacağım?",
-    "nereden başlayacağımı bilmiyorum" gibi ifadeler kullanırsa yalnızca soru sorup
-    öğrenciyi aynı noktada bırakma. Mevcut basamağın amacına uygun, çok küçük bir
-    SCAFFOLDING/İPUCU ver ve ardından öğrencinin düşünmesini sürdürecek yalnızca BİR
-    soru sor veya cümle kur. İpucu cevabı, işlem sonucu, formül, denklem, yöntem veya doğrudan çözüm
-    adımı içermemelidir. Yönlendirici olsun. İpucu öğrencinin zaten söylediği bilgiyi tekrar etmek yerine
-    bir sonraki düşünme adımına yaklaşmasını sağlamalıdır.
+    Öğrenci açıkça takıldığını belirtiyorsa mevcut basamağın talimatlarında belirtilen
+    sınırlar içinde kısa ve somut bir ipucu ver. Gerekirse ardından tek bir soru sor.
+    İpucu cevap, sonuç, formül, denklem, yöntem veya çözüm adımını öğrencinin yerine
+    vermemeli; öğrencinin daha önce söylediği bilgiyi de gereksiz yere tekrarlamamalıdır.
 
-26. İPUCU BASAMAKTAN SAPMAMALI:
-    - Ayrıştırma: yalnızca istenen ve istenene ulaşmak için gerekli bilgi zincirini
-      fark ettirmeye yardımcı ol.
-    - Soyutlama: gerekli/gereksiz bilgileri, nicelikleri, değişimi, ilişkiyi veya
-      örüntüyü fark etmeye yardımcı ol; ilişkiyi adlandırma.
-    - Algoritma Tasarımı: öğrencinin kendi adımlarını ve sırasını düşünmesine
-      yardımcı ol; adımı onun yerine verme.
-    - Hata Ayıklama: çözümünü bir koşul, değer veya farklı durumla kontrol etmesini
-      hatırlat; sorunlu adımı söyleme.
-    - Metabilişsel Yansıtma: planlama, izleme veya değerlendirme boyutunu kendi
-      deneyimi üzerinden hatırlamasına yardımcı ol; yeni matematik öğretme.
+26. BASAMAK SINIRLARI:
+    Her basamağın amacı, izin verilen rehberlik ve yasakları yalnızca BASAMAK TALİMATLARI
+    bölümündeki ilgili basamak protokolünden al. Bu genel kuralları, basamağa özgü
+    talimatların yerine geçecek şekilde yorumlama.
 
 ============================================================
 YANIT BİÇİMİ
@@ -809,8 +732,6 @@ def previous_stages_text(current_step):
 
 def ilk_soruyu_olustur(current_step, problem_analysis):
 
-    progression = BASAMAK_TALIMATLARI[current_step]["ilerleme"]
-
     prompt = f"""
 {SYSTEM_PROMPT}
 
@@ -818,15 +739,10 @@ MEVCUT BASAMAK:
 {current_step}
 
 BASAMAĞIN AKADEMİK AMACI:
-{BASAMAK_TALIMATLARI[current_step]["protokol"]}
+{BASAMAK_TALIMATLARI[current_step]}
 
 ALT BECERİLER:
 {ALT_BECERILER[current_step]}
-
-{progression}
-
-AŞAMA ÖNCELİĞİ:
-Mevcut basamak 1. Ayrıştırma ise, öğrencinin henüz çözüm yapmasına izin verme. İlk soru yalnızca istenen veya istenene ulaşmak için gerekli bilgi zincirini başlatmalıdır; grafik üzerindeki çözüm yolunu, matematiksel ilişkiyi veya hesaplamayı hedefleme.
 
 PROBLEM ANALİZİ:
 {problem_analysis}
@@ -844,7 +760,7 @@ YANITI YALNIZCA ŞU JSON YAPISINDA VER:
 }}
 
 İlk soru için basamak_tamamlandi her zaman false olsun.
-Soru alanında yalnızca tek kısa yönlendirici soru bulunsun.
+Soru alanında 1-2 kısa cümle bulunsun; soru sormak zorunlu değildir ve en fazla bir soru kullanılmalıdır.
 """
 
     raw = gemini_generate(
@@ -863,8 +779,6 @@ def ogrenciye_cevap_ver(current_step, problem_analysis, chat_history, student_me
     conversation = conversation_text(chat_history)
     previous = previous_stages_text(current_step)
 
-    progression = BASAMAK_TALIMATLARI[current_step]["ilerleme"]
-
     stuck_phrases = [
         "takıldım", "bilmiyorum", "yapamadım", "anlamadım",
         "nasıl yapacağım", "nereden başlayacağımı bilmiyorum",
@@ -876,11 +790,10 @@ def ogrenciye_cevap_ver(current_step, problem_analysis, chat_history, student_me
 
     if student_is_stuck:
         stuck_instruction = """
-ÖĞRENCİ TAKILDIĞINI BELİRTTİ. Bu durumda yalnızca yeni bir soru sorup geçme.
-Önce mevcut basamağın hedefinden sapmadan 1 kısa ve somut SCAFFOLDING İPUCU ver.
-İpucu gerçek problem bağlamına dayanabilir ancak cevabı, işlemi, formülü, denklemi,
-çözüm yöntemini veya bir sonraki adımı öğrencinin yerine söylememelidir. Ardından
-öğrencinin düşünmeye devam etmesini sağlayan yalnızca BİR soru sor.
+ÖĞRENCİ TAKILDIĞINI BELİRTTİ. Mevcut basamağın talimatlarıyla uyumlu, kısa ve somut
+bir ipucu ver. Ardından gerekliyse yalnızca bir soru sor; soru sormak zorunlu değildir.
+İpucu cevabı, işlemi, formülü, denklemi, çözüm yöntemini veya bir sonraki çözüm adımını
+öğrencinin yerine söylememelidir.
 """
     else:
         stuck_instruction = """
@@ -894,12 +807,10 @@ MEVCUT BASAMAK:
 {current_step}
 
 BASAMAK PROTOKOLÜ:
-{BASAMAK_TALIMATLARI[current_step]["protokol"]}
+{BASAMAK_TALIMATLARI[current_step]}
 
 ALT BECERİLER:
 {ALT_BECERILER[current_step]}
-
-{progression}
 
 {stuck_instruction}
 
@@ -919,23 +830,12 @@ GÖREV:
 Yüklenen gerçek problem görselini incele.
 Öğrencinin son mesajını önce anlamını koruyarak değerlendir; öğrencinin söylediği bilgiyi kendi varsayımınla değiştirme.
 Mevcut basamağın amacını, diğer bütün genel kurallardan ÖNCELE.
-Bir sonraki düşünme adımını destekleyen yalnızca TEK bir soru sor veya cümle kur.
+Bir sonraki düşünme adımını destekle. Soru sormak zorunda değilsin; soru sorarsan yalnızca TEK soru kullan.
 
-KRİTİK AŞAMA SINIRI:
-Eğer MEVCUT BASAMAK "1. Ayrıştırma" ise öğrenciyi cevaba, yönteme, işleme, matematiksel ilişkiye veya çözüm planına götüren soru sorma.
-Ayrıştırmada yalnızca "Ne isteniyor?", "Bunu bulmak için hangi bilgi gerekiyor?", "Bu bilgiye ulaşmak için hangi bilgi gerekiyor?", "Elindeki verilenlerden hangisi bu ihtiyacı karşılıyor?" türündeki GERİYE DOĞRU düşünme sorularını kullan.
-Öğrencinin çözüm için gereken bir bilgiyi zaten söylemesi, o bilginin nasıl kullanılacağını sorma hakkı vermez; o bilgi zincirde bir halka olarak kabul edilir.
-
-ÖZELLİKLE AYRIŞTIRMA AŞAMASINDA:
-- Öğrencinin son mesajında açıkça verdiği bilgi, nicelik, değer veya grafik bilgisini mevcut zincirin bir halkası olarak kabul et.
-- Öğrencinin zaten söylediği bilgiyi tekrar isteme; aynı bilgiyi "başka hangi bilgi...", "hangi değer...", "grafikte ne görüyorsun?" gibi sorularla yeniden aratma.
-- Öğrenci gerekli bir grafik bilgisini zaten ifade ettiyse, o bilgiyi tekrar buldurma. Bunun yerine o bilginin istenene ulaşmak için yeterli olup olmadığını veya bundan geriye doğru hangi bilgiye ihtiyaç olduğunu düşündür.
-- Öğrenci bir bilginin eksik olduğunu söylüyorsa bunu doğrudan görsel ipucuyla tamamlamaya çalışma. Eksik olan bilginin ne olduğunu veya mevcut bilgilerin yeterli olup olmadığını öğrencinin kendisinin değerlendirmesini sağla.
-- Öğrencinin zaten fark ettiği bir eksen, nokta, çizgi, renk, kesişim veya grafik özelliğini yeniden tarif etme.
-- Problem analizinde bulunan bir bilgi ile öğrencinin söylediği bilgi aynıysa, öğrencinin cevabını yeni bir bilgi arama gerekçesi olarak kullanma; bir sonraki düşünme halkasına geç.
-
-Öğrencinin söylemediği sonucu onun adına çıkarma.
-Çözüm, formül, denklem, işlem, cevap veya doğrudan ipucu verme.
+BASAMAK SINIRI:
+Mevcut basamağın hedefini ve özel sınırlarını BASAMAK TALİMATLARI bölümündeki
+ilgili protokole göre uygula. Öğrencinin söylemediği sonucu onun adına çıkarma.
+Çözüm, formül, denklem, işlem veya cevap verme.
 
 YANITI YALNIZCA ŞU JSON YAPISINDA VER:
 {{
@@ -946,7 +846,7 @@ YANITI YALNIZCA ŞU JSON YAPISINDA VER:
 
 Basamak tamamlanmadıysa false kullan.
 Basamak tamamlandıysa true kullan; bunu yalnızca konuşmada gerçekten yeterli kanıt varsa yap.
-Soru alanında yalnızca öğrencinin göreceği 1-2 kısa cümle ve TEK soru olsun.
+Soru alanında yalnızca öğrencinin göreceği 1-2 kısa cümle olsun; en fazla bir soru kullan ve soru sormak zorunda hissetme.
 """
 
     raw = gemini_generate(
@@ -1004,13 +904,12 @@ Yeni çözüm yolu verme.
 
 Öğrencinin yerine matematiksel ilişki kurma.
 
-Şu beş boyutu değerlendir:
+Şu dört boyutu değerlendir:
 
 1. Ayrıştırma
 2. Soyutlama
 3. Algoritma Tasarımı
 4. Hata Ayıklama
-5. Metabilişsel Yansıtma
 
 Her boyut için öğrencinin süreçteki
 yaklaşımını kısaca belirt.
@@ -1022,8 +921,7 @@ yaklaşımını kısaca belirt.
 - Değişimi ve örüntüyü inceleyebilme,
 - Farklı gösterimler arasında ilişki kurabilme,
 - Kendi çözüm planını oluşturabilme,
-- Oluşturduğu ilişkiyi kontrol edebilme,
-- Kendi planlama, izleme ve değerlendirme süreçlerini fark edebilme
+- Oluşturduğu ilişkiyi kontrol edebilme
 
 açısından değerlendir.
 
@@ -1376,11 +1274,6 @@ st.write(
     f"{st.session_state.current_step}"
 )
 
-if st.session_state.current_step == "5. Metabilişsel Yansıtma":
-    st.info(
-        "🧠 Bu aşama üç boyutta ilerler: **Planlama → İzleme → Değerlendirme**. "
-        "Amaç çözümü yeniden yapmak değil, kendi düşünme sürecini fark etmek ve değerlendirmektir."
-    )
 
 
 # ============================================================
@@ -1682,141 +1575,6 @@ with col1:
 
 
     st.write("---")
-
-
-    # --------------------------------------------------------
-    # ÖZ-YANSITMA
-    # --------------------------------------------------------
-
-    st.info(
-
-        "🧠 **Öz-Yansıtma:** "
-        +
-        METABILISSEL_SORULAR[
-            st.session_state.current_step
-        ]
-    )
-
-
-    meta_key = (
-
-        "meta_"
-        +
-        st.session_state.current_step
-        .replace(" ", "_")
-    )
-
-
-    m_cevap = st.text_area(
-
-        "Düşünceni buraya yaz...",
-
-        key=meta_key
-    )
-
-
-    if st.button(
-        "💾 Düşüncemi Kaydet"
-    ):
-
-        log_kaydet({
-
-            "tarih":
-                datetime.now()
-                .strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                ),
-
-            "id":
-                student_id,
-
-            "basamak":
-                st.session_state.current_step,
-
-            "tip":
-                "Metabiliş",
-
-            "icerik":
-                m_cevap
-        })
-
-
-        st.success(
-            "Kaydedildi!"
-        )
-
-
-    st.write("---")
-
-
-    # --------------------------------------------------------
-    # EMİNLİK
-    # --------------------------------------------------------
-
-    st.write(
-
-        "⭐ **Bu adımdaki çözümünden "
-        "ne kadar eminsin?**"
-    )
-
-
-    confidence = st.select_slider(
-
-        "Derecelendir:",
-
-        options=[
-
-            "Hiç Emin Değilim",
-
-            "Kararsızım",
-
-            "Biraz Eminim",
-
-            "Çok Eminim"
-        ],
-
-        value="Kararsızım",
-
-        key=(
-
-            "confidence_"
-            +
-            st.session_state.current_step
-        )
-    )
-
-
-    if st.button(
-        "📈 Eminlik Derecesini Kaydet"
-    ):
-
-        log_kaydet({
-
-            "tarih":
-                datetime.now()
-                .strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                ),
-
-            "id":
-                student_id,
-
-            "basamak":
-                st.session_state.current_step,
-
-            "tip":
-                "Eminlik",
-
-            "icerik":
-                confidence
-        })
-
-
-        st.success(
-            f"Eminlik: {confidence}"
-        )
-
-
     st.write("---")
 
 
