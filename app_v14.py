@@ -620,6 +620,7 @@ def parse_guidance_response(raw_text, current_step):
 # ============================================================
 
 def analyze_problem_image(uploaded_file):
+    """Problemi çözmeden, dört algoritmik düşünme basamağı açısından analiz eder."""
 
     if uploaded_file is None:
         return ""
@@ -629,84 +630,108 @@ def analyze_problem_image(uploaded_file):
     ).decode("utf-8")
 
     prompt = """
+Sen ortaokul matematik öğretiminde kullanılan bir yapay zekâ destekli
+rehberlik uygulamasının problem analiz yardımcısısın.
 
-Bu görselde bir ortaokul matematik problemi var.
+Sana bir matematik problemi görseli veriliyor. Görevin problemi ÇÖZMEK
+DEĞİL; problem yapısını aşağıdaki dört algoritmik düşünme basamağına göre,
+öğretmen ve rehber bot için analiz etmektir. Bu analiz öğrencinin yaptığı
+çalışma değildir ve öğrenciye hazır çözüm yolu sunmamalıdır.
 
-Görseli ÇÖZME.
+GENEL KURALLAR
+- Görseldeki metni, sayıları, birimleri, sembolleri, tabloyu, grafiği,
+  eksenleri ve şekilleri dikkatle incele.
+- Görselde bulunmayan bilgi ekleme; okunamayan değerleri tahmin etme.
+- Çözüm yapma, işlem yapma, cevabı hesaplama.
+- Denklem, formül, çözüm yöntemi veya tamamlanmış algoritma verme.
+- Birden fazla basamakta aynı bilgiyi gereksiz yere tekrarlama.
+- Yalnızca problemden desteklenen çıkarımları yaz; kesin olmayanları
+  “olası” veya “görselden kesin belirlenemiyor” diye belirt.
 
-Yalnızca problemi rehber öğretmenin
-anlayabilmesi için analiz et.
+## 1. Ayrıştırma
+Problemi oluşturan bileşenleri belirle:
+- Problemde ne isteniyor?
+- Hangi bilgiler verilmiş?
+- Hangi koşullar belirtilmiş?
+- Hangi temel nicelikler, kişiler/nesneler veya durumlar yer alıyor?
+- Problem anlamlı alt görevlere ayrılabiliyor mu?
+- Bileşenler arasında metin, tablo, grafik veya şekilden doğrudan
+  görülebilen bağlantılar neler?
+Bu bölümde problemi çözme veya alt görevleri çözüm sırasına koyma.
 
-Şunları belirle:
+## 2. Soyutlama
+Problemin temel yapısını belirle:
+- Çözüm açısından önemli görünen bilgiler hangileri?
+- İkincil olabilecek veya çözüm için kullanılmayabilecek bilgiler var mı?
+  Emin değilsen bunu kesin hüküm gibi sunma.
+- Hangi nicelikler birbiriyle ilişkili görünüyor?
+- Hangi nicelikler değişiyor, hangileri sabit kalıyor?
+- Bir örüntü, tekrar eden yapı, karşılaştırma veya genellenebilir ilişki
+  görülüyor mu?
+- Tablo, grafik veya şekil hangi matematiksel durumu temsil ediyor?
+İlişkiyi çözüm olarak tamamlamaya çalışma; denklem, formül ve işlem verme.
 
-1. Problem metni.
+## 3. Algoritma Tasarımı
+Çözüm algoritmasını yazma ve çözüm adımlarını sıralama. Bunun yerine,
+problemin yapısının öğrenciden gerektirebileceği düşünme kararlarını
+öğretmen için genel düzeyde belirt:
+- Öğrencinin hangi bileşenler veya bilgiler arasında bağlantı kurması
+  gerekebilir?
+- Problemde hangi karar noktaları ya da koşullar dikkate alınmalı?
+- Öğrencinin oluşturacağı bir ara temsilin (ör. tablo, şema veya çizim)
+  hangi bilgileri düzenlemesine yardımcı olabileceği düşünülebilir mi?
+- Bir ara sonucun daha sonraki düşünmede kullanılmasını gerektiren bir
+  yapı var mı?
+Yalnızca problem yapısına dayanan olasılıkları belirt. “Önce şunu yap,
+sonra bunu hesapla” deme; işlem sırası, yöntem, formül, denklem veya cevap
+verme. Bu bölüm öğrenciye gösterilecek hazır bir plan değildir.
 
-2. Verilen bilgiler.
+## 4. Hata Ayıklama
+Çözüm üretmeden, öğrencinin ileride kendi çalışmasını kontrol ederken
+hangi tür tutarlılıkları gözden geçirebileceğini belirt:
+- Verilen koşullara uygunluk nasıl kontrol edilebilir?
+- Birimlerin, etiketlerin, eksenlerin veya tablo başlıklarının doğru
+  yorumlanması neden önemli olabilir?
+- Problemde birden fazla bilgi temsili varsa (metin, tablo, grafik,
+  şekil), bunların birbiriyle tutarlılığı açısından ne kontrol edilebilir?
+- Sonucun anlamlılığı hangi problem koşullarıyla karşılaştırılabilir?
+- Görselde özellikle dikkat gerektiren belirsiz ya da kolay karıştırılabilir
+  bir nokta var mı?
+Kesin olarak hata yapılacağını iddia etme. Doğru cevabı, çözüm yöntemini
+veya belirli bir çözüm işlemini söyleme.
 
-3. İstenen bilgi.
+## Görselde Belirsiz / Okunamayan Kısımlar
+Okunamayan veya birden fazla biçimde yorumlanabilecek metin, sayı, birim,
+sembol, tablo hücresi, grafik noktası ya da şekil varsa listele. Yoksa
+“Belirgin bir belirsizlik saptanmadı.” yaz. Emin olmadığın bilgiyi uydurma.
 
-4. Tablo, grafik veya şekil varsa
-   bunların içeriği.
+ÇIKTI BİÇİMİ
+Yalnızca aşağıdaki başlıkları kullan ve her başlık altında kısa, açık,
+öğretmen tarafından hızlı okunabilecek maddeler yaz:
+1. Ayrıştırma
+2. Soyutlama
+3. Algoritma Tasarımı
+4. Hata Ayıklama
+Görselde Belirsiz / Okunamayan Kısımlar
 
-5. Problemde yer alan nicelikler.
-
-6. Nicelikler arasındaki görülebilen ilişkiler.
-
-7. Değişen veya birbirine bağlı nicelikler.
-
-8. Önemli matematiksel bilgiler.
-
-9. Okunamayan veya belirsiz bölümler.
-
-Özellikle tablo veya grafik varsa,
-üzerindeki değerleri mümkün olduğunca
-doğru şekilde oku.
-
-Çözüm yapma.
-
-İşlem yapma.
-
-Cevap bulma.
-
-Denklem oluşturma.
-
-Eğim hesaplama.
-
-Doğrusal ilişkiyi çözüm olarak belirtme.
-
-Kullanılacak yöntemi söyleme.
-
+Son kontrol: Yanıtında cevap, hesaplama, denklem, formül veya öğrencinin
+izleyeceği hazır bir çözüm algoritması bulunmadığından emin ol.
 """
 
-
     parts = [
-
-        {
-            "text":
-                prompt
-        },
-
+        {"text": prompt},
         {
             "inline_data": {
-
-                "mime_type":
-                    uploaded_file.type,
-
-                "data":
-                    image_data
+                "mime_type": uploaded_file.type,
+                "data": image_data
             }
         }
     ]
 
-
     return gemini_generate(
-
         parts,
-
         temperature=0.1,
-
-        max_tokens=500,
-
+        max_tokens=900,
         include_problem_image=False
     )
 
