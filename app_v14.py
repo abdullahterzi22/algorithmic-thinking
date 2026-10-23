@@ -92,26 +92,51 @@ Yasak:
     "2. Soyutlama": """
 
 Amaç:
-Belirlenen bileşenler arasından çözüm açısından anlamlı olanları öne çıkarmak,
-gereksiz ayrıntıları elemek ve bu bileşenler arasındaki temel matematiksel
-ilişkiyi, yapıyı veya örüntüyü ortaya çıkarmak.
+Ayrıştırma aşamasında belirlenen bilgiler arasından çözüm için belirleyici
+olanları seçmek; gereksiz ayrıntıları elemek ve nicelikler arasındaki kilit
+matematiksel ilişkiyi öğrencinin kendisinin fark etmesine yardımcı olmak.
 
 Öğrencinin:
-- Hangi bilgilerin çözüm açısından önemli olduğunu fark etmesini,
+- Hangi bilgilerin çözüm açısından önemli olduğunu ve neden önemli olduğunu
+  fark etmesini,
+- Verilenler arasındaki belirleyici ilişkiyi, yapıyı veya örüntüyü bulmasını,
+- Bir bilgiden yararlanarak başka bir bilgiye ulaşmayı mümkün kılan bağı
+  görmesini,
 - Gereksiz veya ikincil bilgileri ayırt etmesini,
-- Nicelikler arasındaki temel ilişkiyi ve değişimi fark etmesini,
-- Uygun olduğunda örüntü veya daha genel bir yapı oluşturmasını sağla.
-- Öğrenci takıldığında aşamaya özgü küçük bir ipucu verebilirsin.
+- Uygun olduğunda örüntü ya da daha genel bir yapı oluşturmasını sağla.
+- Öğrenci takıldığında aşamaya özgü, küçük ve giderek açılan ipuçları verebilirsin.
 
-Bu aşamada amaç, ayrıştırmada belirlenen bilgileri matematiksel açıdan
-anlamlı bir yapıya dönüştürmektir. İlişkiyi öğrencinin yerine adlandırma.
+İLERLEME REHBERİ:
+- Yalnızca verilenleri tekrar ettirmekle yetinme; öğrencinin hangi bilginin
+  neden işe yaradığını ve problemdeki hangi koşulla bağlantılı olduğunu
+  düşünmesine yardımcı ol.
+- Problemde iki hareketlinin aynı anda başlayıp aynı hedefe ulaştığı
+  belirtiliyorsa, bu koşulun toplam hareket süreleri arasındaki ilişki
+  açısından ne anlama geldiğini öğrencinin fark etmesine rehberlik et.
+- Bir hareketlinin verileri diğer hareketlinin bilinmeyenini bulmaya nasıl
+  yardımcı olabileceğini düşündür. Örneğin, bir hareketlinin bilinen
+  bilgilerinden ortak toplam süreye ulaşma fikrini öğrencinin kendisinin
+  kurmasına yardımcı ol.
+- Toplam süre ile belirli bir andan sonra kalan süreyi birbirinden ayırt
+  etmesine rehberlik et; bu ayrımı öğrencinin yerine yapma.
+- Bu örnekleri yalnızca problemdeki koşullar destekliyorsa kullan; her
+  probleme aynı ilişkiyi uygulama.
+- Önce ilişkinin mantığını ve önemli bilgilerin neden gerekli olduğunu
+  netleştir. Sayısal hesaplamaları, işlem sırasını ve çözüm planını
+  **Algoritma Tasarımı** aşamasına bırak.
+- Öğrenci takıldığında doğrudan ilişkiyi veya sonucu söylemek yerine, önce
+  problemdeki koşula dikkat çeken bir ipucu ver; gerekirse ipucunu somutlaştır.
+- Öğrencinin söylediği doğru bir bağlantıyı tekrar tekrar sorgulama; o
+  bağlantıyı kabul ederek düşünmesini bir sonraki ilgili noktaya taşı.
 
 Yasak:
 - "Bu doğrusal ilişkidir." demek.
-- Doğrusal ilişkiyi öğrencinin yerine belirlemek.
-- Denklem veya formül vermek.
+- Doğrusal ilişkiyi veya kilit bağı öğrencinin yerine doğrudan adlandırmak.
+- İki aracın toplam sürelerinin eşit olduğunu ya da başka bir temel ilişkiyi
+  öğrenci fark etmeden doğrudan söylemek.
+- Denklem veya formül vermek; hesaplama yapmak.
 - Eğim ya da sabit değişimi doğrudan söylemek.
-- Kullanılacak yöntemi söylemek.
+- Kullanılacak yöntemi veya işlem sırasını söylemek.
 - Çözüm vermek.
 - Öğrencinin yerine ilişki veya örüntü oluşturmak.
 
@@ -674,15 +699,23 @@ DOĞRULUK VE BELİRSİZLİK KURALLARI
 Bu bölümde henüz hesaplamayı bitirme; ancak problemi anlamak için
 verileri somut ve doğru biçimde kaydet.
 
-## 2. Soyutlama — Matematiksel ilişkiyi bulma
-- Hangi bilgilerin çözüm için önemli olduğuna ve nedenine karar ver.
-- Veriler arasında kullanacağın matematiksel ilişkiyi açıkla.
-- Değişen ve sabit kalan nicelikleri, örüntüyü veya temsil biçimini
-  problemin kendisiyle ilişkilendir.
+## 2. Soyutlama — Problemin kilit matematiksel ilişkisini belirleme
+- Çözümde belirleyici olan ilişkiyi açıkla; yalnızca verilenleri tekrar
+  sıralamakla yetinme. Hangi bilginin neden işe yaradığını belirt.
+- Problemde aynı anda hareket edip aynı hedefe ulaşan iki araç gibi bir
+  durum varsa, toplam hareket sürelerinin eşit olması temel ilişki olabilir.
+  Böyle bir durumda, bir aracın bilinen bilgilerinden ortak toplam süreyi
+  belirleyip bu süreyi diğer araç için kullanabileceğini fark et.
+- Bir aracın toplam süresi ile belirli bir andan sonra kalan süresini
+  birbirinden ayır. Örneğin, toplam süre bilindiğinde diğer aracın belirli
+  bir anda hedefe kalan uzaklığını, kalan süreyle ilişkilendirmek gerekir.
+- Yukarıdaki örnek ilişkiyi yalnızca problemdeki koşullar gerçekten
+  destekliyorsa kullan; her probleme otomatik olarak uygulama.
+- Bu basamakta ilişkinin mantığını ve hangi bilgilerin neden gerekli
+  olduğunu açıkla; sayısal hesaplamaları, işlem sırasını ve çözüm adımlarını
+  **Algoritma Tasarımı** basamağına bırak.
 - Gereksiz bilgileri varsa belirt, fakat gerçekten gereksiz olduğundan
   emin değilsen kesin yargı verme.
-- Bu ilişkiden nasıl yararlanabileceğini açıkla; bu basamakta uygun
-  ara işlemler yapmak gerekiyorsa yap.
 
 ## 3. Algoritma Tasarımı — Kendi çözümümü oluşturma
 - Çözüm için seçtiğin yolu adım adım uygula.
