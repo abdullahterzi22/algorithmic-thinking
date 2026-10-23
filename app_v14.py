@@ -507,7 +507,8 @@ def gemini_generate(
     temperature=0.2,
     max_tokens=250,
     include_problem_image=False,
-    include_flowchart_image=False
+    include_flowchart_image=False,
+    include_annotation_image=False
 ):
 
     final_parts = []
@@ -515,6 +516,14 @@ def gemini_generate(
 
     if include_problem_image:
         image_part = get_problem_image_part()
+        if image_part is not None:
+            final_parts.append(image_part)
+
+    # Öğrencinin problem üzerinde yaptığı işaretlemeyi de Gemini'ye gönder.
+    # Bu görsel, problem arka planı + öğrencinin çizimlerini birlikte içerir.
+    if include_annotation_image:
+        annotation_image = st.session_state.get("annotation_image_data")
+        image_part = image_part_from_canvas(annotation_image)
         if image_part is not None:
             final_parts.append(image_part)
 
@@ -768,6 +777,7 @@ Soru alanında 1-2 kısa cümle bulunsun; soru sormak zorunlu değildir ve en fa
         temperature=0.2,
         max_tokens=150,
         include_problem_image=True,
+        include_annotation_image=True,
         include_flowchart_image=(current_step in ["3. Algoritma Tasarımı", "4. Hata Ayıklama"])
     )
 
@@ -854,6 +864,7 @@ Soru alanında yalnızca öğrencinin göreceği 1-2 kısa cümle olsun; en fazl
         temperature=0.2,
         max_tokens=180,
         include_problem_image=True,
+        include_annotation_image=True,
         include_flowchart_image=(current_step in ["3. Algoritma Tasarımı", "4. Hata Ayıklama"])
     )
 
@@ -952,7 +963,8 @@ SÜREÇ:
 
         max_tokens=500,
 
-        include_problem_image=True
+        include_problem_image=True,
+        include_annotation_image=True
     )
 
 
@@ -1492,10 +1504,6 @@ with col1:
     )
 
 
-    st.caption(
-        "Akış şemanı burada oluşturabilirsin."
-    )
-
 
     canvas_result = st_canvas(
 
@@ -1511,7 +1519,9 @@ with col1:
 
         drawing_mode=drawing_mode,
 
-        update_streamlit=True,
+        # Çizim yapılırken Streamlit'in sürekli yeniden çalışmasını önler.
+        # Böylece öğrencinin oluşturduğu tasarım yanıp sönmez.
+        update_streamlit=False,
 
         initial_drawing=st.session_state.flowchart_storage.get(
             st.session_state.current_step
