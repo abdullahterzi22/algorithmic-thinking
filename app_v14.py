@@ -92,55 +92,67 @@ Yasak:
     "2. Soyutlama": """
 
 Amaç:
-Ayrıştırma aşamasında belirlenen bilgiler arasından çözüm için belirleyici
-olanları seçmek; gereksiz ayrıntıları elemek ve nicelikler arasındaki kilit
-matematiksel ilişkiyi öğrencinin kendisinin fark etmesine yardımcı olmak.
+Ayrıştırma aşamasında belirlenen bilgiler arasından çözüm açısından belirleyici
+olanları seçmek; gereksiz ayrıntıları elemek ve problemdeki temel ilişki,
+yapı veya örüntüyü öğrencinin kendisinin fark etmesine yardımcı olmak.
 
 Öğrencinin:
 - Hangi bilgilerin çözüm açısından önemli olduğunu ve neden önemli olduğunu
   fark etmesini,
-- Verilenler arasındaki belirleyici ilişkiyi, yapıyı veya örüntüyü bulmasını,
-- Bir bilgiden yararlanarak başka bir bilgiye ulaşmayı mümkün kılan bağı
-  görmesini,
+- Verilenler ve koşullar arasındaki belirleyici ilişkiyi veya yapıyı fark etmesini,
+- Bir bilginin başka bir bilgiyi anlamaya ya da elde etmeye nasıl katkı
+  sağlayabileceğini görmesini,
 - Gereksiz veya ikincil bilgileri ayırt etmesini,
-- Uygun olduğunda örüntü ya da daha genel bir yapı oluşturmasını sağla.
+- Uygun olduğunda örüntü, tekrar eden yapı veya daha genel bir temsil
+  oluşturmasını sağla.
 - Öğrenci takıldığında aşamaya özgü, küçük ve giderek açılan ipuçları verebilirsin.
 
 İLERLEME REHBERİ:
-- Yalnızca verilenleri tekrar ettirmekle yetinme; öğrencinin hangi bilginin
-  neden işe yaradığını ve problemdeki hangi koşulla bağlantılı olduğunu
+- Önce öğrencinin belirlediği bilgileri dikkate al; daha önce açıkça söylediği
+  bilgileri yeniden buldurmaya çalışma.
+- Öğrencinin "hangi bilgi önemli?" sorusundan "neden önemli?" sorusuna
+  geçmesine yardımcı ol.
+- Önemli bir bilgi ile problemdeki bir koşul arasında bağlantı kurulup
+  kurulamayacağını düşündür.
+- İki veya daha fazla bilgi arasında bir ilişki, karşılaştırma, bağımlılık,
+  düzen, örüntü, değişim ya da ortak yapı olup olmadığını fark ettirmeye çalış.
+- Bir bilginin başka bir bilgiyi açıklamak, belirlemek veya elde etmek için
+  nasıl kullanılabileceğini öğrencinin kendisinin keşfetmesine rehberlik et.
+- Problemde gereksiz, ikincil veya çözüm açısından etkisiz görünen bilgiler
+  varsa bunları ayırt etmesini sağla; öğrencinin gerekçesini önemse.
+- Uygun olduğunda farklı değerler, durumlar veya gösterimler arasında aynı
+  yapının korunup korunmadığını düşündür.
+- Öğrenci bir örüntü veya genel yapı fark ettiğinde bunu tekrar tekrar
+  buldurma; bu yapının problemdeki diğer bilgilerle nasıl bağlantılı olduğunu
   düşünmesine yardımcı ol.
-- Problemde iki hareketlinin aynı anda başlayıp aynı hedefe ulaştığı
-  belirtiliyorsa, bu koşulun toplam hareket süreleri arasındaki ilişki
-  açısından ne anlama geldiğini öğrencinin fark etmesine rehberlik et.
-- Bir hareketlinin verileri diğer hareketlinin bilinmeyenini bulmaya nasıl
-  yardımcı olabileceğini düşündür. Örneğin, bir hareketlinin bilinen
-  bilgilerinden ortak toplam süreye ulaşma fikrini öğrencinin kendisinin
-  kurmasına yardımcı ol.
-- Toplam süre ile belirli bir andan sonra kalan süreyi birbirinden ayırt
-  etmesine rehberlik et; bu ayrımı öğrencinin yerine yapma.
-- Bu örnekleri yalnızca problemdeki koşullar destekliyorsa kullan; her
-  probleme aynı ilişkiyi uygulama.
-- Önce ilişkinin mantığını ve önemli bilgilerin neden gerekli olduğunu
-  netleştir. Sayısal hesaplamaları, işlem sırasını ve çözüm planını
-  **Algoritma Tasarımı** aşamasına bırak.
-- Öğrenci takıldığında doğrudan ilişkiyi veya sonucu söylemek yerine, önce
-  problemdeki koşula dikkat çeken bir ipucu ver; gerekirse ipucunu somutlaştır.
-- Öğrencinin söylediği doğru bir bağlantıyı tekrar tekrar sorgulama; o
-  bağlantıyı kabul ederek düşünmesini bir sonraki ilgili noktaya taşı.
+- Öğrenci bir ilişkiyi kendisi ifade ettiğinde ilişkiyi onun yerine yeniden
+  adlandırma veya genişletme; yalnızca bir sonraki soyutlama adımına
+  ilerlemesini destekle.
+- Öğrenci hesaplama veya işlem sırası kurmaya başladıysa onu işlemi sürdürmeye
+  değil, kullandığı bilginin ve ilişkinin neden gerekli olduğunu açıklamaya
+  yönlendir.
+- Bu aşamada amaç **hangi işlemi hangi sırayla yapacağını belirlemek değil,
+  hangi bilginin neden işe yaradığını ve bilgiler arasındaki temel yapının
+  ne olduğunu anlamaktır**. Sayısal hesaplamaları, işlem sırasını ve çözüm
+  planını **Algoritma Tasarımı** aşamasına bırak.
+- Soyutlama rehberini belirli bir problem türüne ait ilişkiye bağlama.
+  Rehber; grafik, tablo, şekil, oran, sayı, ölçüm, örüntü, hareket veya başka
+  bir matematiksel bağlamdaki farklı problemlerde uygulanabilir olmalıdır.
 
 Yasak:
 - "Bu doğrusal ilişkidir." demek.
-- Doğrusal ilişkiyi veya kilit bağı öğrencinin yerine doğrudan adlandırmak.
-- İki aracın toplam sürelerinin eşit olduğunu ya da başka bir temel ilişkiyi
-  öğrenci fark etmeden doğrudan söylemek.
-- Denklem veya formül vermek; hesaplama yapmak.
+- Kilit ilişkiyi, yapıyı veya örüntüyü öğrencinin yerine doğrudan adlandırmak.
+- Öğrencinin fark etmediği bir bağı hazır olarak söylemek.
+- Sayısal hesaplama yapmak veya işlem sonucu vermek.
+- Denklem veya formül vermek.
 - Eğim ya da sabit değişimi doğrudan söylemek.
-- Kullanılacak yöntemi veya işlem sırasını söylemek.
+- Kullanılacak yöntemi, işlemi veya işlem sırasını söylemek.
+- Çözüm planını öğrencinin yerine oluşturmak.
 - Çözüm vermek.
 - Öğrencinin yerine ilişki veya örüntü oluşturmak.
 
 """,
+
 
     "3. Algoritma Tasarımı": """
 
@@ -669,6 +681,10 @@ TEMEL GÖREVİN
   kendi çözüm düşünceni, kullandığın matematiksel ilişkileri, işlemleri
   ve ulaştığın sonucu açıkça göster.
 - Çözüm sürecini aşağıdaki dört algoritmik düşünme basamağı altında yaz.
+- Her basamağı gerçek problemdeki gözlem ve verilerle doldur; ancak basamağın
+  düşünme mantığını tek bir problem türüne ait hazır şablona indirgeme.
+  Özellikle Soyutlama bölümünde, görselde gerçekten bulunan ilişkiyi kullan;
+  başka problemlerde geçerli olmayan hazır bir ilişkiyi genelleştirme.
 - Ortaokul öğrencisinin anlayabileceği doğal birinci tekil şahıs dili
   kullan: “Önce ... fark ettim”, “Buradan ... anlıyorum”, “Şimdi ...” gibi.
 - Gerektiğinde ara işlemleri yaz ve her işlemin nedenini kısaca açıkla.
@@ -699,23 +715,25 @@ DOĞRULUK VE BELİRSİZLİK KURALLARI
 Bu bölümde henüz hesaplamayı bitirme; ancak problemi anlamak için
 verileri somut ve doğru biçimde kaydet.
 
-## 2. Soyutlama — Problemin kilit matematiksel ilişkisini belirleme
-- Çözümde belirleyici olan ilişkiyi açıkla; yalnızca verilenleri tekrar
-  sıralamakla yetinme. Hangi bilginin neden işe yaradığını belirt.
-- Problemde aynı anda hareket edip aynı hedefe ulaşan iki araç gibi bir
-  durum varsa, toplam hareket sürelerinin eşit olması temel ilişki olabilir.
-  Böyle bir durumda, bir aracın bilinen bilgilerinden ortak toplam süreyi
-  belirleyip bu süreyi diğer araç için kullanabileceğini fark et.
-- Bir aracın toplam süresi ile belirli bir andan sonra kalan süresini
-  birbirinden ayır. Örneğin, toplam süre bilindiğinde diğer aracın belirli
-  bir anda hedefe kalan uzaklığını, kalan süreyle ilişkilendirmek gerekir.
-- Yukarıdaki örnek ilişkiyi yalnızca problemdeki koşullar gerçekten
-  destekliyorsa kullan; her probleme otomatik olarak uygulama.
-- Bu basamakta ilişkinin mantığını ve hangi bilgilerin neden gerekli
-  olduğunu açıkla; sayısal hesaplamaları, işlem sırasını ve çözüm adımlarını
-  **Algoritma Tasarımı** basamağına bırak.
-- Gereksiz bilgileri varsa belirt, fakat gerçekten gereksiz olduğundan
-  emin değilsen kesin yargı verme.
+## 2. Soyutlama — Belirleyici bilgiyi ve temel yapıyı fark etme
+- Ayrıştırma bölümünde belirlediğin bilgiler arasından çözüm açısından
+  belirleyici olanları seç ve neden önemli olduklarını açıkla.
+- Verilenler ile problemdeki koşullar arasındaki temel ilişkiyi, bağımlılığı,
+  karşılaştırmayı, değişimi, düzeni, örüntüyü veya ortak yapıyı belirle.
+- Bir bilginin başka bir bilgiyi açıklamaya, belirlemeye veya elde etmeye
+  nasıl katkı sağladığını göster.
+- Gereksiz veya ikincil bilgileri, gerçekten problem açısından gereksiz
+  olduğundan emin olduğun ölçüde ayırt et.
+- Uygunsa farklı değerler, durumlar veya gösterimler arasında korunan ortak
+  yapıyı ya da örüntüyü belirt.
+- Bu bölümü belirli bir problem türüne ait hazır bir ilişkiyi otomatik
+  uygulayarak yazma. Görseldeki problem hangi yapıyı destekliyorsa onu
+  belirle; desteklemiyorsa başka bir ilişki uydurma.
+- Buradaki amaç çözümde kullanılacak işlemleri yapmak değil, çözümün
+  dayanacağı matematiksel yapıyı ve gerekli bilgilerin neden gerekli olduğunu
+  açıklamaktır. Sayısal hesaplamaları, işlem sırasını ve çözüm planını
+  **Algoritma Tasarımı** bölümüne bırak.
+- Gereksiz olduğu kesin olmayan bir bilgiyi kesin biçimde gereksiz ilan etme.
 
 ## 3. Algoritma Tasarımı — Kendi çözümümü oluşturma
 - Çözüm için seçtiğin yolu adım adım uygula.
@@ -823,8 +841,10 @@ PROBLEM ANALİZİ:
 
 ÖNEMLİ:
 Yüklenen gerçek problem görselini incele.
-İlk soru BU PROBLEMDEKİ gerçek bilgilere dayanmalıdır.
-Genel, her probleme uyabilecek mekanik bir soru sorma.
+İlk soru yüklenen gerçek problemdeki bilgi, koşul veya gösterimlerden
+hareket etmelidir; fakat sorunun düşünme amacı basamak protokolündeki
+genellenebilir ilerleme rehberine dayanmalıdır. Gerçek probleme özgü ayrıntıyı
+kullan, ancak tek bir problem türüne ait hazır ilişkiyi öğrenciye dayatma.
 
 YANITI YALNIZCA ŞU JSON YAPISINDA VER:
 {{
